@@ -243,12 +243,14 @@ const StudentRegister: React.FC = () => {
 
   /* =========================================================
      CREATE FIREBASE ACCOUNT
-     AUTOMATICALLY CALLED AFTER FACE LIVENESS
+     NO EMAIL VERIFICATION OR OTP
   ========================================================= */
 
   const createStudentAccount = async (
     faceLivenessPassed = faceVerified
   ) => {
+    if (loading) return;
+
     setError('');
     setSuccessMessage('');
 
@@ -325,9 +327,9 @@ const StudentRegister: React.FC = () => {
         'Your GrantAccess account has been created successfully!'
       );
 
-      /* GO DIRECTLY TO STUDENT DASHBOARD */
+      /* DIRECTLY OPEN STUDENT DASHBOARD */
 
-      navigate('/student-home', {
+      navigate('/student-dashboard', {
         replace: true,
         state: {
           registrationSuccess: true,
@@ -386,17 +388,14 @@ const StudentRegister: React.FC = () => {
   ========================================================= */
 
   const handleFaceVerified = async () => {
+    if (loading) return;
+
     setFaceVerified(true);
     setError('');
 
     setSuccessMessage(
       'Face verification successful! Creating your student account...'
     );
-
-    /*
-      Pass true directly because React state updates are asynchronous.
-      This avoids reading the previous faceVerified value.
-    */
 
     await createStudentAccount(true);
   };
@@ -533,9 +532,7 @@ const StudentRegister: React.FC = () => {
                 </div>
               )}
 
-              {/* =================================================
-                  STEP 1 - EMAIL
-              ================================================= */}
+              {/* STEP 1 - EMAIL */}
 
               {registrationStep === 1 && (
                 <div className="student-register-form">
@@ -558,7 +555,7 @@ const StudentRegister: React.FC = () => {
 
                   <p className="student-register-hint">
                     Your email will be used to sign in to GrantAccess.
-                    Email verification and OTP are not required.
+                    No email verification or OTP is required.
                   </p>
 
                   <IonButton
@@ -576,9 +573,7 @@ const StudentRegister: React.FC = () => {
                 </div>
               )}
 
-              {/* =================================================
-                  STEP 2 - PASSWORD
-              ================================================= */}
+              {/* STEP 2 - PASSWORD */}
 
               {registrationStep === 2 && (
                 <div className="student-register-form">
@@ -685,9 +680,7 @@ const StudentRegister: React.FC = () => {
                 </div>
               )}
 
-              {/* =================================================
-                  STEP 3 - STUDENT INFORMATION
-              ================================================= */}
+              {/* STEP 3 - STUDENT INFORMATION */}
 
               {registrationStep === 3 && (
                 <div className="student-register-form">
@@ -828,9 +821,7 @@ const StudentRegister: React.FC = () => {
                 </div>
               )}
 
-              {/* =================================================
-                  STEP 4 - FACE LIVENESS
-              ================================================= */}
+              {/* STEP 4 - FACE LIVENESS */}
 
               {registrationStep === 4 && (
                 <div className="student-register-face-section">
