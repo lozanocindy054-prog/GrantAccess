@@ -39,7 +39,7 @@ interface FaceLivenessProps {
 type Challenge = 'blink' | 'left' | 'right' | 'smile';
 
 // =====================================================
-// CHALLENGE TEXT
+// CHALLENGE LABELS
 // =====================================================
 
 const challengeLabels: Record<Challenge, string> = {
@@ -56,7 +56,10 @@ const challengeInstructions: Record<Challenge, string> = {
   smile: 'Show a natural smile.',
 };
 
-// Keep this version synchronized with the installed npm package.
+// =====================================================
+// MEDIAPIPE CONFIGURATION
+// =====================================================
+
 const MEDIAPIPE_VERSION = '0.10.14';
 
 const WASM_URL =
@@ -79,7 +82,6 @@ const createRandomChallenges = (): Challenge[] => {
 
   for (let i = all.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
-
     [all[i], all[j]] = [all[j], all[i]];
   }
 
@@ -93,8 +95,10 @@ const createRandomChallenges = (): Challenge[] => {
 const isMobileDevice = (): boolean => {
   return (
     /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ||
-    (navigator.maxTouchPoints > 1 &&
-      /Macintosh/i.test(navigator.userAgent))
+    (
+      navigator.maxTouchPoints > 1 &&
+      /Macintosh/i.test(navigator.userAgent)
+    )
   );
 };
 
@@ -110,7 +114,9 @@ const FaceLiveness: React.FC<FaceLivenessProps> = ({
   const landmarkerRef = useRef<FaceLandmarker | null>(null);
 
   const animationRef = useRef<number | null>(null);
+
   const mountedRef = useRef(false);
+  const startRequestRef = useRef(false);
 
   const challengesRef = useRef<Challenge[]>([]);
   const challengeIndexRef = useRef(0);
@@ -122,8 +128,6 @@ const FaceLiveness: React.FC<FaceLivenessProps> = ({
   const lastDetectionRef = useRef(0);
   const statusRef = useRef('');
 
-  const startRequestRef = useRef(false);
-
   const [cameraStarted, setCameraStarted] = useState(false);
   const [cameraLoading, setCameraLoading] = useState(false);
   const [modelLoading, setModelLoading] = useState(false);
@@ -133,7 +137,7 @@ const FaceLiveness: React.FC<FaceLivenessProps> = ({
   const [challengeIndex, setChallengeIndex] = useState(0);
 
   const [status, setStatus] = useState(
-    'Allow camera access to begin verification.'
+    'Press Start Face Verification to begin.'
   );
 
   const [error, setError] = useState('');
@@ -141,7 +145,7 @@ const FaceLiveness: React.FC<FaceLivenessProps> = ({
   const mobile = isMobileDevice();
 
   // =====================================================
-  // UPDATE STATUS
+  // STATUS
   // =====================================================
 
   const updateStatus = useCallback((message: string) => {
@@ -154,7 +158,7 @@ const FaceLiveness: React.FC<FaceLivenessProps> = ({
   }, []);
 
   // =====================================================
-  // STOP FRAME ANALYSIS
+  // STOP ANALYSIS
   // =====================================================
 
   const stopAnalysis = useCallback(() => {
@@ -200,9 +204,7 @@ const FaceLiveness: React.FC<FaceLivenessProps> = ({
       return landmarkerRef.current;
     }
 
-    if (mountedRef.current) {
-      setModelLoading(true);
-    }
+    setModelLoading(true);
 
     updateStatus('Loading face detection model...');
 
@@ -222,8 +224,9 @@ const FaceLiveness: React.FC<FaceLivenessProps> = ({
 
       let landmarker: FaceLandmarker;
 
-      if (mobile) {
-        // MOBILE: CPU FIRST
+      // Try CPU first. This is generally a safer starting
+      // point for mobile devices.
+      try {
         landmarker = await FaceLandmarker.createFromOptions(
           vision,
           {
@@ -234,36 +237,22 @@ const FaceLiveness: React.FC<FaceLivenessProps> = ({
             },
           }
         );
-      } else {
-        // DESKTOP: GPU FIRST, CPU FALLBACK
-        try {
-          landmarker = await FaceLandmarker.createFromOptions(
-            vision,
-            {
-              ...commonOptions,
-              baseOptions: {
-                modelAssetPath: MODEL_URL,
-                delegate: 'GPU',
-              },
-            }
-          );
-        } catch (gpuError) {
-          console.warn(
-            'GPU initialization failed. Using CPU.',
-            gpuError
-          );
+      } catch (cpuError) {
+        console.warn(
+          'MediaPipe CPU initialization failed. Trying GPU.',
+          cpuError
+        );
 
-          landmarker = await FaceLandmarker.createFromOptions(
-            vision,
-            {
-              ...commonOptions,
-              baseOptions: {
-                modelAssetPath: MODEL_URL,
-                delegate: 'CPU',
-              },
-            }
-          );
-        }
+        landmarker = await FaceLandmarker.createFromOptions(
+          vision,
+          {
+            ...commonOptions,
+            baseOptions: {
+              modelAssetPath: MODEL_URL,
+              delegate: 'GPU',
+            },
+          }
+        );
       }
 
       if (!mountedRef.current) {
@@ -277,6 +266,7 @@ const FaceLiveness: React.FC<FaceLivenessProps> = ({
       landmarkerRef.current = landmarker;
 
       return landmarker;
+
     } finally {
       if (mountedRef.current) {
         setModelLoading(false);
@@ -303,7 +293,7 @@ const FaceLiveness: React.FC<FaceLivenessProps> = ({
   };
 
   // =====================================================
-  // COMPLETE CURRENT CHALLENGE
+  // COMPLETE CHALLENGE
   // =====================================================
 
   const completeCurrentChallenge = () => {
@@ -326,7 +316,6 @@ const FaceLiveness: React.FC<FaceLivenessProps> = ({
 
     blinkClosedRef.current = false;
 
-    // ALL CHALLENGES COMPLETED
     if (nextIndex >= challengesRef.current.length) {
       completedRef.current = true;
 
@@ -357,7 +346,7 @@ const FaceLiveness: React.FC<FaceLivenessProps> = ({
   };
 
   // =====================================================
-  // ANALYZE CAMERA FRAME
+  // ANALYZE FRAME
   // =====================================================
 
   const analyzeFrame = (
@@ -376,7 +365,6 @@ const FaceLiveness: React.FC<FaceLivenessProps> = ({
       updateStatus(
         'No face detected. Position your face inside the camera.'
       );
-
       return;
     }
 
@@ -384,7 +372,6 @@ const FaceLiveness: React.FC<FaceLivenessProps> = ({
       updateStatus(
         'Multiple faces detected. Only one person should be visible.'
       );
-
       return;
     }
 
@@ -395,7 +382,7 @@ const FaceLiveness: React.FC<FaceLivenessProps> = ({
 
     const landmarks = faces[0];
 
-    // BLINK CHALLENGE
+    // BLINK
 
     if (challenge === 'blink') {
       const leftEye = getBlendshape(
@@ -425,14 +412,13 @@ const FaceLiveness: React.FC<FaceLivenessProps> = ({
         rightEye < 0.25
       ) {
         updateStatus('Blink detected!');
-
         completeCurrentChallenge();
       }
 
       return;
     }
 
-    // SMILE CHALLENGE
+    // SMILE
 
     if (challenge === 'smile') {
       const leftSmile = getBlendshape(
@@ -450,7 +436,6 @@ const FaceLiveness: React.FC<FaceLivenessProps> = ({
         rightSmile > 0.35
       ) {
         updateStatus('Smile detected!');
-
         completeCurrentChallenge();
       } else {
         updateStatus(
@@ -461,7 +446,7 @@ const FaceLiveness: React.FC<FaceLivenessProps> = ({
       return;
     }
 
-    // HEAD TURN CHALLENGE
+    // HEAD TURN
 
     const nose = landmarks[1];
     const leftEye = landmarks[33];
@@ -485,7 +470,6 @@ const FaceLiveness: React.FC<FaceLivenessProps> = ({
     if (challenge === 'left') {
       if (yawOffset > 0.12) {
         updateStatus('Head turn detected!');
-
         completeCurrentChallenge();
       } else {
         updateStatus(
@@ -497,7 +481,6 @@ const FaceLiveness: React.FC<FaceLivenessProps> = ({
     if (challenge === 'right') {
       if (yawOffset < -0.12) {
         updateStatus('Head turn detected!');
-
         completeCurrentChallenge();
       } else {
         updateStatus(
@@ -519,7 +502,7 @@ const FaceLiveness: React.FC<FaceLivenessProps> = ({
 
     stopAnalysis();
 
-    const detectionInterval = mobile ? 100 : 50;
+    const detectionInterval = mobile ? 120 : 50;
 
     const loop = () => {
       if (
@@ -536,7 +519,8 @@ const FaceLiveness: React.FC<FaceLivenessProps> = ({
         now - lastDetectionRef.current >= detectionInterval &&
         video.readyState >=
           HTMLMediaElement.HAVE_CURRENT_DATA &&
-        video.videoWidth > 0
+        video.videoWidth > 0 &&
+        video.videoHeight > 0
       ) {
         lastDetectionRef.current = now;
 
@@ -547,6 +531,7 @@ const FaceLiveness: React.FC<FaceLivenessProps> = ({
           );
 
           analyzeFrame(result);
+
         } catch (analysisError) {
           console.error(
             'MediaPipe frame analysis error:',
@@ -574,7 +559,7 @@ const FaceLiveness: React.FC<FaceLivenessProps> = ({
   };
 
   // =====================================================
-  // WAIT FOR VIDEO TO BE READY
+  // WAIT FOR VIDEO FRAME
   // =====================================================
 
   const waitForVideoReady = (
@@ -610,7 +595,6 @@ const FaceLiveness: React.FC<FaceLivenessProps> = ({
         ) {
           cleanup();
           resolve();
-
           return;
         }
 
@@ -619,7 +603,7 @@ const FaceLiveness: React.FC<FaceLivenessProps> = ({
 
           reject(
             new Error(
-              'Camera did not provide a video frame. Check your camera permission and try again.'
+              'Camera did not provide a video frame. Check camera permission and try again.'
             )
           );
 
@@ -675,13 +659,15 @@ const FaceLiveness: React.FC<FaceLivenessProps> = ({
       errorName === 'SecurityError' ||
       errorName === 'NotSupportedError'
     ) {
-      return 'Camera access is not supported in this browser. Open GrantAccess using HTTPS in Safari or Chrome.';
+      return 'Camera access requires a supported browser and a secure HTTPS connection.';
     }
 
     if (
       cameraError instanceof TypeError ||
-      (cameraError instanceof Error &&
-        /fetch|network|download/i.test(cameraError.message))
+      (
+        cameraError instanceof Error &&
+        /fetch|network|download/i.test(cameraError.message)
+      )
     ) {
       return 'Unable to download the face verification model. Check your internet connection and try again.';
     }
@@ -724,7 +710,7 @@ const FaceLiveness: React.FC<FaceLivenessProps> = ({
     setChallengeIndex(0);
 
     try {
-      // CHECK SECURE CONNECTION
+      // HTTPS CHECK
 
       if (
         !window.isSecureContext ||
@@ -753,10 +739,10 @@ const FaceLiveness: React.FC<FaceLivenessProps> = ({
                 ideal: 'user',
               },
               width: {
-                ideal: 640,
+                ideal: mobile ? 480 : 640,
               },
               height: {
-                ideal: 480,
+                ideal: mobile ? 360 : 480,
               },
               frameRate: {
                 ideal: 24,
@@ -764,6 +750,7 @@ const FaceLiveness: React.FC<FaceLivenessProps> = ({
               },
             },
           });
+
       } catch (frontCameraError) {
         console.warn(
           'Front camera request failed. Trying default camera.',
@@ -791,24 +778,22 @@ const FaceLiveness: React.FC<FaceLivenessProps> = ({
 
       if (!video) {
         throw new Error(
-          'Camera preview element was not found. Refresh the page and try again.'
+          'Camera preview was not found. Refresh the page and try again.'
         );
       }
 
-      // MOBILE SAFARI COMPATIBILITY
+      // MOBILE BROWSER COMPATIBILITY
 
       video.pause();
 
-      video.removeAttribute('src');
+      video.autoplay = true;
+      video.muted = true;
+      video.playsInline = true;
 
       video.setAttribute('autoplay', '');
       video.setAttribute('muted', '');
       video.setAttribute('playsinline', '');
       video.setAttribute('webkit-playsinline', '');
-
-      video.autoplay = true;
-      video.muted = true;
-      video.playsInline = true;
 
       video.disablePictureInPicture = true;
 
@@ -816,23 +801,48 @@ const FaceLiveness: React.FC<FaceLivenessProps> = ({
 
       updateStatus('Starting camera preview...');
 
-      // Wait for the browser to attach the camera stream.
+      // WAIT FOR VIDEO METADATA
 
       await new Promise<void>((resolve, reject) => {
+        let finished = false;
+
         const timeout = window.setTimeout(() => {
+          if (finished) return;
+
+          finished = true;
+
+          video.removeEventListener(
+            'loadedmetadata',
+            handleReady
+          );
+
+          video.removeEventListener(
+            'loadeddata',
+            handleReady
+          );
+
           reject(
             new Error(
               'Camera preview initialization timed out.'
             )
           );
-        }, 10000);
+        }, 15000);
 
-        const handleLoaded = () => {
+        const handleReady = () => {
+          if (finished) return;
+
+          finished = true;
+
           window.clearTimeout(timeout);
 
           video.removeEventListener(
             'loadedmetadata',
-            handleLoaded
+            handleReady
+          );
+
+          video.removeEventListener(
+            'loadeddata',
+            handleReady
           );
 
           resolve();
@@ -840,16 +850,24 @@ const FaceLiveness: React.FC<FaceLivenessProps> = ({
 
         video.addEventListener(
           'loadedmetadata',
-          handleLoaded,
-          { once: true }
+          handleReady
         );
 
-        if (video.readyState >= 1) {
-          handleLoaded();
+        video.addEventListener(
+          'loadeddata',
+          handleReady
+        );
+
+        if (video.readyState >= 2) {
+          handleReady();
         }
       });
 
+      // PLAY VIDEO
+
       await video.play();
+
+      // WAIT FOR REAL VIDEO FRAME
 
       await waitForVideoReady(video);
 
@@ -861,7 +879,7 @@ const FaceLiveness: React.FC<FaceLivenessProps> = ({
         'Camera ready. Loading face detection model...'
       );
 
-      // LOAD MODEL AFTER CAMERA IS READY
+      // LOAD MEDIAPIPE
 
       const landmarker = await loadLandmarker();
 
@@ -873,7 +891,7 @@ const FaceLiveness: React.FC<FaceLivenessProps> = ({
         );
       }
 
-      // CREATE CHALLENGES
+      // CREATE RANDOM CHALLENGES
 
       const randomChallenges =
         createRandomChallenges();
@@ -919,7 +937,7 @@ const FaceLiveness: React.FC<FaceLivenessProps> = ({
   };
 
   // =====================================================
-  // RETAKE VERIFICATION
+  // RETAKE
   // =====================================================
 
   const retake = () => {
@@ -943,7 +961,7 @@ const FaceLiveness: React.FC<FaceLivenessProps> = ({
   };
 
   // =====================================================
-  // STOP CAMERA BUTTON
+  // STOP CAMERA
   // =====================================================
 
   const handleStopCamera = () => {
@@ -959,7 +977,7 @@ const FaceLiveness: React.FC<FaceLivenessProps> = ({
   };
 
   // =====================================================
-  // COMPONENT CLEANUP
+  // CLEANUP
   // =====================================================
 
   useEffect(() => {
@@ -1101,7 +1119,7 @@ const FaceLiveness: React.FC<FaceLivenessProps> = ({
           )}
         </div>
 
-        {/* CAMERA STATUS */}
+        {/* STATUS */}
 
         <div className="ga-liveness-status">
           <span
@@ -1176,7 +1194,7 @@ const FaceLiveness: React.FC<FaceLivenessProps> = ({
         </div>
       )}
 
-      {/* START / VERIFIED BUTTON */}
+      {/* START / VERIFIED */}
 
       {!faceVerified ? (
         <IonButton
@@ -1266,7 +1284,8 @@ const FaceLiveness: React.FC<FaceLivenessProps> = ({
           This check analyzes facial movements from your
           live camera preview. It does not identify your
           identity or guarantee protection against spoofing.
-          This component does not upload camera frames.
+          This component does not intentionally upload camera
+          frames to your application server.
         </p>
       </div>
 
