@@ -121,7 +121,6 @@ import '@ionic/react/css/palettes/dark.system.css';
 // ==========================================
 import './theme/variables.css';
 import './theme/grant-access-palette.css';
-import './theme/premium-mobile.css';
 
 setupIonicReact();
 
