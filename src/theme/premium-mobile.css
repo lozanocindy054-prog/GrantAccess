@@ -1,20 +1,38 @@
+
+/* ==========================================
+   GRANTACCESS - PREMIUM MOBILE THEME
+   GREEN & WHITE DESIGN
+   RESPONSIVE TABLET AND MOBILE
+========================================== */
+
 :root {
   color-scheme: light;
-  --ion-font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  --ion-font-family: Inter, ui-sans-serif, system-ui, -apple-system,
+    BlinkMacSystemFont, "Segoe UI", sans-serif;
+
   --ga-font-family: var(--ion-font-family);
+
   --ga-radius-sm: 10px;
   --ga-radius-md: 16px;
   --ga-radius-lg: 22px;
-  --ga-shadow-sm: 0 4px 14px rgba(127, 29, 45, 0.06);
-  --ga-shadow-md: 0 12px 30px rgba(127, 29, 45, 0.09);
-  --ga-border: 1px solid var(--ga-rose);
+
+  --ga-shadow-sm: 0 4px 14px rgba(21, 148, 71, 0.06);
+  --ga-shadow-md: 0 12px 30px rgba(21, 148, 71, 0.09);
+
+  --ga-border: 1px solid var(--ga-green-soft);
+
   --ion-toolbar-background: var(--ga-white);
   --ion-toolbar-color: var(--ga-charcoal);
   --ion-item-background: var(--ga-white);
   --ion-card-background: var(--ga-white);
   --ion-color-step-50: var(--ga-blush-white);
-  --ion-color-step-100: var(--ga-rose);
+  --ion-color-step-100: var(--ga-green-soft);
 }
+
+/* ==========================================
+   GLOBAL
+========================================== */
 
 html {
   background: var(--ga-blush-white);
@@ -53,13 +71,21 @@ ion-button {
     transform 160ms ease;
 }
 
+/* ==========================================
+   ACCESSIBILITY
+========================================== */
+
 button:focus-visible,
 a:focus-visible,
 ion-button:focus-visible,
 ion-segment-button:focus-visible {
-  outline: 3px solid rgba(198, 40, 61, 0.3);
+  outline: 3px solid rgba(21, 148, 71, 0.3);
   outline-offset: 3px;
 }
+
+/* ==========================================
+   IONIC BUTTONS
+========================================== */
 
 ion-button {
   --border-radius: var(--ga-radius-sm);
@@ -70,25 +96,33 @@ ion-button {
 }
 
 ion-button:not([fill="clear"]):not([fill="outline"]) {
-  --background: var(--ga-crimson);
-  --background-hover: var(--ga-burgundy);
-  --background-activated: var(--ga-burgundy);
+  --background: var(--ga-primary);
+  --background-hover: var(--ga-primary-dark);
+  --background-activated: var(--ga-primary-dark);
   --color: var(--ga-white);
 }
 
 ion-button[fill="outline"] {
-  --border-color: var(--ga-rose);
-  --color: var(--ga-burgundy);
+  --border-color: var(--ga-green-soft);
+  --color: var(--ga-primary-dark);
 }
+
+/* ==========================================
+   IONIC INPUTS
+========================================== */
 
 ion-input,
 ion-textarea,
 ion-select {
-  --highlight-color-focused: var(--ga-crimson);
-  --highlight-color-valid: var(--ga-burgundy);
-  --placeholder-color: #74676c;
+  --highlight-color-focused: var(--ga-primary);
+  --highlight-color-valid: var(--ga-primary-dark);
+  --placeholder-color: var(--ga-muted);
   --placeholder-opacity: 0.8;
 }
+
+/* ==========================================
+   MODALS AND TOASTS
+========================================== */
 
 ion-modal::part(content) {
   border: var(--ga-border);
@@ -101,6 +135,10 @@ ion-toast {
   --box-shadow: var(--ga-shadow-md);
 }
 
+/* ==========================================
+   PAGE COLORS
+========================================== */
+
 .student-home-page,
 .student-home-content,
 .student-messages-page,
@@ -110,10 +148,14 @@ ion-toast {
   color: var(--ga-charcoal);
 }
 
+/* ==========================================
+   STUDENT HEADER
+========================================== */
+
 .student-global-header {
-  border-color: var(--ga-rose);
+  border-color: var(--ga-green-soft);
   background: rgba(255, 255, 255, 0.96);
-  box-shadow: 0 4px 18px rgba(127, 29, 45, 0.045);
+  box-shadow: 0 4px 18px rgba(21, 148, 71, 0.045);
   backdrop-filter: blur(14px);
 }
 
@@ -121,28 +163,40 @@ ion-toast {
 .home-brand-text h1,
 .admin-brand h2,
 .lgu-home-brand h1 {
-  color: var(--ga-burgundy);
+  color: var(--ga-primary-dark);
 }
+
+/* ==========================================
+   STUDENT NAVIGATION
+========================================== */
 
 .student-global-nav-item:hover,
 .student-global-nav-item.active,
 .home-top-nav-item:hover,
 .home-top-nav-item.active,
 .student-bottom-navigation-item.active {
-  color: var(--ga-crimson);
+  color: var(--ga-primary);
 }
 
 .student-global-nav-item.active::after,
 .home-top-nav-item.active::after {
-  background: var(--ga-crimson);
+  background: var(--ga-primary);
 }
 
+/* ==========================================
+   BOTTOM NAVIGATION
+========================================== */
+
 .student-bottom-navigation {
-  border-color: var(--ga-rose);
+  border-color: var(--ga-green-soft);
   background: rgba(255, 255, 255, 0.97);
-  box-shadow: 0 -8px 26px rgba(127, 29, 45, 0.1);
+  box-shadow: 0 -8px 26px rgba(21, 148, 71, 0.1);
   backdrop-filter: blur(16px);
 }
+
+/* ==========================================
+   CARDS AND PANELS
+========================================== */
 
 .home-welcome,
 .home-organizations-panel,
@@ -157,7 +211,7 @@ ion-toast {
 .lgu-home-menu-item,
 .lgu-home-application-card,
 .lgu-home-stat-card {
-  border-color: var(--ga-rose);
+  border-color: var(--ga-green-soft);
   border-radius: var(--ga-radius-md);
   box-shadow: var(--ga-shadow-sm);
 }
@@ -167,10 +221,14 @@ ion-toast {
   box-shadow: var(--ga-shadow-md);
 }
 
+/* ==========================================
+   CARD HOVER
+========================================== */
+
 .scholarship-card:hover,
 .admin-management-card:hover,
 .lgu-home-menu-item:hover {
-  border-color: rgba(198, 40, 61, 0.38);
+  border-color: rgba(21, 148, 71, 0.38);
   box-shadow: var(--ga-shadow-md);
   transform: translateY(-2px);
 }
@@ -180,28 +238,40 @@ ion-toast {
   background-color: var(--ga-white);
 }
 
+/* ==========================================
+   ADMIN SIDEBAR
+========================================== */
+
 .admin-sidebar {
   background: var(--ga-white);
-  border-color: var(--ga-rose);
+  border-color: var(--ga-green-soft);
 }
 
 .admin-nav-item:hover,
 .admin-nav-item.active,
 .aal-nav-item:hover,
 .aal-nav-item.active {
-  color: var(--ga-burgundy);
-  background: var(--ga-rose);
+  color: var(--ga-primary-dark);
+  background: var(--ga-green-light);
 }
 
 .admin-nav-item.active,
 .aal-nav-item.active {
-  box-shadow: inset 3px 0 0 var(--ga-crimson);
+  box-shadow: inset 3px 0 0 var(--ga-primary);
 }
+
+/* ==========================================
+   ADMIN CONTENT
+========================================== */
 
 .admin-main,
 .admin-content {
   background: var(--ga-blush-white);
 }
+
+/* ==========================================
+   RESPONSIVE TABLES
+========================================== */
 
 [class*="table-wrapper"],
 [class*="table-wrap"],
@@ -212,21 +282,33 @@ ion-toast {
   -webkit-overflow-scrolling: touch;
 }
 
+/* ==========================================
+   IONIC LIST
+========================================== */
+
 ion-list {
   background: transparent;
 }
 
 ion-item {
-  --border-color: var(--ga-rose);
+  --border-color: var(--ga-green-soft);
   --background: var(--ga-white);
   --color: var(--ga-charcoal);
 }
+
+/* ==========================================
+   DESKTOP
+========================================== */
 
 @media (min-width: 851px) {
   .student-bottom-navigation {
     display: none;
   }
 }
+
+/* ==========================================
+   TABLET AND MOBILE
+========================================== */
 
 @media (max-width: 850px) {
   .student-bottom-navigation {
@@ -247,6 +329,10 @@ ion-item {
     transform: translateY(-1px);
   }
 }
+
+/* ==========================================
+   MOBILE ADMIN NAVIGATION
+========================================== */
 
 @media (max-width: 700px) {
   .admin-page .admin-layout,
@@ -271,9 +357,9 @@ ion-item {
     gap: 4px;
     padding: 6px 7px max(6px, env(safe-area-inset-bottom));
     border: 0;
-    border-top: 1px solid var(--ga-rose);
+    border-top: 1px solid var(--ga-green-soft);
     background: rgba(255, 255, 255, 0.97);
-    box-shadow: 0 -8px 26px rgba(127, 29, 45, 0.1);
+    box-shadow: 0 -8px 26px rgba(21, 148, 71, 0.1);
     backdrop-filter: blur(16px);
   }
 
@@ -317,7 +403,7 @@ ion-item {
 
   .admin-page .admin-nav-item.active,
   .aal-page .aal-nav-item.active {
-    box-shadow: inset 0 -2px 0 var(--ga-crimson);
+    box-shadow: inset 0 -2px 0 var(--ga-primary);
   }
 
   .admin-page .admin-logout {
@@ -374,6 +460,10 @@ ion-item {
   }
 }
 
+/* ==========================================
+   SMALL MOBILE
+========================================== */
+
 @media (max-width: 520px) {
   .student-bottom-navigation {
     min-height: 64px;
@@ -401,6 +491,10 @@ ion-item {
     padding-left: 14px;
   }
 }
+
+/* ==========================================
+   REDUCED MOTION
+========================================== */
 
 @media (prefers-reduced-motion: reduce) {
   *,
