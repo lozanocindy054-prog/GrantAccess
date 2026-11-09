@@ -1,0 +1,425 @@
+
+.student-register-content {
+  --background: var(--ga-blush-white);
+}
+
+.student-register-wrapper {
+  min-height: 100%;
+  background: var(--ga-blush-white);
+  color: var(--ga-charcoal);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.student-register-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 18px 6%;
+  background: #ffffff;
+  border-bottom: 1px solid var(--ga-rose);
+}
+
+.student-register-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: none;
+  padding: 0;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.student-register-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border-radius: 13px;
+  background: var(--ga-blush-white);
+  color: var(--ga-charcoal);
+  font-size: 25px;
+}
+
+.student-register-brand-text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.student-register-brand-text strong {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--ga-charcoal);
+}
+
+.student-register-brand-text strong span {
+  color: var(--ga-charcoal);
+}
+
+.student-register-brand-text small {
+  color: var(--ga-charcoal);
+  font-size: 8px;
+  letter-spacing: 0.7px;
+}
+
+.student-register-header-login {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.student-register-header-login span {
+  color: var(--ga-charcoal);
+  font-size: 13px;
+}
+
+.student-register-header-login ion-button {
+  --color: var(--ga-burgundy);
+  --border-color: var(--ga-rose);
+  --border-radius: 10px;
+  font-weight: 600;
+  text-transform: none;
+}
+
+.student-register-main {
+  width: 100%;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 42px 24px 24px;
+}
+
+.student-register-intro {
+  margin-bottom: 26px;
+  text-align: center;
+}
+
+.student-register-eyebrow {
+  display: inline-block;
+  margin-bottom: 12px;
+  color: var(--ga-charcoal);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 2px;
+}
+
+.student-register-intro h1 {
+  margin: 0 0 12px;
+  color: var(--ga-charcoal);
+  font-size: clamp(27px, 4vw, 38px);
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.student-register-intro h1 span {
+  color: var(--ga-charcoal);
+}
+
+.student-register-intro > p {
+  max-width: 540px;
+  margin: 0 auto;
+  color: var(--ga-charcoal);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.student-register-form {
+  padding: 32px;
+  background: #ffffff;
+  border: 1px solid var(--ga-rose);
+  border-radius: 20px;
+  box-shadow: 0 10px 35px rgba(127, 29, 45, 0.07);
+}
+
+.student-register-form-heading {
+  margin-bottom: 24px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--ga-rose);
+}
+
+.student-register-form-heading h2 {
+  margin: 0 0 7px;
+  color: var(--ga-charcoal);
+  font-size: 21px;
+  font-weight: 800;
+}
+
+.student-register-form-heading p {
+  margin: 0;
+  color: var(--ga-charcoal);
+  font-size: 12px;
+}
+
+.student-register-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 19px;
+}
+
+.student-register-field label {
+  color: var(--ga-charcoal);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.student-register-field label span {
+  color: var(--ga-charcoal);
+  font-weight: 400;
+}
+
+.student-register-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-height: 49px;
+  padding: 0 14px;
+  background: #ffffff;
+  border: 1px solid var(--ga-rose);
+  border-radius: 10px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.student-register-input-wrap:focus-within {
+  border-color: var(--ga-crimson);
+  box-shadow: 0 0 0 3px rgba(127, 29, 45, 0.1);
+}
+
+.student-register-input-wrap > ion-icon {
+  flex-shrink: 0;
+  color: var(--ga-charcoal);
+  font-size: 19px;
+}
+
+.student-register-input-wrap input {
+  width: 100%;
+  min-width: 0;
+  height: 46px;
+  padding: 0;
+  color: var(--ga-charcoal);
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: 14px;
+}
+
+.student-register-input-wrap input::placeholder {
+  color: var(--ga-charcoal);
+}
+
+.student-register-field select {
+  width: 100%;
+  min-height: 49px;
+  padding: 0 13px;
+  color: var(--ga-charcoal);
+  background: #ffffff;
+  border: 1px solid var(--ga-rose);
+  border-radius: 10px;
+  outline: none;
+  font-size: 14px;
+}
+
+.student-register-field select:focus {
+  border-color: var(--ga-crimson);
+  box-shadow: 0 0 0 3px rgba(127, 29, 45, 0.1);
+}
+
+.student-register-eye {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 5px;
+  color: var(--ga-charcoal);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 19px;
+}
+
+.student-register-terms {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 8px 0 22px;
+  color: var(--ga-charcoal);
+  font-size: 12px;
+  line-height: 1.6;
+  cursor: pointer;
+}
+
+.student-register-terms input {
+  width: 16px;
+  height: 16px;
+  margin-top: 2px;
+  flex-shrink: 0;
+  accent-color: var(--ga-crimson);
+  cursor: pointer;
+}
+
+.student-register-submit {
+  --background: var(--ga-blush-white);
+  --background-hover: var(--ga-rose);
+  --background-activated: var(--ga-rose);
+  --border-radius: 10px;
+  --box-shadow: none;
+  min-height: 50px;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: none;
+}
+
+.student-register-submit[disabled] {
+  opacity: 0.7;
+}
+
+.student-register-back {
+  --border-color: var(--ga-rose);
+  --color: var(--ga-burgundy);
+  --border-radius: 10px;
+  min-height: 46px;
+  margin: 0 0 12px;
+  font-size: 13px;
+  text-transform: none;
+}
+
+.student-register-resend {
+  align-self: flex-start;
+  padding: 3px 0;
+  border: 0;
+  background: transparent;
+  color: var(--ga-charcoal);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.student-register-resend:disabled {
+  opacity: 0.55;
+  cursor: wait;
+}
+
+.student-register-error {
+  margin-bottom: 20px;
+  padding: 12px 14px;
+  color: var(--ga-charcoal);
+  background: var(--ga-blush-white);
+  border: 1px solid var(--ga-rose);
+  border-radius: 9px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.student-register-login-link {
+  margin: 21px 0 0;
+  color: var(--ga-charcoal);
+  text-align: center;
+  font-size: 13px;
+}
+
+.student-register-login-link a {
+  color: var(--ga-charcoal);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.student-register-login-link a:hover {
+  text-decoration: underline;
+}
+
+.student-register-footer {
+  padding: 25px 0 8px;
+  color: var(--ga-charcoal);
+  text-align: center;
+  font-size: 11px;
+}
+
+@media (max-width: 600px) {
+  .student-register-header {
+    padding: 14px 16px;
+  }
+
+  .student-register-logo {
+    width: 38px;
+    height: 38px;
+    font-size: 22px;
+  }
+
+  .student-register-brand-text strong {
+    font-size: 19px;
+  }
+
+  .student-register-brand-text small {
+    max-width: 155px;
+    font-size: 7px;
+    line-height: 1.4;
+  }
+
+  .student-register-header-login {
+    gap: 0;
+  }
+
+  .student-register-header-login span {
+    display: none;
+  }
+
+  .student-register-header-login ion-button {
+    font-size: 12px;
+  }
+
+  .student-register-main {
+    padding: 30px 14px 18px;
+  }
+
+  .student-register-intro {
+    margin-bottom: 22px;
+  }
+
+  .student-register-intro h1 {
+    font-size: 29px;
+  }
+
+  .student-register-intro > p {
+    font-size: 13px;
+  }
+
+  .student-register-form {
+    padding: 22px 17px;
+    border-radius: 15px;
+  }
+
+  .student-register-form-heading h2 {
+    font-size: 19px;
+  }
+
+  .student-register-field {
+    margin-bottom: 17px;
+  }
+}
+
+@media (max-width: 360px) {
+  .student-register-brand-text small {
+    max-width: 120px;
+  }
+
+  .student-register-brand-text strong {
+    font-size: 17px;
+  }
+
+  .student-register-header {
+    padding: 12px;
+  }
+
+  .student-register-main {
+    padding-right: 10px;
+    padding-left: 10px;
+  }
+
+  .student-register-form {
+    padding: 18px 13px;
+  }
+}

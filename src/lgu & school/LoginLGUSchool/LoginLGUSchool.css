@@ -1,0 +1,552 @@
+
+/* =========================================================
+   GRANTACCESS - LGU / SCHOOL LOGIN
+   Professional Green and White Theme
+   Responsive: Mobile | Tablet | Laptop | Desktop
+========================================================= */
+
+:root {
+  --ga-green: #078747;
+  --ga-green-dark: #056b38;
+  --ga-green-deep: #075c34;
+  --ga-green-light: #eaf8ef;
+  --ga-green-soft: #f3fbf5;
+
+  --ga-charcoal: #202a24;
+  --ga-muted: #718078;
+  --ga-border: #e4ebe6;
+  --ga-white: #ffffff;
+  --ga-background: #f5f8f6;
+
+  --ga-shadow: 0 12px 35px rgba(25, 60, 38, 0.08);
+}
+
+/* =========================================================
+   PAGE
+========================================================= */
+
+.lgu-login-content {
+  --background: #f5f8f6;
+  color: #202a24;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.lgu-login-content::part(scroll) {
+  min-height: 100%;
+}
+
+.lgu-login-page {
+  width: 100%;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 28px 22px 20px;
+  box-sizing: border-box;
+  background: #f5f8f6;
+}
+
+.lgu-login-page *,
+.lgu-login-page *::before,
+.lgu-login-page *::after {
+  box-sizing: border-box;
+}
+
+/* =========================================================
+   HEADER AND BACK BUTTON
+========================================================= */
+
+.lgu-login-header {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto 18px;
+}
+
+.lgu-login-back {
+  min-width: 100px;
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 9px 15px;
+  border: 1px solid #cfe5d6;
+  border-radius: 9px;
+  background: #ffffff;
+  color: #202a24;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.lgu-login-back:hover {
+  border-color: #078747;
+  background: #eaf8ef;
+  color: #056b38;
+}
+
+/* =========================================================
+   LOGIN CARD
+========================================================= */
+
+.lgu-login-card {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 34px 34px 28px;
+  border: 1px solid #e4ebe6;
+  border-radius: 20px;
+  background: #ffffff;
+  box-shadow: var(--ga-shadow);
+}
+
+/* =========================================================
+   LOGO AND HEADING
+========================================================= */
+
+.lgu-login-logo {
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 14px;
+  border-radius: 17px;
+  background: #078747;
+  color: #ffffff;
+  box-shadow: 0 5px 13px rgba(7, 135, 71, 0.18);
+}
+
+.lgu-login-logo ion-icon {
+  font-size: 31px;
+  color: #ffffff;
+}
+
+.lgu-login-brand {
+  margin: 0 0 9px;
+  color: #056b38;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 1.4px;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.lgu-login-card h1 {
+  margin: 0 0 10px;
+  color: #202a24;
+  font-size: 27px;
+  font-weight: 800;
+  line-height: 1.3;
+  letter-spacing: -0.5px;
+  text-align: center;
+}
+
+.lgu-login-subtitle {
+  max-width: 340px;
+  margin: 0 auto 29px;
+  color: #718078;
+  font-size: 13px;
+  line-height: 1.7;
+  text-align: center;
+}
+
+/* =========================================================
+   FORM FIELDS
+========================================================= */
+
+.lgu-login-field {
+  width: 100%;
+  margin-bottom: 21px;
+}
+
+.lgu-login-field > label {
+  display: block;
+  margin-bottom: 9px;
+  color: #202a24;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.lgu-login-input-wrap {
+  width: 100%;
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 0 13px;
+  border: 1px solid #dce8df;
+  border-radius: 10px;
+  background: #ffffff;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.lgu-login-input-wrap:focus-within {
+  border-color: #078747;
+  box-shadow: 0 0 0 3px rgba(7, 135, 71, 0.10);
+}
+
+.lgu-login-input-icon {
+  flex: 0 0 auto;
+  color: #078747;
+  font-size: 19px;
+}
+
+.lgu-login-input-wrap ion-input {
+  flex: 1;
+  min-width: 0;
+  --color: #202a24;
+  --placeholder-color: #8a9990;
+  --placeholder-opacity: 1;
+  --padding-start: 0;
+  --padding-end: 0;
+  --padding-top: 12px;
+  --padding-bottom: 12px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px;
+}
+
+/* =========================================================
+   SHOW / HIDE PASSWORD
+========================================================= */
+
+.lgu-login-password-toggle {
+  width: 35px;
+  height: 38px;
+  flex: 0 0 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: #718078;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.lgu-login-password-toggle:hover {
+  background: #eaf8ef;
+  color: #078747;
+}
+
+.lgu-login-password-toggle:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* =========================================================
+   FORGOT PASSWORD
+========================================================= */
+
+.lgu-login-forgot-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: -8px;
+  margin-bottom: 22px;
+}
+
+.lgu-login-link {
+  padding: 3px 0;
+  border: 0;
+  background: transparent;
+  color: #078747;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.lgu-login-link:hover {
+  color: #056b38;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.lgu-login-link:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* =========================================================
+   SIGN IN BUTTON - FORCE GRANTACCESS GREEN
+========================================================= */
+
+.lgu-login-page ion-button.lgu-login-submit {
+  width: 100%;
+  min-height: 49px;
+  margin: 0;
+
+  --background: #078747 !important;
+  --background-hover: #056b38 !important;
+  --background-activated: #075c34 !important;
+  --background-focused: #056b38 !important;
+  --color: #ffffff !important;
+  --border-color: #078747 !important;
+  --border-radius: 10px;
+  --box-shadow: 0 4px 10px rgba(7, 135, 71, 0.18);
+  --opacity: 1;
+  --padding-start: 18px;
+  --padding-end: 18px;
+
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+  text-transform: none;
+}
+
+.lgu-login-page ion-button.lgu-login-submit::part(native) {
+  min-height: 49px;
+  border: 0;
+  border-radius: 10px;
+  background: #078747;
+  color: #ffffff;
+  font-weight: 800;
+  box-shadow: 0 4px 10px rgba(7, 135, 71, 0.18);
+}
+
+.lgu-login-page ion-button.lgu-login-submit:hover {
+  --background: #056b38 !important;
+}
+
+.lgu-login-page ion-button.lgu-login-submit:active {
+  --background: #075c34 !important;
+}
+
+.lgu-login-submit ion-spinner {
+  width: 19px;
+  height: 19px;
+  margin-right: 9px;
+  color: #ffffff;
+}
+
+.lgu-login-loading-text {
+  margin-left: 3px;
+}
+
+/* =========================================================
+   REGISTRATION LINK
+========================================================= */
+
+.lgu-login-register {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 25px;
+  padding-top: 22px;
+  border-top: 1px solid #e4ebe6;
+  color: #718078;
+  font-size: 13px;
+  line-height: 1.7;
+  text-align: center;
+}
+
+.lgu-login-register ion-text {
+  color: #718078;
+}
+
+.lgu-login-register-link {
+  color: #078747 !important;
+  font-size: 14px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.lgu-login-register-link:hover {
+  color: #056b38 !important;
+  text-decoration: underline;
+}
+
+/* =========================================================
+   SECURITY NOTE
+========================================================= */
+
+.lgu-login-security {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 23px;
+  padding: 12px 10px;
+  border: 1px solid #dceee1;
+  border-radius: 10px;
+  background: #f3fbf5;
+}
+
+.lgu-login-security-dot {
+  width: 7px;
+  height: 7px;
+  flex: 0 0 7px;
+  border-radius: 50%;
+  background: #078747;
+}
+
+.lgu-login-security p {
+  margin: 0;
+  color: #526359;
+  font-size: 11px;
+  line-height: 1.6;
+  text-align: center;
+}
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+.lgu-login-footer {
+  width: 100%;
+  max-width: 480px;
+  margin: 20px auto 0;
+  padding: 0 8px 8px;
+  color: #8a9990;
+  font-size: 11px;
+  line-height: 1.7;
+  text-align: center;
+}
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (min-width: 601px) and (max-width: 900px) {
+  .lgu-login-page {
+    padding-top: 35px;
+  }
+
+  .lgu-login-card {
+    max-width: 460px;
+  }
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 600px) {
+  .lgu-login-page {
+    padding: 20px 14px 16px;
+  }
+
+  .lgu-login-header {
+    margin-bottom: 15px;
+  }
+
+  .lgu-login-card {
+    padding: 27px 20px 23px;
+    border-radius: 16px;
+  }
+
+  .lgu-login-logo {
+    width: 54px;
+    height: 54px;
+    border-radius: 15px;
+  }
+
+  .lgu-login-logo ion-icon {
+    font-size: 28px;
+  }
+
+  .lgu-login-card h1 {
+    font-size: 24px;
+  }
+
+  .lgu-login-subtitle {
+    margin-bottom: 25px;
+    font-size: 12px;
+  }
+
+  .lgu-login-field {
+    margin-bottom: 19px;
+  }
+
+  .lgu-login-input-wrap {
+    min-height: 48px;
+    gap: 9px;
+    padding: 0 11px;
+  }
+
+  .lgu-login-input-wrap ion-input {
+    font-size: 13px;
+  }
+
+  .lgu-login-page ion-button.lgu-login-submit {
+    min-height: 47px;
+  }
+
+  .lgu-login-page ion-button.lgu-login-submit::part(native) {
+    min-height: 47px;
+  }
+
+  .lgu-login-register {
+    gap: 5px;
+    font-size: 12px;
+  }
+
+  .lgu-login-register-link {
+    font-size: 13px;
+  }
+
+  .lgu-login-footer {
+    font-size: 10px;
+  }
+}
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media (max-width: 360px) {
+  .lgu-login-page {
+    padding-right: 11px;
+    padding-left: 11px;
+  }
+
+  .lgu-login-card {
+    padding: 24px 15px 20px;
+  }
+
+  .lgu-login-card h1 {
+    font-size: 22px;
+  }
+
+  .lgu-login-security {
+    gap: 6px;
+    padding: 11px 7px;
+  }
+
+  .lgu-login-security p {
+    font-size: 10px;
+  }
+}
+
+/* =========================================================
+   ACCESSIBILITY
+========================================================= */
+
+.lgu-login-page button:focus-visible,
+.lgu-login-page ion-button:focus-visible {
+  outline: 3px solid rgba(7, 135, 71, 0.25);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lgu-login-page *,
+  .lgu-login-page *::before,
+  .lgu-login-page *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}

@@ -1,0 +1,771 @@
+/* =========================================================
+   GRANTACCESS - REGISTER CHOICE
+   Professional Green and White Theme
+   Responsive: Mobile | Tablet | Laptop | Desktop
+========================================================= */
+
+:root {
+  --register-green: #078747;
+  --register-green-dark: #056b38;
+  --register-green-deep: #075c34;
+  --register-green-light: #eaf8ef;
+  --register-green-soft: #f3fbf5;
+
+  --register-text: #202a24;
+  --register-muted: #718078;
+  --register-border: #e4ebe6;
+  --register-white: #ffffff;
+  --register-background: #f5f8f6;
+
+  --register-shadow: 0 5px 22px rgba(25, 60, 38, 0.065);
+}
+
+/* =========================================================
+   PAGE
+========================================================= */
+
+.register-choice-page {
+  --background: var(--register-background);
+  background: var(--register-background);
+}
+
+.register-choice-content {
+  --background: var(--register-background);
+}
+
+.register-choice-content::part(scroll) {
+  padding: 0;
+}
+
+.register-choice-overlay {
+  width: 100%;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--register-background);
+  color: var(--register-text);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.register-choice-overlay *,
+.register-choice-overlay *::before,
+.register-choice-overlay *::after {
+  box-sizing: border-box;
+}
+
+/* =========================================================
+   HERO SECTION
+========================================================= */
+
+.register-hero {
+  position: relative;
+  width: 100%;
+  min-height: 465px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  padding: 55px max(calc((100vw - 1180px) / 2), 7%);
+  background: linear-gradient(
+    115deg,
+    #075c34 0%,
+    #078747 57%,
+    #159d59 100%
+  );
+  color: #ffffff;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 780px;
+}
+
+.hero-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 11px;
+  margin-bottom: 42px;
+  color: #ffffff;
+  font-size: 23px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+.hero-brand img {
+  width: 46px;
+  height: 46px;
+  object-fit: contain;
+  padding: 4px;
+  border-radius: 12px;
+  background: #ffffff;
+}
+
+.brand-highlight {
+  color: #b8efca;
+}
+
+.hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 17px;
+  color: #c8f1d7;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.8px;
+}
+
+.hero-eyebrow ion-icon {
+  font-size: 17px;
+}
+
+.hero-content h1 {
+  margin: 0;
+  color: #ffffff;
+  font-size: clamp(35px, 5vw, 55px);
+  font-weight: 800;
+  line-height: 1.16;
+  letter-spacing: -1.7px;
+}
+
+.hero-content h1 span {
+  color: #b8efca;
+}
+
+.hero-description {
+  max-width: 620px;
+  margin: 20px 0 24px;
+  color: #e4f5e9;
+  font-size: 15px;
+  line-height: 1.8;
+}
+
+.hero-points {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.hero-points > div {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.hero-check {
+  width: 23px;
+  height: 23px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.16);
+  color: #c9f3d8;
+  font-size: 17px;
+}
+
+.hero-bottom-label {
+  position: absolute;
+  right: max(calc((100vw - 1180px) / 2), 7%);
+  bottom: 27px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1.3px;
+}
+
+.hero-bottom-label ion-icon {
+  font-size: 17px;
+}
+
+/* HERO DECORATIONS */
+
+.hero-decoration {
+  position: absolute;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.hero-decoration-one {
+  width: 410px;
+  height: 410px;
+  top: -190px;
+  right: 8%;
+}
+
+.hero-decoration-two {
+  width: 310px;
+  height: 310px;
+  right: -70px;
+  bottom: -190px;
+}
+
+.hero-decoration-three {
+  width: 170px;
+  height: 170px;
+  top: 45px;
+  right: 23%;
+  border-color: rgba(255, 255, 255, 0.07);
+}
+
+/* =========================================================
+   MAIN CONTAINER
+========================================================= */
+
+.register-choice-container {
+  width: 100%;
+  max-width: 1250px;
+  margin: 0 auto;
+  padding: 55px 30px 25px;
+}
+
+/* =========================================================
+   WELCOME SECTION
+========================================================= */
+
+.welcome-section {
+  max-width: 650px;
+  margin: 0 auto 36px;
+  text-align: center;
+}
+
+.section-eyebrow {
+  display: inline-block;
+  margin-bottom: 10px;
+  color: var(--register-green);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 2px;
+}
+
+.welcome-section h2 {
+  margin: 0;
+  color: #19251e;
+  font-size: clamp(25px, 3vw, 34px);
+  font-weight: 800;
+  letter-spacing: -0.8px;
+}
+
+.welcome-section > p {
+  margin: 11px 0 0;
+  color: var(--register-muted);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.welcome-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 22px;
+  color: var(--register-green);
+}
+
+.welcome-divider span {
+  width: 55px;
+  height: 1px;
+  background: #cbded0;
+}
+
+.welcome-divider ion-icon {
+  font-size: 17px;
+}
+
+/* =========================================================
+   ACCOUNT CARDS GRID
+========================================================= */
+
+.register-choice-options {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: stretch;
+  gap: 20px;
+}
+
+/* =========================================================
+   ACCOUNT CARD
+========================================================= */
+
+.register-choice-card {
+  position: relative;
+  min-width: 0;
+  min-height: 560px;
+  display: flex;
+  flex-direction: column;
+  padding: 25px 23px 21px;
+  border: 1px solid var(--register-border);
+  border-radius: 16px;
+  background: var(--register-white);
+  box-shadow: var(--register-shadow);
+  transition:
+    transform 0.22s ease,
+    box-shadow 0.22s ease,
+    border-color 0.22s ease;
+}
+
+.register-choice-card:hover {
+  transform: translateY(-5px);
+  border-color: #b9ddc6;
+  box-shadow: 0 12px 28px rgba(25, 60, 38, 0.11);
+}
+
+.card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 25px;
+}
+
+.choice-icon {
+  width: 53px;
+  height: 53px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  font-size: 27px;
+}
+
+.student-icon,
+.organization-icon,
+.admin-icon {
+  background: var(--register-green-light);
+  color: var(--register-green);
+}
+
+.card-number {
+  color: #8a9990;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.card-category {
+  display: block;
+  margin-bottom: 9px;
+  color: var(--register-green);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.3px;
+}
+
+.register-choice-card h3 {
+  margin: 0;
+  color: #202a24;
+  font-size: 21px;
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.card-description {
+  min-height: 90px;
+  margin: 13px 0 17px;
+  color: #65736a;
+  font-size: 12px;
+  line-height: 1.8;
+}
+
+.card-divider {
+  width: 100%;
+  height: 1px;
+  margin-bottom: 17px;
+  background: var(--register-border);
+}
+
+.feature-heading {
+  margin: 0 0 14px;
+  color: #38483d;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.card-features {
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+  margin-bottom: 22px;
+}
+
+.card-features > div {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  color: #47564c;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.card-features ion-icon {
+  flex-shrink: 0;
+  margin-top: 1px;
+  color: var(--register-green);
+  font-size: 16px;
+}
+
+/* =========================================================
+   CARD ACTIONS
+========================================================= */
+
+.card-action-buttons {
+  width: 100%;
+  margin-top: auto;
+}
+
+/* CREATE BUTTONS - GREEN THEME */
+
+.register-choice-overlay .card-action-buttons ion-button {
+  width: 100%;
+  min-height: 45px;
+  margin: 0;
+
+  --background: #078747 !important;
+  --background-hover: #056b38 !important;
+  --background-activated: #075c34 !important;
+  --background-focused: #056b38 !important;
+  --color: #ffffff !important;
+  --border-radius: 9px;
+  --box-shadow: 0 4px 10px rgba(7, 135, 71, 0.16);
+  --opacity: 1;
+
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: none;
+  letter-spacing: 0.1px;
+}
+
+/* Keep all three Create buttons green */
+
+.register-choice-overlay .student-choice-button,
+.register-choice-overlay .organization-choice-button,
+.register-choice-overlay .admin-choice-button {
+  --background: #078747 !important;
+  --background-hover: #056b38 !important;
+  --background-activated: #075c34 !important;
+  --background-focused: #056b38 !important;
+  --color: #ffffff !important;
+}
+
+/* LOGIN LINK */
+
+.login-prompt {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 14px;
+  color: var(--register-muted);
+  font-size: 11px;
+}
+
+.text-login-button {
+  padding: 2px;
+  border: none;
+  background: transparent;
+  color: var(--register-green-dark);
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.text-login-button:hover {
+  color: #034b2a;
+  text-decoration: underline;
+}
+
+.card-note {
+  min-height: 28px;
+  margin: 17px 0 0;
+  color: #8a9990;
+  font-size: 10px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+.register-choice-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  margin-top: 50px;
+  padding: 25px 15px 15px;
+  border-top: 1px solid var(--register-border);
+  text-align: center;
+}
+
+.footer-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--register-green-dark);
+  font-size: 16px;
+}
+
+.footer-brand img {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+}
+
+.register-choice-footer p {
+  margin: 0;
+  color: var(--register-muted);
+  font-size: 12px;
+}
+
+.register-choice-footer > span {
+  margin-top: 5px;
+  color: #96a39a;
+  font-size: 10px;
+}
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 1000px) {
+  .register-hero {
+    min-height: 430px;
+    padding-right: 6%;
+    padding-left: 6%;
+  }
+
+  .register-choice-container {
+    padding-right: 22px;
+    padding-left: 22px;
+  }
+
+  .register-choice-options {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 17px;
+  }
+
+  .register-choice-card {
+    min-height: 555px;
+  }
+
+  .admin-card {
+    grid-column: 1 / -1;
+    width: calc(50% - 9px);
+    justify-self: center;
+  }
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 650px) {
+  .register-hero {
+    min-height: 440px;
+    align-items: flex-start;
+    padding: 30px 23px 65px;
+  }
+
+  .hero-brand {
+    margin-bottom: 35px;
+    font-size: 20px;
+  }
+
+  .hero-brand img {
+    width: 40px;
+    height: 40px;
+  }
+
+  .hero-eyebrow {
+    margin-bottom: 13px;
+    font-size: 9px;
+    letter-spacing: 1.2px;
+  }
+
+  .hero-content h1 {
+    font-size: clamp(30px, 8vw, 40px);
+    letter-spacing: -1px;
+  }
+
+  .hero-description {
+    margin: 16px 0 20px;
+    font-size: 12px;
+    line-height: 1.7;
+  }
+
+  .hero-points {
+    gap: 10px;
+  }
+
+  .hero-points > div {
+    font-size: 11px;
+  }
+
+  .hero-bottom-label {
+    right: 20px;
+    bottom: 18px;
+    font-size: 8px;
+  }
+
+  .register-choice-container {
+    padding: 37px 16px 20px;
+  }
+
+  .welcome-section {
+    margin-bottom: 27px;
+  }
+
+  .welcome-section h2 {
+    font-size: 25px;
+  }
+
+  .welcome-section > p {
+    font-size: 12px;
+  }
+
+  .register-choice-options {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .register-choice-card {
+    width: 100%;
+    min-height: auto;
+    padding: 22px 19px;
+    border-radius: 14px;
+  }
+
+  .admin-card {
+    grid-column: auto;
+    width: 100%;
+  }
+
+  .card-top {
+    margin-bottom: 21px;
+  }
+
+  .choice-icon {
+    width: 47px;
+    height: 47px;
+    font-size: 24px;
+  }
+
+  .register-choice-card h3 {
+    font-size: 20px;
+  }
+
+  .card-description {
+    min-height: auto;
+    margin-bottom: 16px;
+    font-size: 12px;
+  }
+
+  .card-features {
+    gap: 12px;
+  }
+
+  .card-features > div {
+    font-size: 11px;
+  }
+
+  .register-choice-overlay .card-action-buttons ion-button {
+    min-height: 44px;
+    font-size: 11px;
+  }
+
+  .register-choice-footer {
+    margin-top: 35px;
+  }
+}
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media (max-width: 380px) {
+  .register-hero {
+    padding-right: 17px;
+    padding-left: 17px;
+  }
+
+  .hero-content h1 {
+    font-size: 29px;
+  }
+
+  .hero-description {
+    font-size: 11px;
+  }
+
+  .register-choice-container {
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+
+  .register-choice-card {
+    padding: 19px 15px;
+  }
+
+  .card-number {
+    font-size: 8px;
+  }
+
+  .register-choice-card h3 {
+    font-size: 18px;
+  }
+}
+
+/* =========================================================
+   LARGE DESKTOP
+========================================================= */
+
+@media (min-width: 1400px) {
+  .register-hero {
+    min-height: 490px;
+  }
+
+  .register-choice-container {
+    max-width: 1320px;
+  }
+
+  .register-choice-options {
+    gap: 25px;
+  }
+
+  .register-choice-card {
+    padding: 29px 26px;
+  }
+}
+
+/* =========================================================
+   ACCESSIBILITY
+========================================================= */
+
+.register-choice-overlay button:focus-visible,
+.register-choice-overlay ion-button:focus-visible {
+  outline: 3px solid rgba(7, 135, 71, 0.35);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .register-choice-overlay *,
+  .register-choice-overlay *::before,
+  .register-choice-overlay *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}

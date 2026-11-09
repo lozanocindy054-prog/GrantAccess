@@ -1,0 +1,492 @@
+
+/* ==========================================
+   GRANTACCESS - ADMIN REGISTRATION
+   Layout inspired by Student Registration
+========================================== */
+
+.admin-register-page {
+  font-family: Arial, Helvetica, sans-serif;
+  color: var(--ga-charcoal);
+}
+
+/* HEADER */
+
+.admin-register-header {
+  position: relative;
+  z-index: 10;
+  box-shadow: none;
+  border-bottom: 1px solid var(--ga-rose);
+}
+
+.admin-register-toolbar {
+  --background: var(--ga-blush-white);
+  --color: var(--ga-burgundy);
+  --min-height: 62px;
+  --padding-start: 0;
+  --padding-end: 0;
+}
+
+.admin-register-brand {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: min(100% - 40px, 1340px);
+  margin: 0 auto;
+}
+
+.admin-register-brand > img {
+  display: block;
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  border-radius: 10px;
+}
+
+.admin-register-brand-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.admin-register-brand-text > span {
+  color: var(--ga-charcoal);
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.7px;
+  line-height: 1.05;
+}
+
+.admin-register-brand-text > span > span {
+  color: var(--ga-charcoal);
+}
+
+.admin-register-brand-text > small {
+  color: var(--ga-charcoal);
+  font-size: 7px;
+  font-weight: 700;
+  letter-spacing: 0.55px;
+}
+
+/* PAGE BACKGROUND */
+
+.admin-register-content {
+  --background: var(--ga-blush-white);
+  --color: var(--ga-burgundy);
+}
+
+.admin-register-main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  min-height: 100%;
+  padding: 35px 20px 24px;
+  box-sizing: border-box;
+}
+
+/* INTRODUCTION */
+
+.admin-register-intro {
+  width: 100%;
+  max-width: 650px;
+  margin: 0 auto 23px;
+  text-align: center;
+}
+
+.admin-register-eyebrow {
+  display: block;
+  margin-bottom: 11px;
+  color: var(--ga-charcoal);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+}
+
+.admin-register-intro h1 {
+  margin: 0;
+  color: var(--ga-charcoal);
+  font-size: clamp(25px, 3vw, 34px);
+  font-weight: 800;
+  letter-spacing: -0.9px;
+  line-height: 1.3;
+}
+
+.admin-register-intro h1 span {
+  color: var(--ga-charcoal);
+}
+
+.admin-register-intro > p {
+  max-width: 480px;
+  margin: 11px auto 0;
+  color: var(--ga-charcoal);
+  font-size: 12px;
+  line-height: 1.8;
+}
+
+/* FORM CARD */
+
+.admin-register-card {
+  width: 100%;
+  max-width: 570px;
+  padding: 25px 26px 24px;
+  box-sizing: border-box;
+  border: 1px solid var(--ga-rose);
+  border-radius: 17px;
+  background: #ffffff;
+  box-shadow: 0 12px 35px rgba(127, 29, 45, 0.055);
+}
+
+/* CARD HEADING */
+
+.admin-register-card-heading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.admin-register-card-icon {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 39px;
+  height: 39px;
+  border-radius: 11px;
+  background: var(--ga-blush-white);
+  color: var(--ga-charcoal);
+}
+
+.admin-register-card-icon ion-icon {
+  font-size: 21px;
+}
+
+.admin-register-card-heading h2 {
+  margin: 0;
+  color: var(--ga-charcoal);
+  font-size: 17px;
+  font-weight: 800;
+  line-height: 1.4;
+}
+
+.admin-register-card-heading p {
+  margin: 4px 0 0;
+  color: var(--ga-charcoal);
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.admin-register-divider {
+  width: 100%;
+  height: 1px;
+  margin: 17px 0 20px;
+  background: var(--ga-crimson);
+}
+
+/* FORM */
+
+.admin-register-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.admin-register-field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-width: 0;
+}
+
+.admin-register-field > label {
+  color: var(--ga-charcoal);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.admin-register-field > label > span {
+  color: var(--ga-charcoal);
+}
+
+/* INPUT */
+
+.admin-register-input {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-width: 0;
+  min-height: 40px;
+  padding: 0 11px;
+  box-sizing: border-box;
+  border: 1px solid var(--ga-rose);
+  border-radius: 9px;
+  background: #ffffff;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+.admin-register-input:focus-within {
+  border-color: var(--ga-crimson);
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(127, 29, 45, 0.09);
+}
+
+.admin-register-input > ion-icon {
+  flex-shrink: 0;
+  margin-right: 10px;
+  color: var(--ga-charcoal);
+  font-size: 16px;
+}
+
+.admin-register-input ion-input {
+  flex: 1;
+  min-width: 0;
+  --color: var(--ga-burgundy);
+  --placeholder-color: var(--ga-charcoal);
+  --placeholder-opacity: var(--ga-charcoal);
+  --padding-top: 9px;
+  --padding-bottom: 9px;
+  --padding-start: 0;
+  --padding-end: 0;
+  font-size: 11px;
+}
+
+.admin-register-input ion-input input {
+  min-width: 0;
+}
+
+/* PASSWORD VISIBILITY */
+
+.admin-register-eye {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 32px;
+  margin-left: 5px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--ga-charcoal);
+  font-size: 17px;
+  cursor: pointer;
+}
+
+.admin-register-eye:hover {
+  background: var(--ga-blush-white);
+  color: var(--ga-charcoal);
+}
+
+.admin-register-hint {
+  color: var(--ga-charcoal);
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+/* CREATE ACCOUNT BUTTON */
+
+.admin-register-submit {
+  min-height: 44px;
+  margin: 4px 0 0;
+  --background: var(--ga-crimson);
+  --background-hover: var(--ga-burgundy);
+  --background-activated: var(--ga-burgundy);
+  --color: #ffffff;
+  --border-radius: 9px;
+  --box-shadow: none;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: none;
+}
+
+.admin-register-submit ion-spinner {
+  width: 17px;
+  height: 17px;
+  margin-right: 9px;
+}
+
+/* LOGIN LINK */
+
+.admin-register-login-prompt {
+  margin: 1px 0 0;
+  color: var(--ga-charcoal);
+  font-size: 11px;
+  text-align: center;
+}
+
+.admin-register-login-prompt button {
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--ga-charcoal);
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.admin-register-login-prompt button:hover {
+  text-decoration: underline;
+}
+
+/* SECURITY NOTICE */
+
+.admin-register-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  width: 100%;
+  max-width: 570px;
+  margin-top: 15px;
+  padding: 12px 14px;
+  box-sizing: border-box;
+  border: 1px solid var(--ga-rose);
+  border-radius: 9px;
+  background: var(--ga-blush-white);
+}
+
+.admin-register-notice ion-icon {
+  flex-shrink: 0;
+  margin-top: 1px;
+  color: var(--ga-charcoal);
+  font-size: 17px;
+}
+
+.admin-register-notice p {
+  margin: 0;
+  color: var(--ga-charcoal);
+  font-size: 10px;
+  line-height: 1.7;
+}
+
+/* FOOTER */
+
+.admin-register-footer {
+  width: 100%;
+  margin-top: 20px;
+  text-align: center;
+}
+
+.admin-register-footer p {
+  margin: 0;
+  color: var(--ga-charcoal);
+  font-size: 10px;
+  line-height: 1.7;
+}
+
+/* TABLET */
+
+@media (max-width: 768px) {
+  .admin-register-main {
+    padding: 30px 18px 22px;
+  }
+
+  .admin-register-intro {
+    margin-bottom: 21px;
+  }
+
+  .admin-register-intro h1 {
+    font-size: 28px;
+  }
+
+  .admin-register-card {
+    max-width: 570px;
+  }
+}
+
+/* MOBILE */
+
+@media (max-width: 480px) {
+  .admin-register-toolbar {
+    --min-height: 57px;
+  }
+
+  .admin-register-brand {
+    width: calc(100% - 30px);
+  }
+
+  .admin-register-brand > img {
+    width: 32px;
+    height: 32px;
+  }
+
+  .admin-register-brand-text > span {
+    font-size: 18px;
+  }
+
+  .admin-register-main {
+    padding: 27px 13px 20px;
+  }
+
+  .admin-register-intro {
+    margin-bottom: 20px;
+  }
+
+  .admin-register-eyebrow {
+    margin-bottom: 9px;
+    font-size: 9px;
+  }
+
+  .admin-register-intro h1 {
+    font-size: 25px;
+    letter-spacing: -0.6px;
+  }
+
+  .admin-register-intro > p {
+    max-width: 330px;
+    margin-top: 9px;
+    font-size: 11px;
+  }
+
+  .admin-register-card {
+    padding: 21px 17px;
+    border-radius: 14px;
+  }
+
+  .admin-register-card-heading h2 {
+    font-size: 16px;
+  }
+
+  .admin-register-form {
+    gap: 15px;
+  }
+
+  .admin-register-input {
+    min-height: 43px;
+    padding: 0 10px;
+  }
+
+  .admin-register-input ion-input {
+    font-size: 12px;
+  }
+
+  .admin-register-field > label {
+    font-size: 11px;
+  }
+
+  .admin-register-submit {
+    min-height: 45px;
+  }
+
+  .admin-register-notice {
+    padding: 11px;
+  }
+}
+
+/* SMALL MOBILE */
+
+@media (max-width: 340px) {
+  .admin-register-main {
+    padding-right: 10px;
+    padding-left: 10px;
+  }
+
+  .admin-register-intro h1 {
+    font-size: 22px;
+  }
+
+  .admin-register-card {
+    padding: 18px 13px;
+  }
+}

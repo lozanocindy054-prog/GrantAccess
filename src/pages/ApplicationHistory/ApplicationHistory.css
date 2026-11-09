@@ -1,0 +1,1328 @@
+/* =========================================================
+   GRANTACCESS - APPLICATION HISTORY
+   Green and White Theme
+   Mobile | Tablet | Laptop | Desktop
+   Optimized Touch Interaction
+========================================================= */
+
+:root {
+  --history-green: #159447;
+  --history-green-dark: #087638;
+  --history-green-deep: #075b2e;
+  --history-green-light: #eaf8ef;
+
+  --history-text: #111c15;
+  --history-muted: #252d28;
+  --history-border: #e8eee9;
+  --history-background: #f7faf8;
+  --history-white: #ffffff;
+
+  --history-pending: #e7a52b;
+  --history-pending-bg: #fff5dc;
+
+  --history-approved: #16864a;
+  --history-approved-bg: #e5f7eb;
+
+  --history-rejected: #d84d4d;
+  --history-rejected-bg: #ffebeb;
+
+  --history-shadow: 0 4px 16px rgba(18, 75, 42, 0.08);
+}
+
+/* =========================================================
+   GLOBAL / PAGE
+========================================================= */
+
+.history-page {
+  --background: var(--history-background);
+  background: var(--history-background);
+  color: var(--history-text);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.history-page *,
+.history-page *::before,
+.history-page *::after {
+  box-sizing: border-box;
+}
+
+.history-content {
+  --background: var(--history-background);
+  background: var(--history-background);
+  color: var(--history-text);
+}
+
+.history-content::part(scroll) {
+  padding-bottom: 18px;
+}
+
+/* =========================================================
+   TOP HEADER
+========================================================= */
+
+.history-top-header {
+  position: relative;
+  z-index: 10;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  width: 100%;
+  min-height: 60px;
+  padding: 0 18px;
+
+  background: var(--history-green);
+  color: var(--history-white);
+}
+
+.history-top-header h1 {
+  flex: 1;
+  margin: 0;
+  padding: 0 12px;
+
+  color: #ffffff;
+  font-size: 21px;
+  font-weight: 800;
+  letter-spacing: -0.2px;
+  text-align: left;
+}
+
+.history-back-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex: 0 0 38px;
+  width: 38px;
+  height: 40px;
+  padding: 0;
+
+  border: 0;
+  border-radius: 10px;
+
+  background: transparent;
+  color: #ffffff;
+
+  font-size: 25px;
+  cursor: pointer;
+
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.history-header-spacer {
+  width: 38px;
+  flex-shrink: 0;
+}
+
+/* =========================================================
+   MAIN CONTENT
+========================================================= */
+
+.history-container {
+  width: 100%;
+  max-width: 900px;
+
+  margin: 0 auto;
+  padding: 16px 14px 0;
+}
+
+/* =========================================================
+   FILTER TABS
+========================================================= */
+
+.history-filter-section {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+
+  margin: 0 -14px 16px;
+  padding: 10px 14px;
+
+  background: rgba(247, 250, 248, 0.97);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.history-filter-list {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  width: 100%;
+  overflow-x: auto;
+
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+
+  -webkit-overflow-scrolling: touch;
+}
+
+.history-filter-list::-webkit-scrollbar {
+  display: none;
+}
+
+.history-filter-chip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex: 1 0 auto;
+  min-width: 0;
+  min-height: 40px;
+
+  padding: 0 15px;
+
+  border: 1px solid #e7ece8;
+  border-radius: 22px;
+
+  background: #ffffff;
+  color: var(--history-text);
+
+  font-size: 14px;
+  font-weight: 700;
+  white-space: nowrap;
+
+  cursor: pointer;
+
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.history-filter-chip.active {
+  border-color: var(--history-green);
+  background: var(--history-green);
+  color: #ffffff;
+
+  box-shadow: 0 3px 8px rgba(21, 148, 71, 0.16);
+}
+
+/* =========================================================
+   RESULTS HEADING
+========================================================= */
+
+.history-results-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+
+  margin: 5px 2px 13px;
+
+  color: var(--history-text);
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.history-results-total {
+  color: var(--history-muted);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* =========================================================
+   APPLICATION LIST
+========================================================= */
+
+.history-list-section {
+  width: 100%;
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  width: 100%;
+}
+
+/* =========================================================
+   APPLICATION CARD
+========================================================= */
+
+.history-card {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  width: 100%;
+  min-width: 0;
+  min-height: 100px;
+
+  padding: 13px 12px;
+
+  border: 1px solid var(--history-border);
+  border-radius: 15px;
+
+  background: #ffffff;
+  color: var(--history-text);
+
+  text-align: left;
+  cursor: pointer;
+
+  box-shadow: 0 3px 12px rgba(27, 67, 42, 0.055);
+
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.history-card:focus-visible {
+  outline: 2px solid var(--history-green);
+  outline-offset: 3px;
+}
+
+/* =========================================================
+   ORGANIZATION LOGO
+========================================================= */
+
+.history-card-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex: 0 0 48px;
+  width: 48px;
+  height: 48px;
+
+  overflow: hidden;
+
+  border: 1px solid #e8eee9;
+  border-radius: 50%;
+
+  background: #f0f8f2;
+  color: var(--history-green);
+
+  font-size: 25px;
+}
+
+.history-card-logo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+
+  object-fit: contain;
+  border-radius: 50%;
+}
+
+/* =========================================================
+   CARD INFORMATION
+========================================================= */
+
+.history-card-content {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+
+  min-width: 0;
+  gap: 5px;
+}
+
+.history-card-content h2 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+
+  overflow: hidden;
+  overflow-wrap: anywhere;
+
+  margin: 0;
+
+  color: #111c15;
+  font-size: 16px;
+  line-height: 1.4;
+  font-weight: 800;
+}
+
+.history-card-organization {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  margin: 0;
+
+  color: #252d28;
+  font-size: 14px;
+  line-height: 1.4;
+  font-weight: 600;
+}
+
+.history-card-date {
+  margin: 0;
+
+  color: #252d28;
+  font-size: 13px;
+  line-height: 1.4;
+  font-weight: 500;
+}
+
+/* =========================================================
+   CARD RIGHT SIDE
+========================================================= */
+
+.history-card-right {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  align-self: stretch;
+
+  flex: 0 0 auto;
+  gap: 6px;
+
+  padding-left: 3px;
+}
+
+/* =========================================================
+   STATUS BADGES
+========================================================= */
+
+.history-status-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 26px;
+  padding: 5px 10px;
+
+  border-radius: 20px;
+
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1.3;
+
+  white-space: nowrap;
+}
+
+.status-pending {
+  background: var(--history-pending-bg);
+  color: #8a5900;
+}
+
+.status-approved {
+  background: var(--history-approved-bg);
+  color: #126c3a;
+}
+
+.status-rejected {
+  background: var(--history-rejected-bg);
+  color: #b52c2c;
+}
+
+.history-card-arrow {
+  flex-shrink: 0;
+  color: #252d28;
+  font-size: 19px;
+}
+
+/* =========================================================
+   LOADING
+========================================================= */
+
+.history-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 240px;
+  gap: 14px;
+
+  color: var(--history-text);
+  text-align: center;
+}
+
+.history-message ion-spinner {
+  width: 34px;
+  height: 34px;
+  color: var(--history-green);
+}
+
+.history-message p {
+  margin: 0;
+
+  color: var(--history-text);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+/* =========================================================
+   EMPTY STATE
+========================================================= */
+
+.history-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 290px;
+  padding: 28px 20px;
+
+  border: 1px solid var(--history-border);
+  border-radius: 17px;
+
+  background: #ffffff;
+  text-align: center;
+}
+
+.history-empty-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 66px;
+  height: 66px;
+  margin-bottom: 15px;
+
+  border-radius: 50%;
+
+  background: var(--history-green-light);
+  color: var(--history-green);
+
+  font-size: 31px;
+}
+
+.history-empty-state h2 {
+  margin: 0 0 9px;
+
+  color: var(--history-text);
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.history-empty-state p {
+  max-width: 380px;
+  margin: 0;
+
+  color: var(--history-muted);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.history-error-state .history-empty-icon {
+  background: #fff0f0;
+  color: #d84d4d;
+}
+
+/* =========================================================
+   EMPTY STATE BUTTONS
+========================================================= */
+
+.history-retry-button,
+.history-browse-button {
+  min-height: 44px;
+  margin-top: 18px;
+  padding: 0 23px;
+
+  border: 0;
+  border-radius: 22px;
+
+  background: var(--history-green);
+  color: #ffffff;
+
+  font-size: 14px;
+  font-weight: 800;
+
+  cursor: pointer;
+
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* =========================================================
+   DETAILS MODAL
+========================================================= */
+
+.history-details-modal {
+  --width: 100%;
+  --height: 100%;
+  --border-radius: 0;
+}
+
+.history-modal-toolbar {
+  --background: var(--history-green);
+  --color: #ffffff;
+}
+
+.history-modal-toolbar ion-title {
+  color: #ffffff;
+  font-size: 19px;
+  font-weight: 800;
+}
+
+.history-modal-toolbar ion-button {
+  --color: #ffffff;
+}
+
+.history-modal-content {
+  --background: var(--history-background);
+}
+
+.history-modal-body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+
+  width: 100%;
+  max-width: 700px;
+
+  margin: 0 auto;
+  padding: 25px 18px 40px;
+}
+
+/* =========================================================
+   MODAL LOGO
+========================================================= */
+
+.history-modal-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 86px;
+  height: 86px;
+  margin: 0 auto 16px;
+
+  overflow: hidden;
+
+  border: 1px solid var(--history-border);
+  border-radius: 50%;
+
+  background: #ffffff;
+  color: var(--history-green);
+
+  font-size: 41px;
+}
+
+.history-modal-logo img {
+  width: 100%;
+  height: 100%;
+
+  object-fit: contain;
+  border-radius: 50%;
+}
+
+.history-modal-body > .history-status-badge {
+  align-self: center;
+
+  min-height: 28px;
+  margin-bottom: 14px;
+  padding: 6px 14px;
+
+  font-size: 12px;
+}
+
+.history-modal-body > h2 {
+  width: 100%;
+  margin: 0 0 8px;
+
+  color: var(--history-text);
+  font-size: 23px;
+  line-height: 1.4;
+  font-weight: 800;
+
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.history-modal-provider {
+  width: 100%;
+  margin: 0 0 23px;
+
+  color: var(--history-muted);
+  font-size: 15px;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* =========================================================
+   MODAL INFORMATION
+========================================================= */
+
+.history-modal-information {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+
+  width: 100%;
+  margin-bottom: 27px;
+  padding: 19px;
+
+  border: 1px solid var(--history-border);
+  border-radius: 14px;
+
+  background: #ffffff;
+}
+
+.history-modal-information > div {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.history-modal-information > div > ion-icon {
+  flex-shrink: 0;
+  color: var(--history-green);
+  font-size: 23px;
+}
+
+.history-modal-information span {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+
+  min-width: 0;
+}
+
+.history-modal-information small {
+  color: var(--history-muted);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.history-modal-information strong {
+  color: var(--history-text);
+  font-size: 15px;
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+/* =========================================================
+   MODAL SECTIONS
+========================================================= */
+
+.history-modal-section {
+  width: 100%;
+  margin-bottom: 25px;
+}
+
+.history-modal-section h3 {
+  margin: 0 0 12px;
+
+  color: var(--history-text);
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.history-modal-remarks {
+  margin: 0;
+  padding: 15px;
+
+  border: 1px solid #f2dfb8;
+  border-radius: 11px;
+
+  background: #fff9eb;
+  color: var(--history-text);
+
+  font-size: 15px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+
+.history-no-documents {
+  margin: 0;
+
+  color: var(--history-muted);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* =========================================================
+   SUBMITTED DOCUMENTS
+========================================================= */
+
+.history-document-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.history-document-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  min-height: 58px;
+  padding: 13px 14px;
+
+  border: 1px solid var(--history-border);
+  border-radius: 11px;
+
+  background: #ffffff;
+  color: var(--history-text);
+
+  text-decoration: none;
+
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.history-document-item > ion-icon:first-child {
+  flex-shrink: 0;
+  color: var(--history-green);
+  font-size: 23px;
+}
+
+.history-document-item span {
+  flex: 1;
+  min-width: 0;
+
+  color: var(--history-text);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.4;
+
+  overflow-wrap: anywhere;
+}
+
+.history-document-arrow {
+  flex-shrink: 0;
+  color: var(--history-muted);
+  font-size: 20px;
+}
+
+.history-modal-close-button {
+  width: 100%;
+  min-height: 48px;
+  margin-top: 8px;
+
+  --background: var(--history-green);
+  --background-hover: var(--history-green-dark);
+  --border-radius: 11px;
+
+  font-size: 15px;
+  font-weight: 800;
+
+  touch-action: manipulation;
+}
+
+/* =========================================================
+   BOTTOM NAVIGATION SPACING
+========================================================= */
+
+.history-bottom-space {
+  width: 100%;
+  height: 90px;
+}
+
+.history-page student-bottom-nav,
+.history-page .student-bottom-nav {
+  z-index: 20;
+}
+
+/* =========================================================
+   DESKTOP HOVER EFFECTS ONLY
+   Prevents sticky hover on touchscreen devices
+========================================================= */
+
+@media (hover: hover) and (pointer: fine) {
+  .history-back-button:hover {
+    background: rgba(255, 255, 255, 0.14);
+  }
+
+  .history-filter-chip:not(.active):hover {
+    border-color: var(--history-green);
+    background: var(--history-green-light);
+  }
+
+  .history-card:hover {
+    border-color: #b8dec5;
+    box-shadow: var(--history-shadow);
+  }
+
+  .history-retry-button:hover,
+  .history-browse-button:hover {
+    background: var(--history-green-dark);
+  }
+
+  .history-document-item:hover {
+    border-color: #b8dec5;
+    background: #f7fcf8;
+  }
+}
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (min-width: 600px) {
+  .history-top-header {
+    min-height: 66px;
+    padding: 0 25px;
+  }
+
+  .history-top-header h1 {
+    font-size: 22px;
+  }
+
+  .history-container {
+    padding: 22px 24px 0;
+  }
+
+  .history-filter-section {
+    margin: 0 -24px 20px;
+    padding: 12px 24px;
+  }
+
+  .history-filter-list {
+    gap: 10px;
+  }
+
+  .history-filter-chip {
+    flex: 0 0 auto;
+    min-width: 95px;
+    min-height: 43px;
+    font-size: 15px;
+  }
+
+  .history-list {
+    gap: 14px;
+  }
+
+  .history-card {
+    min-height: 112px;
+    gap: 16px;
+    padding: 15px 17px;
+  }
+
+  .history-card-logo {
+    flex-basis: 55px;
+    width: 55px;
+    height: 55px;
+    font-size: 29px;
+  }
+
+  .history-card-content {
+    gap: 6px;
+  }
+
+  .history-card-content h2 {
+    font-size: 17px;
+  }
+
+  .history-card-organization {
+    font-size: 15px;
+  }
+
+  .history-card-date {
+    font-size: 14px;
+  }
+
+  .history-status-badge {
+    min-height: 28px;
+    padding: 5px 11px;
+    font-size: 12px;
+  }
+
+  .history-card-arrow {
+    font-size: 21px;
+  }
+
+  .history-results-heading {
+    font-size: 16px;
+  }
+
+  .history-results-total {
+    font-size: 14px;
+  }
+
+  .history-modal-body {
+    padding: 28px 25px 40px;
+  }
+}
+
+/* =========================================================
+   DESKTOP / LAPTOP
+========================================================= */
+
+@media (min-width: 992px) {
+  .history-top-header {
+    min-height: 70px;
+    padding: 0 35px;
+  }
+
+  .history-top-header h1 {
+    font-size: 23px;
+  }
+
+  .history-container {
+    max-width: 1000px;
+    padding: 27px 30px 0;
+  }
+
+  .history-filter-section {
+    margin: 0 -30px 22px;
+    padding: 13px 30px;
+  }
+
+  .history-filter-chip {
+    min-height: 45px;
+    padding: 0 20px;
+    font-size: 15px;
+  }
+
+  .history-card {
+    min-height: 118px;
+    padding: 17px 20px;
+  }
+
+  .history-card-logo {
+    flex-basis: 60px;
+    width: 60px;
+    height: 60px;
+    font-size: 31px;
+  }
+
+  .history-card-content h2 {
+    font-size: 18px;
+  }
+
+  .history-card-organization {
+    font-size: 15px;
+  }
+
+  .history-card-date {
+    font-size: 14px;
+  }
+
+  .history-status-badge {
+    min-height: 29px;
+    padding: 5px 12px;
+    font-size: 12px;
+  }
+
+  .history-results-heading {
+    font-size: 17px;
+  }
+
+  .history-results-total {
+    font-size: 14px;
+  }
+
+  .history-details-modal {
+    --width: 650px;
+    --height: 90%;
+    --border-radius: 18px;
+  }
+
+  .history-modal-body {
+    padding: 30px 32px 40px;
+  }
+
+  .history-modal-body > h2 {
+    font-size: 25px;
+  }
+
+  .history-modal-provider {
+    font-size: 16px;
+  }
+
+  .history-modal-section h3 {
+    font-size: 19px;
+  }
+
+  .history-modal-remarks {
+    font-size: 15px;
+  }
+}
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media (max-width: 420px) {
+  .history-container {
+    padding-right: 11px;
+    padding-left: 11px;
+  }
+
+  .history-filter-section {
+    margin-right: -11px;
+    margin-left: -11px;
+    padding-right: 11px;
+    padding-left: 11px;
+  }
+
+  .history-filter-list {
+    gap: 6px;
+  }
+
+  .history-filter-chip {
+    min-height: 38px;
+    padding: 0 12px;
+    font-size: 12px;
+  }
+
+  .history-card {
+    gap: 9px;
+    padding: 11px 9px;
+  }
+
+  .history-card-logo {
+    flex-basis: 42px;
+    width: 42px;
+    height: 42px;
+    font-size: 22px;
+  }
+
+  .history-card-content h2 {
+    font-size: 14px;
+  }
+
+  .history-card-organization {
+    font-size: 12px;
+  }
+
+  .history-card-date {
+    font-size: 11px;
+  }
+
+  .history-card-right {
+    gap: 4px;
+    padding-left: 0;
+  }
+
+  .history-status-badge {
+    min-height: 23px;
+    padding: 4px 7px;
+    font-size: 9px;
+  }
+
+  .history-card-arrow {
+    font-size: 16px;
+  }
+
+  .history-results-heading {
+    font-size: 14px;
+  }
+
+  .history-results-total {
+    font-size: 12px;
+  }
+
+  .history-empty-state {
+    min-height: 250px;
+    padding: 22px 14px;
+  }
+
+  .history-empty-state h2 {
+    font-size: 18px;
+  }
+
+  .history-empty-state p {
+    font-size: 13px;
+  }
+
+  .history-modal-body {
+    padding: 20px 13px 35px;
+  }
+
+  .history-modal-body > h2 {
+    font-size: 18px;
+  }
+
+  .history-modal-provider {
+    font-size: 13px;
+  }
+
+  .history-modal-information {
+    padding: 13px;
+    gap: 13px;
+  }
+
+  .history-modal-information small {
+    font-size: 11px;
+  }
+
+  .history-modal-information strong {
+    font-size: 13px;
+  }
+
+  .history-modal-section h3 {
+    font-size: 15px;
+  }
+
+  .history-modal-remarks {
+    font-size: 13px;
+  }
+
+  .history-document-item span {
+    font-size: 12px;
+  }
+
+  .history-modal-close-button {
+    font-size: 13px;
+  }
+}
+
+/* =========================================================
+   VERY SMALL MOBILE
+========================================================= */
+
+@media (max-width: 360px) {
+  .history-top-header {
+    min-height: 54px;
+    padding: 0 11px;
+  }
+
+  .history-top-header h1 {
+    font-size: 18px;
+  }
+
+  .history-back-button {
+    flex-basis: 34px;
+    width: 34px;
+    font-size: 23px;
+  }
+
+  .history-header-spacer {
+    width: 34px;
+  }
+
+  .history-container {
+    padding-right: 9px;
+    padding-left: 9px;
+  }
+
+  .history-filter-section {
+    margin-right: -9px;
+    margin-left: -9px;
+    padding-right: 9px;
+    padding-left: 9px;
+  }
+
+  .history-filter-list {
+    gap: 5px;
+  }
+
+  .history-filter-chip {
+    min-height: 36px;
+    padding: 0 10px;
+    font-size: 11px;
+  }
+
+  .history-results-heading {
+    font-size: 13px;
+  }
+
+  .history-results-total {
+    font-size: 11px;
+  }
+
+  .history-card {
+    min-height: 90px;
+    gap: 7px;
+    padding: 9px 7px;
+  }
+
+  .history-card-logo {
+    flex-basis: 36px;
+    width: 36px;
+    height: 36px;
+    font-size: 19px;
+  }
+
+  .history-card-content {
+    gap: 4px;
+  }
+
+  .history-card-content h2 {
+    font-size: 12px;
+  }
+
+  .history-card-organization {
+    font-size: 11px;
+  }
+
+  .history-card-date {
+    font-size: 10px;
+  }
+
+  .history-card-right {
+    gap: 2px;
+  }
+
+  .history-status-badge {
+    min-height: 20px;
+    padding: 3px 5px;
+    font-size: 8px;
+  }
+
+  .history-card-arrow {
+    font-size: 14px;
+  }
+
+  .history-empty-state h2 {
+    font-size: 17px;
+  }
+
+  .history-empty-state p {
+    font-size: 12px;
+  }
+
+  .history-modal-body {
+    padding: 18px 11px 30px;
+  }
+
+  .history-modal-body > h2 {
+    font-size: 17px;
+  }
+
+  .history-modal-provider {
+    font-size: 12px;
+  }
+
+  .history-modal-information {
+    padding: 12px;
+    gap: 12px;
+  }
+
+  .history-modal-information small {
+    font-size: 10px;
+  }
+
+  .history-modal-information strong {
+    font-size: 12px;
+  }
+
+  .history-modal-section h3 {
+    font-size: 14px;
+  }
+
+  .history-modal-remarks {
+    font-size: 12px;
+  }
+
+  .history-document-item {
+    gap: 9px;
+    padding: 11px;
+  }
+
+  .history-document-item span {
+    font-size: 11px;
+  }
+
+  .history-modal-close-button {
+    font-size: 12px;
+  }
+}
+
+/* =========================================================
+   ACCESSIBILITY
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .history-card,
+  .history-filter-chip,
+  .history-back-button,
+  .history-retry-button,
+  .history-browse-button,
+  .history-document-item {
+    transition: none !important;
+    animation: none !important;
+  }
+}

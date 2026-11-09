@@ -1,0 +1,1792 @@
+
+/* =========================================================
+   GRANTACCESS - STUDENT LOCATION
+   Complete Responsive CSS
+   Desktop | Laptop | Tablet | Mobile
+   Green and White Theme
+========================================================= */
+
+:root {
+  --location-primary: var(--ga-crimson);
+  --location-primary-dark: var(--ga-burgundy);
+  --location-primary-light: var(--ga-rose);
+  --location-background: var(--ga-blush-white);
+  --location-text: var(--ga-charcoal);
+  --location-muted: var(--ga-charcoal);
+  --location-border: var(--ga-rose);
+  --location-white: #ffffff;
+  --location-shadow: 0 4px 18px rgba(127, 29, 45, 0.07);
+}
+
+/* =========================================================
+   PAGE
+========================================================= */
+
+.student-location-page {
+  background: var(--location-background);
+  color: var(--location-text);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.student-location-content {
+  --background: var(--ga-blush-white);
+  --padding-bottom: 25px;
+}
+
+.student-location-container {
+  width: 100%;
+  max-width: 1050px;
+  margin: 0 auto;
+  padding: 28px 28px 35px;
+  box-sizing: border-box;
+}
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.student-location-header {
+  position: relative;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(127, 29, 45, 0.05);
+}
+
+.student-location-header ion-toolbar {
+  --background: var(--ga-blush-white);
+  --color: var(--location-text);
+
+  min-height: 72px;
+  padding: 0;
+  border-bottom: 1px solid var(--location-border);
+}
+
+.location-header-content {
+  display: flex;
+  width: 100%;
+  max-width: 1050px;
+  min-height: 72px;
+  align-items: center;
+  gap: 13px;
+  margin: 0 auto;
+  padding: 8px 28px;
+  box-sizing: border-box;
+}
+
+.location-back-button {
+  --color: var(--location-primary);
+  --background: var(--ga-blush-white);
+  --background-hover: var(--ga-rose);
+
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  margin: 0;
+  border-radius: 50%;
+}
+
+.location-back-button ion-icon {
+  font-size: 21px;
+}
+
+.location-header-icon {
+  display: flex;
+  width: 43px;
+  height: 43px;
+  flex: 0 0 43px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: var(--location-primary-light);
+  color: var(--location-primary);
+}
+
+.location-header-icon ion-icon {
+  font-size: 23px;
+}
+
+.location-header-title {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.location-header-title ion-title {
+  position: static;
+  width: auto;
+  padding: 0;
+  color: var(--ga-charcoal);
+  font-size: 17px;
+  font-weight: 800;
+  text-align: left;
+}
+
+.location-header-title p {
+  margin: 0;
+  color: var(--location-muted);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+/* =========================================================
+   INTRODUCTION
+========================================================= */
+
+.location-intro {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 25px;
+  margin-bottom: 22px;
+  padding: 25px 27px;
+  border: 1px solid var(--ga-rose);
+  border-radius: 15px;
+  background: linear-gradient(120deg, #ffffff 0%, var(--ga-blush-white) 100%);
+  box-shadow: 0 2px 8px rgba(127, 29, 45, 0.035);
+}
+
+.location-intro-text {
+  min-width: 0;
+}
+
+.location-eyebrow {
+  display: inline-block;
+  margin-bottom: 9px;
+  color: var(--location-primary);
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: 1.2px;
+}
+
+.location-intro h1 {
+  margin: 0 0 9px;
+  color: var(--ga-charcoal);
+  font-size: 27px;
+  font-weight: 850;
+  line-height: 1.25;
+  letter-spacing: -0.5px;
+}
+
+.location-intro p {
+  max-width: 690px;
+  margin: 0;
+  color: var(--ga-charcoal);
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.location-intro-icon {
+  display: flex;
+  width: 76px;
+  height: 76px;
+  flex: 0 0 76px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--ga-rose);
+  border-radius: 20px;
+  background: var(--ga-blush-white);
+  color: var(--location-primary);
+}
+
+.location-intro-icon ion-icon {
+  font-size: 38px;
+}
+
+/* =========================================================
+   SHARED CARD STYLING
+========================================================= */
+
+.location-sharing-card,
+.location-map-card {
+  margin: 0 0 20px;
+  overflow: hidden;
+  border: 1px solid var(--location-border);
+  border-radius: 14px;
+  background: var(--location-white);
+  box-shadow: var(--location-shadow);
+}
+
+.location-sharing-card ion-card-content,
+.location-map-card ion-card-content {
+  padding: 21px;
+}
+
+/* =========================================================
+   LOCATION STATUS
+========================================================= */
+
+.location-status-row {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+}
+
+.location-status-icon {
+  display: flex;
+  width: 47px;
+  height: 47px;
+  flex: 0 0 47px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: var(--location-primary-light);
+  color: var(--location-primary);
+}
+
+.location-status-icon ion-icon {
+  font-size: 24px;
+}
+
+.location-status-details {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.location-status-details ion-card-title {
+  color: var(--ga-charcoal);
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.4;
+}
+
+.location-status-details ion-card-subtitle {
+  color: var(--location-muted);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.location-status-chip {
+  flex-shrink: 0;
+  margin: 0;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.location-status-description {
+  margin-top: 17px;
+}
+
+.location-status-description p {
+  margin: 0;
+  color: var(--ga-charcoal);
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+/* =========================================================
+   CONSENT INFORMATION
+========================================================= */
+
+.location-consent-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: 17px;
+  padding: 15px;
+  border: 1px solid var(--ga-rose);
+  border-radius: 11px;
+  background: var(--ga-blush-white);
+}
+
+.consent-icon {
+  display: flex;
+  width: 35px;
+  height: 35px;
+  flex: 0 0 35px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9px;
+  background: var(--ga-crimson);
+  color: var(--location-primary);
+}
+
+.consent-icon ion-icon {
+  font-size: 20px;
+}
+
+.consent-text {
+  min-width: 0;
+}
+
+.consent-text strong {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--ga-charcoal);
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.consent-text p {
+  margin: 0;
+  color: var(--ga-charcoal);
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+/* =========================================================
+   CONSENT CHECKBOX
+========================================================= */
+
+.location-consent-checkbox {
+  margin-top: 17px;
+}
+
+.location-checkbox-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.location-checkbox-label input {
+  width: 17px;
+  height: 17px;
+  flex: 0 0 17px;
+  margin: 2px 0 0;
+  accent-color: var(--location-primary);
+  cursor: pointer;
+}
+
+.location-checkbox-label span {
+  color: var(--ga-charcoal);
+  font-size: 12px;
+  line-height: 1.65;
+}
+
+/* =========================================================
+   ERROR MESSAGE
+========================================================= */
+
+.location-error {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  margin-top: 14px;
+  padding: 11px 13px;
+  border: 1px solid var(--ga-rose);
+  border-radius: 9px;
+  background: var(--ga-blush-white);
+  color: var(--ga-charcoal);
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.location-error ion-icon {
+  flex: 0 0 auto;
+  margin-top: 1px;
+  font-size: 17px;
+}
+
+/* =========================================================
+   ACTION BUTTONS
+========================================================= */
+
+.location-action {
+  margin-top: 18px;
+}
+
+.enable-location-button {
+  --background: var(--ga-crimson);
+  --background-hover: var(--ga-burgundy);
+  --background-activated: var(--ga-burgundy);
+  --color: #ffffff;
+  --border-radius: 9px;
+
+  min-height: 46px;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: none;
+}
+
+.enable-location-button:disabled {
+  opacity: 0.55;
+}
+
+.enable-location-button ion-spinner {
+  width: 18px;
+  height: 18px;
+}
+
+.disable-location-button {
+  --border-radius: 9px;
+
+  min-height: 45px;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: none;
+}
+
+/* =========================================================
+   MAP CARD HEADER
+========================================================= */
+
+.location-map-card ion-card-header {
+  padding: 19px 21px 13px;
+}
+
+.location-map-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+}
+
+.location-map-heading ion-card-title {
+  color: var(--ga-charcoal);
+  font-size: 16px;
+  font-weight: 850;
+  line-height: 1.4;
+}
+
+.location-map-heading ion-card-subtitle {
+  margin-top: 5px;
+  color: var(--location-muted);
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.location-map-heading-icon {
+  flex: 0 0 auto;
+  color: var(--location-primary);
+  font-size: 25px;
+}
+
+/* =========================================================
+   LEAFLET MAP
+========================================================= */
+
+.location-map-wrapper {
+  position: relative;
+  width: 100%;
+  height: 390px;
+  min-height: 300px;
+  overflow: hidden;
+  border: 1px solid var(--ga-rose);
+  border-radius: 12px;
+  background: var(--ga-crimson);
+  isolation: isolate;
+}
+
+.student-location-map {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 300px;
+  background: var(--ga-crimson);
+  outline: none;
+}
+
+/* Keep Leaflet controls and attribution visible. */
+.student-location-map .leaflet-control-container {
+  position: relative;
+  z-index: 400;
+}
+
+.student-location-map .leaflet-control-zoom {
+  border: 1px solid var(--ga-rose);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.student-location-map .leaflet-control-zoom a {
+  color: var(--location-primary);
+}
+
+.student-location-map .leaflet-popup-content-wrapper {
+  border-radius: 9px;
+}
+
+.student-location-map .leaflet-popup-content {
+  color: var(--ga-charcoal);
+  font-size: 12px;
+}
+
+/* =========================================================
+   MAP DISABLED OVERLAY
+========================================================= */
+
+.map-disabled-overlay {
+  position: absolute;
+  z-index: 500;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 25px;
+  background: rgba(246, 248, 252, 0.91);
+  text-align: center;
+  backdrop-filter: blur(2px);
+}
+
+.map-disabled-icon {
+  display: flex;
+  width: 53px;
+  height: 53px;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+  border-radius: 50%;
+  background: var(--ga-crimson);
+  color: var(--location-primary);
+}
+
+.map-disabled-icon ion-icon {
+  font-size: 25px;
+}
+
+.map-disabled-overlay strong {
+  color: var(--ga-charcoal);
+  font-size: 14px;
+  font-weight: 850;
+}
+
+.map-disabled-overlay p {
+  max-width: 300px;
+  margin: 7px 0 0;
+  color: var(--ga-charcoal);
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+/* =========================================================
+   MAP LOADING
+========================================================= */
+
+.map-loading-message {
+  position: absolute;
+  z-index: 600;
+  top: 12px;
+  left: 50%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  transform: translateX(-50%);
+  border: 1px solid var(--ga-rose);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.96);
+  color: var(--ga-charcoal);
+  font-size: 10px;
+  box-shadow: 0 2px 8px rgba(127, 29, 45, 0.08);
+}
+
+.map-loading-message ion-spinner {
+  width: 15px;
+  height: 15px;
+  color: var(--location-primary);
+}
+
+/* =========================================================
+   MAP ERROR
+========================================================= */
+
+.map-error-message {
+  position: absolute;
+  z-index: 700;
+  right: 12px;
+  bottom: 35px;
+  left: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 14px;
+  border: 1px solid var(--ga-rose);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.97);
+  color: var(--ga-charcoal);
+  text-align: center;
+}
+
+.map-error-message > ion-icon {
+  font-size: 22px;
+}
+
+.map-error-message p {
+  margin: 7px 0;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.map-error-message ion-button {
+  --color: var(--ga-burgundy);
+  --border-color: var(--ga-rose);
+
+  min-height: 30px;
+  font-size: 10px;
+  text-transform: none;
+}
+
+/* =========================================================
+   COORDINATE INFORMATION
+========================================================= */
+
+.location-coordinate-info {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 14px;
+  padding: 12px 13px;
+  border: 1px solid var(--ga-rose);
+  border-radius: 10px;
+  background: var(--ga-blush-white);
+}
+
+.location-coordinate-info > ion-icon {
+  flex: 0 0 auto;
+  margin-top: 1px;
+  font-size: 19px;
+}
+
+.location-coordinate-info strong {
+  display: block;
+  color: var(--ga-charcoal);
+  font-size: 11px;
+  font-weight: 850;
+}
+
+.location-coordinate-info p {
+  margin: 4px 0 0;
+  color: var(--ga-charcoal);
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+/* =========================================================
+   MAP NOTE
+========================================================= */
+
+.location-map-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  margin-top: 13px;
+}
+
+.location-map-note ion-icon {
+  flex: 0 0 auto;
+  margin-top: 1px;
+  color: var(--location-primary);
+  font-size: 17px;
+}
+
+.location-map-note p {
+  margin: 0;
+  color: var(--ga-charcoal);
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+/* =========================================================
+   PRIVACY SECTION
+========================================================= */
+
+.location-privacy-section {
+  margin-top: 23px;
+  padding: 21px;
+  border: 1px solid var(--location-border);
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow: var(--location-shadow);
+}
+
+.privacy-section-heading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 17px;
+}
+
+.privacy-section-heading > ion-icon {
+  color: var(--location-primary);
+  font-size: 23px;
+}
+
+.privacy-section-heading h2 {
+  margin: 0;
+  color: var(--ga-charcoal);
+  font-size: 16px;
+  font-weight: 850;
+  line-height: 1.4;
+}
+
+.privacy-information-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 15px;
+}
+
+.privacy-information-item {
+  display: flex;
+  min-width: 0;
+  align-items: flex-start;
+  gap: 11px;
+  padding: 13px;
+  border: 1px solid var(--ga-rose);
+  border-radius: 10px;
+  background: #ffffff;
+}
+
+.privacy-item-icon {
+  display: flex;
+  width: 35px;
+  height: 35px;
+  flex: 0 0 35px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9px;
+  background: var(--location-primary-light);
+  color: var(--location-primary);
+}
+
+.privacy-item-icon ion-icon {
+  font-size: 18px;
+}
+
+.privacy-information-item > div:last-child {
+  min-width: 0;
+}
+
+.privacy-information-item strong {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--ga-charcoal);
+  font-size: 11px;
+  font-weight: 850;
+}
+
+.privacy-information-item p {
+  margin: 0;
+  color: var(--ga-charcoal);
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+/* =========================================================
+   FOOTER NOTE
+========================================================= */
+
+.location-footer-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 18px;
+  padding: 13px 15px;
+  border: 1px solid var(--ga-rose);
+  border-radius: 10px;
+  background: #ffffff;
+}
+
+.location-footer-note ion-icon {
+  flex: 0 0 auto;
+  margin-top: 1px;
+  color: var(--location-primary);
+  font-size: 18px;
+}
+
+.location-footer-note p {
+  margin: 0;
+  color: var(--ga-charcoal);
+  font-size: 10px;
+  line-height: 1.7;
+}
+
+/* =========================================================
+   BOTTOM BACK BUTTON
+========================================================= */
+
+.location-bottom-action {
+  display: flex;
+  justify-content: center;
+  margin-top: 22px;
+}
+
+.location-bottom-back-button {
+  --color: var(--location-primary);
+  --border-color: var(--ga-rose);
+  --border-radius: 9px;
+  --background-hover: var(--ga-rose);
+
+  min-height: 43px;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: none;
+}
+
+/* =========================================================
+   FOCUS AND ACCESSIBILITY
+========================================================= */
+
+.location-back-button:focus-visible,
+.location-bottom-back-button:focus-visible,
+.location-checkbox-label input:focus-visible {
+  outline: 2px solid var(--location-primary);
+  outline-offset: 3px;
+}
+
+/* =========================================================
+   LARGE TABLET / SMALL LAPTOP
+========================================================= */
+
+@media (max-width: 900px) {
+  .student-location-container {
+    max-width: 850px;
+    padding: 23px 20px 30px;
+  }
+
+  .location-header-content {
+    padding-right: 20px;
+    padding-left: 20px;
+  }
+
+  .location-map-wrapper {
+    height: 360px;
+  }
+}
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 700px) {
+  .student-location-container {
+    padding: 19px 16px 28px;
+  }
+
+  .location-intro {
+    padding: 21px;
+  }
+
+  .location-intro h1 {
+    font-size: 24px;
+  }
+
+  .location-intro-icon {
+    width: 62px;
+    height: 62px;
+    flex-basis: 62px;
+  }
+
+  .location-intro-icon ion-icon {
+    font-size: 31px;
+  }
+
+  .location-map-wrapper {
+    height: 340px;
+  }
+
+  .privacy-information-grid {
+    gap: 10px;
+  }
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 520px) {
+  .student-location-header ion-toolbar {
+    min-height: 64px;
+  }
+
+  .location-header-content {
+    min-height: 64px;
+    gap: 9px;
+    padding: 7px 13px;
+  }
+
+  .location-back-button {
+    width: 37px;
+    height: 37px;
+    flex-basis: 37px;
+  }
+
+  .location-header-icon {
+    width: 37px;
+    height: 37px;
+    flex-basis: 37px;
+    border-radius: 10px;
+  }
+
+  .location-header-icon ion-icon {
+    font-size: 20px;
+  }
+
+  .location-header-title ion-title {
+    font-size: 15px;
+  }
+
+  .location-header-title p {
+    font-size: 10px;
+  }
+
+  .student-location-container {
+    padding: 15px 12px 25px;
+  }
+
+  .location-intro {
+    gap: 12px;
+    margin-bottom: 15px;
+    padding: 18px;
+    border-radius: 12px;
+  }
+
+  .location-eyebrow {
+    font-size: 9px;
+    letter-spacing: 0.8px;
+  }
+
+  .location-intro h1 {
+    font-size: 21px;
+  }
+
+  .location-intro p {
+    font-size: 11px;
+    line-height: 1.65;
+  }
+
+  .location-intro-icon {
+    width: 48px;
+    height: 48px;
+    flex-basis: 48px;
+    border-radius: 13px;
+  }
+
+  .location-intro-icon ion-icon {
+    font-size: 25px;
+  }
+
+  .location-sharing-card,
+  .location-map-card {
+    margin-bottom: 15px;
+    border-radius: 12px;
+  }
+
+  .location-sharing-card ion-card-content,
+  .location-map-card ion-card-content {
+    padding: 15px;
+  }
+
+  .location-status-row {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .location-status-icon {
+    width: 40px;
+    height: 40px;
+    flex-basis: 40px;
+  }
+
+  .location-status-icon ion-icon {
+    font-size: 21px;
+  }
+
+  .location-status-details {
+    flex: 1 1 calc(100% - 110px);
+  }
+
+  .location-status-details ion-card-title {
+    font-size: 14px;
+  }
+
+  .location-status-chip {
+    margin-left: auto;
+  }
+
+  .location-status-description p {
+    font-size: 11px;
+  }
+
+  .location-consent-box {
+    gap: 9px;
+    padding: 12px;
+  }
+
+  .consent-icon {
+    width: 30px;
+    height: 30px;
+    flex-basis: 30px;
+  }
+
+  .consent-icon ion-icon {
+    font-size: 17px;
+  }
+
+  .consent-text p {
+    font-size: 10px;
+  }
+
+  .location-checkbox-label span {
+    font-size: 10px;
+  }
+
+  .enable-location-button,
+  .disable-location-button {
+    min-height: 43px;
+    font-size: 11px;
+  }
+
+  .location-map-card ion-card-header {
+    padding: 16px 15px 10px;
+  }
+
+  .location-map-heading ion-card-title {
+    font-size: 14px;
+  }
+
+  .location-map-heading ion-card-subtitle {
+    font-size: 10px;
+  }
+
+  .location-map-heading-icon {
+    font-size: 22px;
+  }
+
+  .location-map-wrapper {
+    height: 300px;
+    min-height: 260px;
+  }
+
+  .student-location-map {
+    min-height: 260px;
+  }
+
+  .map-disabled-overlay {
+    padding: 15px;
+  }
+
+  .map-disabled-overlay strong {
+    font-size: 12px;
+  }
+
+  .map-disabled-overlay p {
+    font-size: 10px;
+  }
+
+  .location-coordinate-info {
+    padding: 10px;
+  }
+
+  .location-coordinate-info strong {
+    font-size: 10px;
+  }
+
+  .location-coordinate-info p,
+  .location-map-note p {
+    font-size: 9px;
+  }
+
+  .location-privacy-section {
+    margin-top: 15px;
+    padding: 15px;
+    border-radius: 12px;
+  }
+
+  .privacy-section-heading {
+    gap: 8px;
+    margin-bottom: 13px;
+  }
+
+  .privacy-section-heading h2 {
+    font-size: 14px;
+  }
+
+  .privacy-section-heading > ion-icon {
+    font-size: 20px;
+  }
+
+  .privacy-information-grid {
+    grid-template-columns: 1fr;
+    gap: 9px;
+  }
+
+  .privacy-information-item {
+    padding: 11px;
+  }
+
+  .privacy-information-item strong {
+    font-size: 10px;
+  }
+
+  .privacy-information-item p {
+    font-size: 9px;
+  }
+
+  .location-footer-note {
+    padding: 11px;
+  }
+
+  .location-footer-note p {
+    font-size: 9px;
+  }
+
+  .location-bottom-back-button {
+    width: 100%;
+    margin: 0;
+  }
+}
+
+/* =========================================================
+   EXTRA SMALL MOBILE
+========================================================= */
+
+@media (max-width: 360px) {
+  .student-location-container {
+    padding-right: 10px;
+    padding-left: 10px;
+  }
+
+  .location-intro {
+    padding: 15px;
+  }
+
+  .location-intro h1 {
+    font-size: 19px;
+  }
+
+  .location-intro-icon {
+    width: 42px;
+    height: 42px;
+    flex-basis: 42px;
+  }
+
+  .location-status-details ion-card-title {
+    font-size: 13px;
+  }
+
+  .location-map-wrapper {
+    height: 270px;
+    min-height: 240px;
+  }
+
+  .student-location-map {
+    min-height: 240px;
+  }
+}
+
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* =========================================================
+   ORGANIZATION MAP AND LOCATION DIRECTORY
+========================================================= */
+
+.student-location-page,
+.student-location-content {
+  --background: var(--grant-cloud-white);
+  background: var(--grant-cloud-white);
+}
+
+.student-location-content {
+  --padding-bottom: 0;
+  --overflow: hidden;
+}
+
+.location-live-map-screen {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: var(--ga-crimson);
+}
+
+.location-live-map-screen > .student-location-map {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+  background: var(--ga-crimson);
+}
+
+.location-live-map-screen .leaflet-control-attribution {
+  margin-bottom: 4px;
+  font-size: 9px;
+}
+
+.location-live-map-screen .leaflet-control-zoom {
+  margin-top: 85px;
+  margin-right: 12px;
+}
+
+.location-map-topbar {
+  position: absolute;
+  z-index: 800;
+  top: max(12px, env(safe-area-inset-top));
+  right: 12px;
+  left: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.location-map-back,
+.location-map-locate {
+  --color: var(--ga-charcoal);
+  --background: var(--ga-blush-white);
+  --background-hover: var(--ga-rose);
+  --background-activated: var(--ga-rose);
+  --border-radius: 50%;
+  --padding-start: 0;
+  --padding-end: 0;
+
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+  margin: 0;
+  border: 1px solid rgba(127, 29, 45, 0.08);
+  border-radius: 50%;
+  box-shadow: 0 3px 12px rgba(127, 29, 45, 0.16);
+  pointer-events: auto;
+}
+
+.location-map-back ion-icon,
+.location-map-locate ion-icon {
+  font-size: 20px;
+}
+
+.location-map-brand {
+  display: flex;
+  min-width: 0;
+  flex: 1 1 auto;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 13px;
+  border: 1px solid rgba(127, 29, 45, 0.08);
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 3px 12px rgba(127, 29, 45, 0.13);
+  color: var(--ga-charcoal);
+  pointer-events: auto;
+}
+
+.location-map-brand > ion-icon {
+  color: var(--location-primary);
+  font-size: 21px;
+}
+
+.location-map-brand div {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.location-map-brand strong {
+  overflow: hidden;
+  font-size: 12px;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.location-map-brand span {
+  color: var(--ga-charcoal);
+  font-size: 10px;
+}
+
+.location-map-locate[disabled] {
+  opacity: 0.55;
+}
+
+.location-map-loading,
+.location-map-error {
+  position: absolute;
+  z-index: 850;
+  top: 68px;
+  left: 50%;
+  display: flex;
+  max-width: calc(100% - 32px);
+  align-items: center;
+  gap: 8px;
+  padding: 9px 13px;
+  transform: translateX(-50%);
+  border: 1px solid rgba(127, 29, 45, 0.08);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 2px 9px rgba(127, 29, 45, 0.13);
+  color: var(--ga-charcoal);
+  font-size: 11px;
+}
+
+.location-map-loading ion-spinner {
+  width: 16px;
+  height: 16px;
+  color: var(--location-primary);
+}
+
+.location-map-error {
+  top: 69px;
+  color: var(--ga-charcoal);
+}
+
+.location-map-error ion-button {
+  --color: var(--ga-burgundy);
+  margin: -7px -8px -7px 0;
+}
+
+.location-map-sheet {
+  position: absolute;
+  z-index: 700;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  max-height: min(54vh, 500px);
+  min-height: 280px;
+  flex-direction: column;
+  padding: 7px 16px calc(12px + env(safe-area-inset-bottom));
+  overflow: hidden;
+  border-radius: 22px 22px 0 0;
+  background: var(--ga-charcoal);
+  box-shadow: 0 -7px 28px rgba(127, 29, 45, 0.22);
+  color: var(--ga-charcoal);
+}
+
+.location-map-sheet.collapsed {
+  min-height: 0;
+  max-height: none;
+  padding-bottom: calc(10px + env(safe-area-inset-bottom));
+}
+
+.location-map-sheet.collapsed .location-sheet-handle,
+.location-map-sheet.collapsed .location-sheet-heading p,
+.location-map-sheet.collapsed .location-organization-search,
+.location-map-sheet.collapsed .location-organization-list,
+.location-map-sheet.collapsed .location-selected-status,
+.location-map-sheet.collapsed .location-sharing-compact,
+.location-map-sheet.collapsed .location-sharing-error {
+  display: none;
+}
+
+.location-sheet-handle {
+  display: flex;
+  height: 15px;
+  flex: 0 0 15px;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.location-sheet-handle span {
+  width: 42px;
+  height: 4px;
+  border-radius: 4px;
+  background: var(--ga-burgundy);
+}
+
+.location-sheet-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 2px 1px 9px;
+}
+
+.location-sheet-heading h1 {
+  margin: 0;
+  color: var(--ga-charcoal);
+  font-size: 17px;
+  font-weight: 750;
+}
+
+.location-sheet-heading p {
+  margin: 4px 0 0;
+  color: var(--ga-charcoal);
+  font-size: 11px;
+}
+
+.location-sheet-count {
+  display: inline-flex;
+  width: 29px;
+  height: 29px;
+  flex: 0 0 29px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--ga-charcoal);
+  color: var(--ga-charcoal);
+  font-size: 11px;
+  font-weight: 750;
+}
+
+.location-organization-search {
+  --background: var(--ga-blush-white);
+  --color: var(--ga-charcoal);
+  --placeholder-color: var(--ga-charcoal);
+  --icon-color: var(--ga-crimson);
+  --clear-button-color: var(--ga-crimson);
+
+  min-height: 42px;
+  padding: 0;
+}
+
+.location-organization-search::part(container) {
+  min-height: 40px;
+  border-radius: 22px;
+  box-shadow: none;
+}
+
+.location-organization-search::part(input) {
+  font-size: 12px;
+}
+
+.location-organization-list {
+  min-height: 52px;
+  flex: 1 1 auto;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-color: var(--ga-charcoal) transparent;
+  scrollbar-width: thin;
+}
+
+.location-organization-row {
+  display: flex;
+  min-height: 66px;
+  align-items: center;
+  gap: 7px;
+  border-bottom: 1px solid rgba(233, 237, 255, 0.1);
+}
+
+.location-organization-row.selected {
+  background: rgba(127, 29, 45, 0.1);
+}
+
+.location-organization-select {
+  display: flex;
+  min-width: 0;
+  flex: 1 1 auto;
+  align-items: center;
+  gap: 11px;
+  padding: 8px 4px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.location-organization-avatar {
+  display: flex;
+  width: 43px;
+  height: 43px;
+  flex: 0 0 43px;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--ga-rose);
+  border-radius: 50%;
+  background: var(--ga-crimson);
+  color: var(--location-primary);
+  object-fit: cover;
+  box-shadow: 0 0 0 2px rgba(127, 29, 45, 0.24);
+}
+
+.location-organization-avatar.placeholder ion-icon {
+  font-size: 21px;
+}
+
+.location-organization-details {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.location-organization-details strong {
+  overflow: hidden;
+  color: var(--ga-charcoal);
+  font-size: 12px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.location-organization-address,
+.location-organization-type {
+  overflow: hidden;
+  color: var(--ga-charcoal);
+  font-size: 10px;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.location-organization-type {
+  color: var(--ga-charcoal);
+}
+
+.location-profile-button {
+  --color: var(--ga-crimson);
+  --padding-start: 9px;
+  --padding-end: 6px;
+
+  min-height: 34px;
+  margin: 0;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: none;
+}
+
+.location-list-state {
+  display: flex;
+  min-height: 65px;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  padding: 12px;
+  color: var(--ga-charcoal);
+  font-size: 11px;
+  text-align: center;
+}
+
+.location-list-state ion-icon {
+  color: var(--ga-charcoal);
+  font-size: 19px;
+}
+
+.location-list-state ion-spinner {
+  width: 18px;
+  height: 18px;
+  color: var(--ga-charcoal);
+}
+
+.location-selected-status {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 6px;
+  margin: 5px 0 0;
+  overflow: hidden;
+  color: var(--ga-charcoal);
+  font-size: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.location-selected-status ion-icon {
+  flex: 0 0 auto;
+  color: var(--ga-charcoal);
+  font-size: 15px;
+}
+
+.location-sharing-compact {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(233, 237, 255, 0.12);
+}
+
+.location-sharing-consent {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 7px;
+  color: var(--ga-charcoal);
+  font-size: 10px;
+  line-height: 1.35;
+}
+
+.location-sharing-consent input {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 16px;
+  margin: 0;
+  accent-color: var(--ga-crimson);
+}
+
+.location-sharing-button {
+  --background: var(--ga-blush-white);
+  --background-hover: var(--ga-rose);
+  --border-radius: 20px;
+  --padding-start: 12px;
+  --padding-end: 12px;
+
+  min-height: 34px;
+  flex: 0 0 auto;
+  margin: 0;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: none;
+}
+
+.location-sharing-button ion-icon {
+  font-size: 15px;
+}
+
+.location-sharing-enabled {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 7px;
+  color: var(--ga-charcoal);
+  font-size: 10px;
+}
+
+.location-sharing-enabled ion-icon {
+  flex: 0 0 auto;
+  color: var(--ga-charcoal);
+  font-size: 16px;
+}
+
+.location-sharing-disable {
+  --color: var(--ga-crimson);
+  --padding-start: 8px;
+  --padding-end: 8px;
+
+  min-height: 32px;
+  margin: 0;
+  font-size: 10px;
+  text-transform: none;
+}
+
+.location-sharing-error {
+  flex: 0 0 auto;
+  margin: 6px 0 0;
+  color: var(--ga-charcoal);
+  font-size: 10px;
+  line-height: 1.4;
+}
+
+.organization-map-marker {
+  border: 0;
+  background: transparent;
+}
+
+.organization-map-marker-content {
+  display: flex;
+  width: 46px;
+  height: 46px;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 3px solid var(--ga-rose);
+  border-radius: 50%;
+  background: var(--ga-crimson);
+  color: var(--ga-charcoal);
+  box-shadow:
+    0 2px 6px rgba(127, 29, 45, 0.35),
+    0 0 0 3px rgba(127, 29, 45, 0.52);
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.location-sheet-toggle {
+  display: flex;
+  width: 35px;
+  height: 35px;
+  flex: 0 0 35px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(233, 237, 255, 0.18);
+  border-radius: 50%;
+  background: var(--ga-charcoal);
+  color: var(--ga-charcoal);
+  cursor: pointer;
+}
+
+.location-sheet-toggle ion-icon {
+  font-size: 19px;
+}
+
+.organization-map-marker-content img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.organization-map-marker.selected .organization-map-marker-content {
+  width: 54px;
+  height: 54px;
+  box-shadow:
+    0 3px 8px rgba(127, 29, 45, 0.38),
+    0 0 0 5px rgba(127, 29, 45, 0.42);
+}
+
+.organization-map-popup {
+  display: flex;
+  min-width: 185px;
+  flex-direction: column;
+  gap: 4px;
+  color: var(--ga-charcoal);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.organization-map-popup strong {
+  color: var(--ga-charcoal);
+  font-size: 13px;
+}
+
+.organization-map-popup a {
+  margin-top: 3px;
+  color: var(--ga-charcoal);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.organization-map-popup a:hover {
+  text-decoration: underline;
+}
+
+@media (min-width: 760px) {
+  .location-map-sheet {
+    right: auto;
+    bottom: 18px;
+    left: 18px;
+    width: min(430px, calc(100% - 36px));
+    max-height: min(68vh, 620px);
+    border-radius: 20px;
+  }
+
+  .location-map-topbar {
+    right: 18px;
+    left: 18px;
+  }
+}
+
+@media (max-width: 380px) {
+  .location-map-sheet {
+    max-height: 58vh;
+    min-height: 260px;
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+
+  .location-sheet-heading h1 {
+    font-size: 15px;
+  }
+
+  .location-sheet-heading p {
+    font-size: 10px;
+  }
+
+  .location-organization-avatar {
+    width: 39px;
+    height: 39px;
+    flex-basis: 39px;
+  }
+}

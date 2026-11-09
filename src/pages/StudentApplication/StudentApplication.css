@@ -1,0 +1,1048 @@
+
+/* =========================================================
+   GRANTACCESS - STUDENT APPLICATION
+   Responsive Layout: Desktop | Laptop | Tablet | Mobile
+   Green and White Theme
+========================================================= */
+
+:root {
+  --application-green: #087c3c;
+  --application-green-dark: #05632f;
+  --application-green-light: #eaf7ef;
+  --application-green-soft: #f4fbf6;
+  --application-text: #202b24;
+  --application-muted: #718078;
+  --application-border: #e3ebe5;
+  --application-white: #ffffff;
+  --application-page: #f5f8f6;
+  --application-danger: #dc4545;
+  --application-shadow: 0 8px 28px rgba(22, 65, 39, 0.07);
+}
+
+/* =========================================================
+   PAGE
+========================================================= */
+
+.student-application-page {
+  --background: var(--application-page);
+  background: var(--application-page);
+  color: var(--application-text);
+}
+
+.student-application-content {
+  --background: var(--application-page);
+  --padding-bottom: 105px;
+}
+
+.student-application-content::part(scroll) {
+  padding-bottom: 24px;
+}
+
+.student-application-layout {
+  width: 100%;
+  max-width: 920px;
+  min-height: 100%;
+  margin: 0 auto;
+  padding: 22px 24px 40px;
+  box-sizing: border-box;
+}
+
+/* =========================================================
+   BACK BUTTON
+========================================================= */
+
+.student-application-back {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 40px;
+  margin-bottom: 18px;
+  padding: 8px 13px;
+  border: 1px solid var(--application-border);
+  border-radius: 10px;
+  background: var(--application-white);
+  color: var(--application-green);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.student-application-back ion-icon {
+  font-size: 17px;
+}
+
+.student-application-back:hover {
+  background: var(--application-green-light);
+  border-color: #b9ddc5;
+}
+
+/* =========================================================
+   MAIN APPLICATION CARD
+========================================================= */
+
+.student-application-card {
+  width: 100%;
+  overflow: hidden;
+  border: 1px solid var(--application-border);
+  border-radius: 20px;
+  background: var(--application-white);
+  box-shadow: var(--application-shadow);
+}
+
+.student-application-card form {
+  width: 100%;
+}
+
+.student-application-heading {
+  position: relative;
+  padding: 30px 34px 25px;
+  background: linear-gradient(
+    135deg,
+    #087c3c 0%,
+    #07934a 100%
+  );
+  color: #ffffff;
+}
+
+.student-application-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  margin-bottom: 12px;
+  padding: 6px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.13);
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.student-application-heading h1 {
+  margin: 0 0 9px;
+  color: #ffffff;
+  font-size: clamp(21px, 3vw, 29px);
+  font-weight: 800;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+
+.student-application-heading > p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.student-application-heading > p strong {
+  color: #ffffff;
+}
+
+.student-application-summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.student-application-summary span {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 34px;
+  padding: 7px 11px;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.student-application-summary ion-icon {
+  font-size: 16px;
+}
+
+/* =========================================================
+   STEP PROGRESS
+========================================================= */
+
+.application-step-progress {
+  position: relative;
+  padding: 23px 34px 20px;
+  border-bottom: 1px solid var(--application-border);
+  background: #ffffff;
+  scroll-margin-top: 15px;
+}
+
+.application-step-caption {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 11px;
+}
+
+.application-step-caption strong {
+  color: var(--application-text);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.application-step-caption span {
+  color: var(--application-green);
+  font-size: 12px;
+  font-weight: 700;
+  text-align: right;
+}
+
+.application-step-track {
+  width: 100%;
+  height: 8px;
+  overflow: hidden;
+  border-radius: 20px;
+  background: #e9efeb;
+}
+
+.application-step-track span {
+  display: block;
+  height: 100%;
+  min-width: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    90deg,
+    #087c3c,
+    #22a45c
+  );
+  transition: width 0.3s ease;
+}
+
+/* =========================================================
+   APPLICATION SECTIONS
+========================================================= */
+
+.student-application-section {
+  padding: 26px 34px;
+  border-bottom: 1px solid var(--application-border);
+  background: #ffffff;
+}
+
+.student-application-section h2 {
+  margin: 0 0 13px;
+  color: var(--application-text);
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.4;
+}
+
+.student-application-section h3 {
+  margin: 22px 0 12px;
+  color: var(--application-text);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.student-application-section p {
+  margin: 0 0 13px;
+  color: #58665e;
+  font-size: 13px;
+  line-height: 1.8;
+  overflow-wrap: anywhere;
+}
+
+.student-application-section p:last-child {
+  margin-bottom: 0;
+}
+
+.student-application-section p strong {
+  color: var(--application-text);
+}
+
+/* =========================================================
+   DOWNLOADABLE FORMS
+========================================================= */
+
+.application-download-section {
+  margin-top: 23px;
+  padding: 17px;
+  border: 1px solid var(--application-border);
+  border-radius: 13px;
+  background: var(--application-green-soft);
+}
+
+.application-download-section h3 {
+  margin: 0 0 13px;
+  color: var(--application-text);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.student-application-downloads {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* =========================================================
+   REQUIREMENT UPLOAD
+========================================================= */
+
+.application-current-requirement {
+  background: #ffffff;
+}
+
+.application-requirement-step {
+  display: inline-flex;
+  margin-bottom: 10px;
+  padding: 6px 11px;
+  border-radius: 20px;
+  background: var(--application-green-light);
+  color: var(--application-green);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.application-requirement-upload {
+  margin-top: 17px;
+}
+
+.student-application-upload {
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+  width: 100%;
+  padding: 19px;
+  border: 1.5px dashed #a8cdb4;
+  border-radius: 13px;
+  background: #f8fcf9;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.student-application-upload:hover {
+  border-color: var(--application-green);
+  background: var(--application-green-light);
+}
+
+.student-application-requirement-name {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  color: var(--application-text);
+  font-size: 13px;
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+.student-application-requirement-name ion-icon {
+  flex-shrink: 0;
+  color: var(--application-green);
+  font-size: 20px;
+}
+
+.student-application-requirement-name strong {
+  margin-left: auto;
+  padding: 4px 8px;
+  border-radius: 20px;
+  background: #fff0ef;
+  color: #d44747;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.student-application-file-input {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 47px;
+  padding: 10px 13px;
+  border: 1px solid #d7e8dc;
+  border-radius: 9px;
+  background: #ffffff;
+  color: var(--application-green);
+  font-size: 12px;
+  font-weight: 700;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.student-application-file-input ion-icon {
+  flex-shrink: 0;
+  font-size: 19px;
+}
+
+.student-application-upload input[type="file"] {
+  display: none;
+}
+
+.application-upload-confirmed {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 10px !important;
+  color: var(--application-green) !important;
+  font-size: 12px !important;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.application-upload-confirmed ion-icon {
+  flex-shrink: 0;
+  font-size: 17px;
+}
+
+/* =========================================================
+   REVIEW LIST
+========================================================= */
+
+.application-review-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.application-review-list > div {
+  display: grid;
+  grid-template-columns: 22px minmax(100px, 0.8fr) minmax(120px, 1.2fr) auto;
+  align-items: center;
+  gap: 10px;
+  padding: 13px;
+  border: 1px solid var(--application-border);
+  border-radius: 10px;
+  background: #fbfdfb;
+}
+
+.application-review-list > div > ion-icon {
+  color: var(--application-green);
+  font-size: 19px;
+}
+
+.application-review-list > div > span {
+  color: var(--application-text);
+  font-size: 12px;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.application-review-list > div > strong {
+  color: var(--application-muted);
+  font-size: 11px;
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+
+.application-review-list button {
+  padding: 7px 10px;
+  border: 1px solid #c9e1d1;
+  border-radius: 7px;
+  background: #ffffff;
+  color: var(--application-green);
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.application-review-list button:hover {
+  background: var(--application-green-light);
+}
+
+.student-application-no-requirements {
+  padding: 14px;
+  border-radius: 9px;
+  background: var(--application-green-soft);
+  color: var(--application-green) !important;
+  font-weight: 600;
+}
+
+/* =========================================================
+   OPTIONAL FILES
+========================================================= */
+
+.student-application-section input[type="file"]:not(
+  .student-application-upload input
+) {
+  width: 100%;
+  max-width: 100%;
+  padding: 12px;
+  border: 1px solid var(--application-border);
+  border-radius: 9px;
+  background: #fbfdfb;
+  color: var(--application-text);
+  font-size: 12px;
+}
+
+.student-application-section input[type="file"]::file-selector-button {
+  margin-right: 10px;
+  padding: 8px 12px;
+  border: 0;
+  border-radius: 7px;
+  background: var(--application-green-light);
+  color: var(--application-green);
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.application-optional-file {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 9px;
+  padding: 11px 13px;
+  border: 1px solid var(--application-border);
+  border-radius: 9px;
+  background: #ffffff;
+}
+
+.application-optional-file span {
+  min-width: 0;
+  color: var(--application-text);
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+.application-optional-file button {
+  flex-shrink: 0;
+  padding: 7px 10px;
+  border: 0;
+  border-radius: 7px;
+  background: #fff0ef;
+  color: var(--application-danger);
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+/* =========================================================
+   CHECKBOX / LOCATION CONSENT
+========================================================= */
+
+.student-application-location {
+  margin: 18px 34px;
+  padding: 17px;
+  border: 1px solid var(--application-border);
+  border-radius: 12px;
+  background: #fbfdfb;
+}
+
+.student-application-location label {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  cursor: pointer;
+}
+
+.student-application-location input[type="checkbox"] {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  margin: 2px 0 0;
+  accent-color: var(--application-green);
+  cursor: pointer;
+}
+
+.student-application-location label > span {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-width: 0;
+}
+
+.student-application-location strong {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px;
+  color: var(--application-text);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.student-application-location strong ion-icon {
+  color: var(--application-green);
+  font-size: 17px;
+}
+
+.student-application-location small {
+  color: var(--application-muted);
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+/* =========================================================
+   ACTION BUTTONS
+========================================================= */
+
+.student-application-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 13px;
+  padding: 22px 34px;
+  border-top: 1px solid var(--application-border);
+  background: #ffffff;
+}
+
+.student-application-actions button,
+.student-application-submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 46px;
+  padding: 11px 21px;
+  border: 0;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 800;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.student-application-cancel {
+  min-width: 110px;
+  border: 1px solid var(--application-border) !important;
+  background: #ffffff;
+  color: #56645b;
+}
+
+.student-application-cancel:hover:not(:disabled) {
+  background: #f2f6f3;
+}
+
+.student-application-submit {
+  min-width: 175px;
+  background: var(--application-green);
+  color: #ffffff;
+}
+
+.student-application-submit:hover:not(:disabled) {
+  background: var(--application-green-dark);
+  transform: translateY(-1px);
+}
+
+.student-application-submit ion-icon {
+  font-size: 17px;
+}
+
+.student-application-actions button:disabled,
+.student-application-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.student-application-actions ion-spinner {
+  width: 17px;
+  height: 17px;
+  --color: #ffffff;
+}
+
+/* =========================================================
+   EXTERNAL APPLICATION
+========================================================= */
+
+.student-application-external .student-application-section {
+  border-bottom: 0;
+}
+
+.student-application-external .student-application-section ul {
+  margin: 14px 0;
+  padding-left: 22px;
+  color: var(--application-muted);
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+.student-application-external .student-application-submit {
+  width: 100%;
+  margin-top: 15px;
+}
+
+/* =========================================================
+   LOADING
+========================================================= */
+
+.student-application-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 13px;
+  min-height: 300px;
+  padding: 35px 20px;
+  border: 1px solid var(--application-border);
+  border-radius: 17px;
+  background: #ffffff;
+  color: var(--application-muted);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.student-application-loading ion-spinner {
+  width: 35px;
+  height: 35px;
+  --color: var(--application-green);
+}
+
+/* =========================================================
+   ERROR CARD
+========================================================= */
+
+.student-application-error {
+  padding: 35px;
+  text-align: center;
+}
+
+.student-application-error h1 {
+  margin: 0 0 10px;
+  color: var(--application-text);
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.student-application-error p {
+  margin: 0 0 22px;
+  color: var(--application-muted);
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.student-application-error .student-application-submit {
+  width: 100%;
+  max-width: 260px;
+}
+
+/* =========================================================
+   IONIC TOAST
+========================================================= */
+
+.student-application-page ion-toast {
+  --border-radius: 11px;
+  font-size: 13px;
+}
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 768px) {
+  .student-application-layout {
+    max-width: 680px;
+    padding: 18px 17px 35px;
+  }
+
+  .student-application-heading {
+    padding: 25px 24px 22px;
+  }
+
+  .application-step-progress {
+    padding: 20px 24px;
+  }
+
+  .student-application-section {
+    padding: 23px 24px;
+  }
+
+  .student-application-location {
+    margin: 16px 24px;
+  }
+
+  .student-application-actions {
+    padding: 19px 24px;
+  }
+
+  .application-review-list > div {
+    grid-template-columns: 22px minmax(90px, 0.8fr) minmax(100px, 1.2fr) auto;
+  }
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 576px) {
+  .student-application-content {
+    --padding-bottom: 100px;
+  }
+
+  .student-application-layout {
+    padding: 12px 12px 28px;
+  }
+
+  .student-application-back {
+    min-height: 36px;
+    margin-bottom: 12px;
+    padding: 7px 10px;
+    font-size: 11px;
+  }
+
+  .student-application-card {
+    border-radius: 15px;
+  }
+
+  .student-application-heading {
+    padding: 21px 18px 19px;
+  }
+
+  .student-application-eyebrow {
+    margin-bottom: 9px;
+    font-size: 9px;
+  }
+
+  .student-application-heading h1 {
+    font-size: 20px;
+  }
+
+  .student-application-heading > p {
+    font-size: 11px;
+  }
+
+  .student-application-summary {
+    gap: 7px;
+    margin-top: 15px;
+  }
+
+  .student-application-summary span {
+    min-height: 30px;
+    padding: 6px 9px;
+    font-size: 10px;
+  }
+
+  .application-step-progress {
+    padding: 17px 18px;
+  }
+
+  .application-step-caption {
+    gap: 8px;
+  }
+
+  .application-step-caption strong,
+  .application-step-caption span {
+    font-size: 10px;
+  }
+
+  .application-step-track {
+    height: 7px;
+  }
+
+  .student-application-section {
+    padding: 20px 18px;
+  }
+
+  .student-application-section h2 {
+    font-size: 16px;
+  }
+
+  .student-application-section h3 {
+    font-size: 13px;
+  }
+
+  .student-application-section p {
+    font-size: 12px;
+    line-height: 1.7;
+  }
+
+  .application-download-section {
+    padding: 13px;
+  }
+
+  .application-requirement-step {
+    font-size: 10px;
+  }
+
+  .student-application-upload {
+    padding: 14px;
+  }
+
+  .student-application-requirement-name {
+    font-size: 12px;
+  }
+
+  .student-application-file-input {
+    min-height: 43px;
+    font-size: 11px;
+  }
+
+  .application-review-list > div {
+    grid-template-columns: 20px minmax(0, 1fr) auto;
+    gap: 8px;
+    padding: 11px;
+  }
+
+  .application-review-list > div > span {
+    grid-column: 2;
+    font-size: 11px;
+  }
+
+  .application-review-list > div > strong {
+    grid-column: 2;
+    font-size: 10px;
+  }
+
+  .application-review-list button {
+    grid-column: 3;
+    grid-row: 1 / span 2;
+    padding: 7px 9px;
+  }
+
+  .student-application-location {
+    margin: 13px 18px;
+    padding: 13px;
+  }
+
+  .student-application-location strong {
+    font-size: 11px;
+  }
+
+  .student-application-location small {
+    font-size: 10px;
+  }
+
+  .student-application-actions {
+    position: sticky;
+    bottom: 0;
+    z-index: 5;
+    gap: 9px;
+    padding: 13px 14px;
+    box-shadow: 0 -5px 16px rgba(20, 60, 35, 0.05);
+  }
+
+  .student-application-actions button,
+  .student-application-submit {
+    min-width: 0;
+    min-height: 43px;
+    padding: 10px 12px;
+    border-radius: 9px;
+    font-size: 11px;
+  }
+
+  .student-application-cancel {
+    flex: 0.8;
+  }
+
+  .student-application-actions .student-application-submit {
+    flex: 1.4;
+  }
+
+  .student-application-error {
+    padding: 25px 18px;
+  }
+
+  .student-application-error h1 {
+    font-size: 19px;
+  }
+
+  .student-application-error p {
+    font-size: 12px;
+  }
+}
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media (max-width: 360px) {
+  .student-application-layout {
+    padding-right: 9px;
+    padding-left: 9px;
+  }
+
+  .student-application-heading {
+    padding-right: 14px;
+    padding-left: 14px;
+  }
+
+  .student-application-heading h1 {
+    font-size: 18px;
+  }
+
+  .student-application-summary span {
+    font-size: 9px;
+  }
+
+  .student-application-section {
+    padding-right: 14px;
+    padding-left: 14px;
+  }
+
+  .student-application-location {
+    margin-right: 14px;
+    margin-left: 14px;
+  }
+
+  .student-application-actions {
+    padding-right: 10px;
+    padding-left: 10px;
+  }
+
+  .student-application-actions button,
+  .student-application-submit {
+    font-size: 10px;
+  }
+}
+
+/* =========================================================
+   LARGE DESKTOP
+========================================================= */
+
+@media (min-width: 1200px) {
+  .student-application-layout {
+    max-width: 960px;
+    padding-top: 28px;
+  }
+
+  .student-application-heading {
+    padding: 34px 40px 28px;
+  }
+
+  .application-step-progress {
+    padding-right: 40px;
+    padding-left: 40px;
+  }
+
+  .student-application-section {
+    padding-right: 40px;
+    padding-left: 40px;
+  }
+
+  .student-application-location {
+    margin-right: 40px;
+    margin-left: 40px;
+  }
+
+  .student-application-actions {
+    padding-right: 40px;
+    padding-left: 40px;
+  }
+}
+
+/* =========================================================
+   ACCESSIBILITY
+========================================================= */
+
+.student-application-page button:focus-visible,
+.student-application-page a:focus-visible,
+.student-application-page input:focus-visible {
+  outline: 3px solid rgba(8, 124, 60, 0.3);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .student-application-page *,
+  .student-application-page *::before,
+  .student-application-page *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}

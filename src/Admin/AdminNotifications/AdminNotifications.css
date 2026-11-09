@@ -1,0 +1,1043 @@
+/* ==========================================
+   GRANTACCESS - ADMIN NOTIFICATIONS
+   Matches AdminDashboard.css
+========================================== */
+
+.admin-page {
+  --ion-font-family: Arial, Helvetica, sans-serif;
+  color: var(--ga-charcoal);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.admin-page *,
+.admin-content * {
+  box-sizing: border-box;
+}
+
+.admin-layout {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+  background: var(--ga-blush-white);
+}
+
+/* SIDEBAR — SAME AS DASHBOARD */
+
+.admin-sidebar {
+  display: flex;
+  flex: 0 0 242px;
+  flex-direction: column;
+  width: 242px;
+  height: 100%;
+  min-height: 100%;
+  padding: 24px 13px 18px;
+  box-sizing: border-box;
+  background: #ffffff;
+  border-right: 1px solid var(--ga-rose);
+}
+
+.admin-brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 0 7px 25px;
+  border-bottom: 1px solid var(--ga-rose);
+}
+
+.admin-brand-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 42px;
+  height: 42px;
+  color: var(--ga-charcoal);
+  background: var(--ga-blush-white);
+  border-radius: 12px;
+  font-size: 22px;
+}
+
+.admin-brand h2 {
+  margin: 0;
+  color: var(--ga-charcoal);
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.admin-brand p {
+  margin: 5px 0 0;
+  color: var(--ga-charcoal);
+  font-size: 11px;
+}
+
+.admin-menu-label {
+  margin: 26px 8px 12px;
+  color: var(--ga-charcoal);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.4px;
+}
+
+.admin-navigation {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.admin-nav-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 43px;
+  padding: 11px 12px;
+  color: var(--ga-charcoal);
+  background: transparent;
+  border: none;
+  border-radius: 9px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.admin-nav-item ion-icon {
+  flex-shrink: 0;
+  font-size: 17px;
+}
+
+.admin-nav-item:hover,
+.admin-nav-item.active {
+  color: var(--ga-charcoal);
+  background: var(--ga-blush-white);
+}
+
+.admin-nav-item.active {
+  font-weight: 800;
+}
+
+.admin-nav-badge {
+  min-width: 19px;
+  margin-left: auto;
+  padding: 3px 5px;
+  color: #ffffff;
+  background: var(--ga-burgundy);
+  border-radius: 20px;
+  font-size: 9px;
+  font-weight: 800;
+  text-align: center;
+}
+
+.admin-logout {
+  margin-top: auto;
+  color: var(--ga-charcoal);
+}
+
+.admin-logout:hover {
+  color: var(--ga-charcoal);
+  background: var(--ga-blush-white);
+}
+
+/* MAIN CONTENT — SAME AS DASHBOARD */
+
+.admin-main {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  background: var(--ga-blush-white);
+}
+
+.admin-content {
+  --background: var(--ga-blush-white);
+  color: var(--ga-charcoal);
+}
+
+.admin-dashboard-container {
+  width: 100%;
+  max-width: 1700px;
+  margin: 0 auto;
+  padding: 25px 30px 40px;
+  box-sizing: border-box;
+}
+
+.admin-breadcrumb {
+  margin-bottom: 9px;
+  color: var(--ga-charcoal);
+  font-size: 11px;
+}
+
+/* PAGE HEADER */
+
+.admin-page-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 29px;
+}
+
+.admin-page-heading h1 {
+  margin: 0;
+  color: var(--ga-charcoal);
+  font-size: 29px;
+  font-weight: 800;
+  letter-spacing: -0.7px;
+  overflow-wrap: anywhere;
+}
+
+.admin-page-heading p {
+  margin: 8px 0 0;
+  color: var(--ga-charcoal);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.admin-notification-button {
+  --color: var(--ga-burgundy);
+  --background: var(--ga-blush-white);
+  --border-radius: 11px;
+  width: 43px;
+  height: 43px;
+  flex-shrink: 0;
+  margin: 0;
+  border: 1px solid var(--ga-rose);
+  border-radius: 11px;
+}
+
+.admin-notification-button:hover {
+  --background: var(--ga-blush-white);
+}
+
+/* SECTION HEADINGS */
+
+.admin-section {
+  margin-bottom: 29px;
+}
+
+.admin-section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 17px;
+}
+
+.admin-section-heading h2 {
+  margin: 0;
+  color: var(--ga-charcoal);
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.admin-section-heading p {
+  margin: 6px 0 0;
+  color: var(--ga-charcoal);
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+/* RESET FILTERS */
+
+.admin-reset-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  gap: 7px;
+  min-height: 36px;
+  padding: 9px 12px;
+  color: var(--ga-charcoal);
+  background: #ffffff;
+  border: 1px solid var(--ga-rose);
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.admin-reset-button ion-icon {
+  font-size: 15px;
+}
+
+.admin-reset-button:hover {
+  background: var(--ga-blush-white);
+  border-color: var(--ga-rose);
+}
+
+/* NOTIFICATION SUMMARY CARDS */
+
+.admin-notification-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.admin-notification-stat-card {
+  min-width: 0;
+  padding: 18px 17px;
+  background: #ffffff;
+  border: 1px solid var(--ga-rose);
+  border-radius: 13px;
+  box-shadow: 0 3px 10px rgb(25 60 36 / 3%);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.admin-notification-stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 7px 17px rgb(25 60 36 / 7%);
+}
+
+.admin-notification-stat-card .admin-stat-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 39px;
+  height: 39px;
+  margin-bottom: 15px;
+  border-radius: 11px;
+  font-size: 21px;
+}
+
+.admin-notification-stat-card.total .admin-stat-icon {
+  color: var(--ga-charcoal);
+  background: var(--ga-blush-white);
+}
+
+.admin-notification-stat-card.unread .admin-stat-icon {
+  color: var(--ga-charcoal);
+  background: var(--ga-rose);
+}
+
+.admin-notification-stat-card.read .admin-stat-icon {
+  color: var(--ga-charcoal);
+  background: var(--ga-rose);
+}
+
+.admin-notification-stat-card .admin-stat-title {
+  margin: 0;
+  color: var(--ga-charcoal);
+  font-size: 11px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.admin-notification-stat-card .admin-stat-value {
+  display: flex;
+  align-items: center;
+  min-height: 39px;
+  margin-top: 6px;
+  color: var(--ga-charcoal);
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.7px;
+  overflow-wrap: anywhere;
+}
+
+.admin-notification-stat-card .admin-stat-value ion-spinner {
+  width: 22px;
+  height: 22px;
+  color: var(--ga-charcoal);
+}
+
+.admin-notification-stat-card .admin-stat-note {
+  margin: 5px 0 0;
+  color: var(--ga-charcoal);
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+/* NOTIFICATION PANEL */
+
+.admin-notification-panel {
+  min-width: 0;
+  overflow: hidden;
+  background: #ffffff;
+  border: 1px solid var(--ga-rose);
+  border-radius: 14px;
+  box-shadow: 0 3px 10px rgb(25 60 36 / 3%);
+}
+
+.admin-notification-panel-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 21px 19px;
+  border-bottom: 1px solid var(--ga-rose);
+}
+
+.admin-notification-panel-heading h2 {
+  margin: 0;
+  color: var(--ga-charcoal);
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.admin-notification-panel-heading p {
+  margin: 6px 0 0;
+  color: var(--ga-charcoal);
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+/* MARK ALL AS READ */
+
+.admin-mark-all-button {
+  --background: var(--ga-crimson);
+  --background-hover: var(--ga-burgundy);
+  --background-activated: var(--ga-burgundy);
+  --color: #ffffff;
+  --border-radius: 8px;
+  --box-shadow: none;
+  flex-shrink: 0;
+  min-height: 38px;
+  margin: 0;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: none;
+}
+
+.admin-mark-all-button ion-icon {
+  font-size: 16px;
+}
+
+.admin-mark-all-button ion-spinner {
+  width: 17px;
+  height: 17px;
+  color: #ffffff;
+}
+
+.admin-mark-all-button:disabled {
+  opacity: 0.55;
+}
+
+/* SEARCH AND FILTERS */
+
+.admin-notification-filters {
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) 175px 215px;
+  gap: 11px;
+  padding: 18px 19px;
+  background: #ffffff;
+  border-bottom: 1px solid var(--ga-rose);
+}
+
+.admin-notification-search {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+  min-height: 40px;
+  padding: 0 12px;
+  background: #ffffff;
+  border: 1px solid var(--ga-rose);
+  border-radius: 8px;
+  color: var(--ga-charcoal);
+}
+
+.admin-notification-search > ion-icon {
+  flex-shrink: 0;
+  font-size: 18px;
+}
+
+.admin-notification-search input {
+  width: 100%;
+  min-width: 0;
+  padding: 0;
+  color: var(--ga-charcoal);
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: inherit;
+  font-size: 12px;
+}
+
+.admin-notification-search input::placeholder {
+  color: var(--ga-charcoal);
+}
+
+.admin-notification-search:focus-within {
+  border-color: var(--ga-crimson);
+}
+
+.admin-notification-select {
+  width: 100%;
+  min-width: 0;
+  min-height: 40px;
+  padding: 0 10px;
+  color: var(--ga-charcoal);
+  background: #ffffff;
+  border: 1px solid var(--ga-rose);
+  border-radius: 8px;
+  outline: none;
+  font-family: inherit;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.admin-notification-select:focus {
+  border-color: var(--ga-crimson);
+}
+
+/* RESULTS SUMMARY */
+
+.admin-notification-list-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 47px;
+  padding: 12px 19px;
+  color: var(--ga-charcoal);
+  border-bottom: 1px solid var(--ga-rose);
+  font-size: 11px;
+}
+
+.admin-notification-list-summary strong {
+  color: var(--ga-charcoal);
+}
+
+.admin-live-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--ga-charcoal);
+  white-space: nowrap;
+}
+
+.admin-live-status > span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--ga-burgundy);
+}
+
+/* NOTIFICATION ITEMS */
+
+.admin-notification-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-notification-item {
+  display: grid;
+  grid-template-columns: 43px minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 15px;
+  min-width: 0;
+  padding: 21px 19px;
+  background: #ffffff;
+  border-bottom: 1px solid var(--ga-rose);
+  transition: background 0.2s;
+}
+
+.admin-notification-item:last-child {
+  border-bottom: none;
+}
+
+.admin-notification-item:hover {
+  background: #ffffff;
+}
+
+.admin-notification-item.unread {
+  background: #ffffff;
+}
+
+.admin-notification-type-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 43px;
+  height: 43px;
+  flex-shrink: 0;
+  border-radius: 11px;
+  font-size: 21px;
+}
+
+.admin-notification-type-icon.student-type {
+  color: var(--ga-charcoal);
+  background: var(--ga-rose);
+}
+
+.admin-notification-type-icon.application-type {
+  color: var(--ga-charcoal);
+  background: var(--ga-crimson);
+}
+
+.admin-notification-type-icon.scholarship-type {
+  color: var(--ga-charcoal);
+  background: var(--ga-rose);
+}
+
+.admin-notification-type-icon.system-type {
+  color: var(--ga-charcoal);
+  background: var(--ga-rose);
+}
+
+.admin-notification-details {
+  min-width: 0;
+}
+
+.admin-notification-title-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+
+.admin-notification-title-row h3 {
+  margin: 1px 0 0;
+  color: var(--ga-charcoal);
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.admin-unread-pill {
+  padding: 3px 7px;
+  color: var(--ga-charcoal);
+  background: var(--ga-blush-white);
+  border-radius: 20px;
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.admin-notification-message {
+  margin: 7px 0 11px;
+  color: var(--ga-charcoal);
+  font-size: 12px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.admin-notification-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 9px 13px;
+}
+
+.admin-notification-type-label,
+.admin-notification-date {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+.admin-notification-type-label {
+  padding: 4px 7px;
+  border-radius: 5px;
+  font-weight: 700;
+}
+
+.admin-notification-type-label ion-icon,
+.admin-notification-date ion-icon {
+  flex-shrink: 0;
+  font-size: 13px;
+}
+
+.admin-notification-type-label.student-type {
+  color: var(--ga-charcoal);
+  background: var(--ga-rose);
+}
+
+.admin-notification-type-label.application-type {
+  color: var(--ga-charcoal);
+  background: var(--ga-crimson);
+}
+
+.admin-notification-type-label.scholarship-type {
+  color: var(--ga-charcoal);
+  background: var(--ga-rose);
+}
+
+.admin-notification-type-label.system-type {
+  color: var(--ga-charcoal);
+  background: var(--ga-rose);
+}
+
+.admin-notification-date {
+  color: var(--ga-charcoal);
+}
+
+/* ITEM ACTIONS */
+
+.admin-notification-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-width: 100px;
+}
+
+.admin-mark-read-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 10px;
+  color: var(--ga-charcoal);
+  background: #ffffff;
+  border: 1px solid var(--ga-rose);
+  border-radius: 7px;
+  font-family: inherit;
+  font-size: 10px;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.admin-mark-read-button ion-icon {
+  font-size: 15px;
+}
+
+.admin-mark-read-button:hover {
+  background: var(--ga-blush-white);
+}
+
+.admin-read-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--ga-charcoal);
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+.admin-read-status ion-icon {
+  color: var(--ga-charcoal);
+  font-size: 15px;
+}
+
+/* LOADING AND EMPTY STATES */
+
+.admin-notification-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 210px;
+  color: var(--ga-charcoal);
+  font-size: 12px;
+}
+
+.admin-notification-loading ion-spinner {
+  color: var(--ga-charcoal);
+}
+
+.admin-notification-loading p {
+  margin: 0;
+}
+
+.admin-notification-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 260px;
+  padding: 35px 20px;
+  text-align: center;
+}
+
+.admin-notification-empty-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 57px;
+  height: 57px;
+  margin-bottom: 15px;
+  color: var(--ga-charcoal);
+  background: var(--ga-blush-white);
+  border-radius: 50%;
+  font-size: 27px;
+}
+
+.admin-notification-empty h3 {
+  margin: 0;
+  color: var(--ga-charcoal);
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.admin-notification-empty p {
+  max-width: 360px;
+  margin: 8px 0 0;
+  color: var(--ga-charcoal);
+  font-size: 12px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+
+/* FOOTER — SAME AS DASHBOARD */
+
+.admin-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px;
+  padding: 22px 2px;
+  color: var(--ga-charcoal);
+  font-size: 11px;
+}
+
+.admin-notification-footer span {
+  overflow-wrap: anywhere;
+}
+
+/* TABLET */
+
+@media (max-width: 1100px) {
+  .admin-sidebar {
+    flex-basis: 215px;
+    width: 215px;
+  }
+
+  .admin-dashboard-container {
+    padding: 23px 22px 34px;
+  }
+
+  .admin-notification-stats-grid {
+    gap: 11px;
+  }
+
+  .admin-notification-stat-card {
+    padding: 16px 13px;
+  }
+
+  .admin-notification-filters {
+    grid-template-columns: minmax(140px, 1fr) 145px 180px;
+    padding-right: 17px;
+    padding-left: 17px;
+  }
+
+  .admin-notification-item {
+    gap: 11px;
+    padding-right: 17px;
+    padding-left: 17px;
+  }
+}
+
+/* SMALLER SCREENS */
+
+@media (max-width: 850px) {
+  .admin-notification-filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .admin-notification-search {
+    grid-column: 1 / -1;
+  }
+
+  .admin-notification-item {
+    grid-template-columns: 40px minmax(0, 1fr);
+  }
+
+  .admin-notification-type-icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .admin-notification-actions {
+    grid-column: 2;
+    justify-content: flex-start;
+    min-width: 0;
+    margin-top: 0;
+  }
+}
+
+/* MOBILE — SAME SIDEBAR BEHAVIOR AS DASHBOARD */
+
+@media (max-width: 700px) {
+  .admin-layout {
+    display: block;
+    height: 100%;
+  }
+
+  .admin-sidebar {
+    display: none;
+  }
+
+  .admin-main {
+    width: 100%;
+    height: 100%;
+  }
+
+  .admin-dashboard-container {
+    padding: 19px 14px 30px;
+  }
+
+  .admin-page-heading {
+    margin-bottom: 25px;
+  }
+
+  .admin-page-heading h1 {
+    font-size: 25px;
+  }
+
+  .admin-section-heading h2 {
+    font-size: 16px;
+  }
+
+  .admin-notification-stats-grid {
+    grid-template-columns: 1fr;
+    gap: 11px;
+  }
+
+  .admin-notification-stat-card {
+    display: grid;
+    grid-template-columns: 40px minmax(0, 1fr);
+    column-gap: 13px;
+    align-items: center;
+    padding: 14px 12px;
+  }
+
+  .admin-notification-stat-card .admin-stat-icon {
+    grid-column: 1;
+    grid-row: 1 / span 3;
+    width: 35px;
+    height: 35px;
+    margin: 0;
+    font-size: 19px;
+  }
+
+  .admin-notification-stat-card .admin-stat-title {
+    grid-column: 2;
+    grid-row: 1;
+    font-size: 10px;
+  }
+
+  .admin-notification-stat-card .admin-stat-value {
+    grid-column: 2;
+    grid-row: 2;
+    min-height: 30px;
+    margin-top: 2px;
+    font-size: 24px;
+  }
+
+  .admin-notification-stat-card .admin-stat-note {
+    grid-column: 2;
+    grid-row: 3;
+    font-size: 9px;
+  }
+
+  .admin-notification-panel-heading {
+    align-items: stretch;
+    flex-direction: column;
+    padding: 17px 12px;
+  }
+
+  .admin-notification-panel-heading h2 {
+    font-size: 16px;
+  }
+
+  .admin-mark-all-button {
+    width: 100%;
+    margin-top: 3px;
+  }
+
+  .admin-notification-filters {
+    grid-template-columns: 1fr;
+    padding: 14px 12px;
+  }
+
+  .admin-notification-search {
+    grid-column: auto;
+  }
+
+  .admin-notification-select {
+    min-height: 42px;
+  }
+
+  .admin-notification-list-summary {
+    align-items: flex-start;
+    padding: 12px;
+    font-size: 10px;
+  }
+
+  .admin-notification-item {
+    grid-template-columns: 38px minmax(0, 1fr);
+    gap: 11px;
+    padding: 17px 12px;
+  }
+
+  .admin-notification-type-icon {
+    width: 38px;
+    height: 38px;
+    font-size: 19px;
+  }
+
+  .admin-notification-title-row h3 {
+    font-size: 12px;
+  }
+
+  .admin-notification-message {
+    font-size: 11px;
+  }
+
+  .admin-notification-meta {
+    gap: 7px;
+  }
+
+  .admin-notification-type-label,
+  .admin-notification-date {
+    font-size: 9px;
+  }
+
+  .admin-mark-read-button {
+    padding: 8px 10px;
+  }
+
+  .admin-footer {
+    align-items: flex-start;
+    flex-direction: column;
+    padding-bottom: 20px;
+  }
+}
+
+/* VERY SMALL MOBILE */
+
+@media (max-width: 360px) {
+  .admin-dashboard-container {
+    padding-right: 10px;
+    padding-left: 10px;
+  }
+
+  .admin-page-heading h1 {
+    font-size: 22px;
+  }
+
+  .admin-notification-stat-card {
+    padding: 12px 9px;
+  }
+
+  .admin-notification-stat-card .admin-stat-value {
+    font-size: 21px;
+  }
+
+  .admin-notification-panel-heading {
+    padding-right: 10px;
+    padding-left: 10px;
+  }
+
+  .admin-notification-item {
+    padding-right: 10px;
+    padding-left: 10px;
+  }
+
+  .admin-notification-list-summary {
+    flex-direction: column;
+    gap: 7px;
+  }
+}

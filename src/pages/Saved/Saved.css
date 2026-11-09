@@ -1,0 +1,881 @@
+/* =========================================================
+   GRANTACCESS - SAVED PAGE
+   Green and White Theme
+   Compact Scholarship Cards
+   Responsive: Desktop | Laptop | Tablet | Mobile
+========================================================= */
+
+:root {
+  --saved-green: #087b43;
+  --saved-green-dark: #056536;
+  --saved-green-light: #e9f7ef;
+  --saved-green-soft: #f2faf5;
+  --saved-text: #202b25;
+  --saved-muted: #758179;
+  --saved-border: #e5eee8;
+  --saved-white: #ffffff;
+  --saved-page: #f6faf7;
+  --saved-danger: #dc4c4c;
+  --saved-shadow: 0 4px 16px rgba(18, 74, 43, 0.06);
+}
+
+/* PAGE */
+
+.saved-page {
+  background: var(--saved-page);
+  color: var(--saved-text);
+}
+
+.saved-content {
+  --background: var(--saved-page);
+  --padding-bottom: 20px;
+}
+
+.saved-content::part(scroll) {
+  padding-bottom: 100px;
+}
+
+/* MAIN CONTAINER */
+
+.saved-container {
+  width: 100%;
+  max-width: 1050px;
+  margin: 0 auto;
+  padding: 26px 30px 110px;
+  box-sizing: border-box;
+}
+
+/* HEADER */
+
+.saved-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 25px;
+}
+
+.saved-heading h1 {
+  margin: 0;
+  color: var(--saved-text);
+  font-size: 26px;
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.saved-heading p {
+  margin: 6px 0 0;
+  color: var(--saved-muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* SAVED COUNT */
+
+.saved-count {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-width: 58px;
+  height: 43px;
+  padding: 0 12px;
+  border: 1px solid #d9eee1;
+  border-radius: 12px;
+  background: var(--saved-green-light);
+  color: var(--saved-green);
+}
+
+.saved-count ion-icon {
+  font-size: 18px;
+}
+
+.saved-count span {
+  font-size: 16px;
+  font-weight: 800;
+}
+
+/* SECTION */
+
+.saved-section {
+  margin-bottom: 28px;
+}
+
+.saved-section-heading {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  margin-bottom: 13px;
+}
+
+.saved-section-icon {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
+  background: var(--saved-green-light);
+  color: var(--saved-green);
+}
+
+.saved-section-icon ion-icon {
+  font-size: 19px;
+}
+
+.saved-section-heading h2 {
+  margin: 0;
+  color: var(--saved-text);
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.saved-section-heading p {
+  margin: 3px 0 0;
+  color: var(--saved-muted);
+  font-size: 11px;
+}
+
+/* SCHOLARSHIP LIST */
+
+.saved-list {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+
+/* SCHOLARSHIP CARD - COMPACT DESIGN */
+
+.saved-scholarship-card {
+  width: 100%;
+  min-width: 0;
+  padding: 12px 14px;
+  border: 1px solid #edf1ee;
+  border-radius: 15px;
+  background: var(--saved-white);
+  box-shadow: 0 3px 12px rgba(18, 74, 43, 0.045);
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+.saved-scholarship-card:hover {
+  transform: translateY(-1px);
+  border-color: #cce5d5;
+  box-shadow: 0 6px 17px rgba(18, 74, 43, 0.075);
+}
+
+.saved-scholarship-main {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-width: 0;
+}
+
+/* SCHOLARSHIP LOGO */
+
+.saved-scholarship-logo {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  overflow: hidden;
+  border: 1px solid #edf1ee;
+  border-radius: 50%;
+  background: var(--saved-green-soft);
+  color: var(--saved-green);
+}
+
+.saved-scholarship-logo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 3px;
+  object-fit: contain;
+  border-radius: 50%;
+}
+
+.saved-scholarship-logo ion-icon {
+  font-size: 23px;
+}
+
+/* SCHOLARSHIP INFORMATION */
+
+.saved-scholarship-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.saved-scholarship-info h3 {
+  margin: 0 0 4px;
+  overflow: hidden;
+  color: #26332b;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.saved-scholarship-amount {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin: 0 0 3px;
+  color: var(--saved-green);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.saved-amount-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  background: var(--saved-green-light);
+  color: var(--saved-green);
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.saved-scholarship-deadline {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin: 0;
+  color: var(--saved-muted);
+  font-size: 10px;
+  line-height: 1.4;
+}
+
+.saved-calendar-symbol {
+  color: #78877e;
+  font-size: 11px;
+}
+
+.saved-scholarship-provider {
+  margin: 4px 0 0;
+  overflow: hidden;
+  color: var(--saved-muted);
+  font-size: 10px;
+  line-height: 1.4;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* BOOKMARK BUTTON */
+
+.saved-bookmark-button {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 35px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--saved-green);
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    color 0.2s ease;
+}
+
+.saved-bookmark-button ion-icon {
+  font-size: 21px;
+}
+
+.saved-bookmark-button:hover:not(:disabled) {
+  transform: scale(1.12);
+  color: var(--saved-green-dark);
+}
+
+.saved-bookmark-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.saved-bookmark-button ion-spinner {
+  width: 18px;
+  height: 18px;
+  color: var(--saved-green);
+}
+
+/* CARD FOOTER */
+
+.saved-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 10px;
+  padding-top: 9px;
+  border-top: 1px solid #f0f3f1;
+}
+
+.saved-view-button,
+.saved-open-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-height: 30px;
+  padding: 5px 9px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  font-family: inherit;
+  font-size: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.saved-view-button {
+  color: var(--saved-muted);
+}
+
+.saved-view-button:hover {
+  background: #f3f8f5;
+  color: var(--saved-green);
+}
+
+.saved-open-button {
+  border-color: #dceee2;
+  background: var(--saved-green-light);
+  color: var(--saved-green);
+}
+
+.saved-open-button:hover {
+  border-color: var(--saved-green);
+  background: #dff2e6;
+}
+
+.saved-view-button ion-icon,
+.saved-open-button ion-icon {
+  font-size: 13px;
+}
+
+/* EXPANDED DETAILS */
+
+.saved-expanded-details {
+  margin-top: 10px;
+  padding: 12px;
+  border: 1px solid #e7f0ea;
+  border-radius: 10px;
+  background: #f8fbf9;
+}
+
+.saved-expanded-details p {
+  margin: 0 0 8px;
+  color: #65736a;
+  font-size: 11px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.saved-expanded-details p:last-child {
+  margin-bottom: 0;
+}
+
+.saved-expanded-details strong {
+  color: var(--saved-text);
+  font-weight: 750;
+}
+
+.saved-detail-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  padding: 7px 10px;
+  border: 1px solid #dceee2;
+  border-radius: 8px;
+  background: var(--saved-green-light);
+  color: var(--saved-green);
+  font-family: inherit;
+  font-size: 10px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.saved-detail-link:hover:not(:disabled) {
+  background: #dff2e6;
+}
+
+.saved-detail-link:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.saved-detail-link ion-icon {
+  font-size: 13px;
+}
+
+/* POSTS AND ORGANIZATIONS */
+
+.saved-simple-card {
+  width: 100%;
+  min-width: 0;
+  padding: 13px;
+  border: 1px solid var(--saved-border);
+  border-radius: 14px;
+  background: var(--saved-white);
+  box-shadow: var(--saved-shadow);
+}
+
+.saved-simple-main {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-width: 0;
+  margin-bottom: 9px;
+}
+
+.saved-simple-icon {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  overflow: hidden;
+  border: 1px solid var(--saved-border);
+  border-radius: 50%;
+  background: var(--saved-green-soft);
+  color: var(--saved-green);
+}
+
+.saved-simple-icon img {
+  width: 100%;
+  height: 100%;
+  padding: 3px;
+  object-fit: contain;
+}
+
+.saved-simple-icon ion-icon {
+  font-size: 22px;
+}
+
+.saved-simple-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.saved-simple-info h3 {
+  margin: 0 0 4px;
+  overflow: hidden;
+  color: var(--saved-text);
+  font-size: 13px;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.saved-simple-info p {
+  margin: 0;
+  overflow: hidden;
+  color: var(--saved-muted);
+  font-size: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.saved-simple-card > .saved-view-button {
+  margin-left: 55px;
+}
+
+.saved-post-image {
+  display: block;
+  width: 100%;
+  max-height: 220px;
+  margin: 9px 0;
+  border: 1px solid var(--saved-border);
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+/* EMPTY STATE */
+
+.saved-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 280px;
+  padding: 30px 20px;
+  border: 1px dashed #d6e8dc;
+  border-radius: 16px;
+  background: var(--saved-white);
+  text-align: center;
+}
+
+.saved-empty-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  margin-bottom: 14px;
+  border-radius: 50%;
+  background: var(--saved-green-light);
+  color: var(--saved-green);
+}
+
+.saved-empty-icon ion-icon {
+  font-size: 27px;
+}
+
+.saved-empty h2 {
+  margin: 0 0 8px;
+  color: var(--saved-text);
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.saved-empty p {
+  max-width: 370px;
+  margin: 0 0 18px;
+  color: var(--saved-muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+/* PRIMARY BUTTON */
+
+.saved-primary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 0 17px;
+  border: 1px solid var(--saved-green);
+  border-radius: 9px;
+  background: var(--saved-green);
+  color: var(--saved-white);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 750;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.saved-primary-button:hover {
+  background: var(--saved-green-dark);
+}
+
+/* LOADING */
+
+.saved-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 220px;
+  gap: 12px;
+  color: var(--saved-muted);
+}
+
+.saved-message ion-spinner {
+  width: 29px;
+  height: 29px;
+  color: var(--saved-green);
+}
+
+.saved-message p {
+  margin: 0;
+  font-size: 12px;
+}
+
+/* ERROR */
+
+.saved-error {
+  margin-bottom: 17px;
+  padding: 12px 15px;
+  border: 1px solid #f0cccc;
+  border-radius: 10px;
+  background: #fff6f6;
+  color: #a93434;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+/* ACCESSIBILITY */
+
+.saved-page button:focus-visible {
+  outline: 3px solid rgba(8, 123, 67, 0.2);
+  outline-offset: 3px;
+}
+
+/* TABLET */
+
+@media (max-width: 900px) {
+  .saved-container {
+    padding: 23px 22px 105px;
+  }
+}
+
+/* MOBILE */
+
+@media (max-width: 600px) {
+  .saved-container {
+    width: 100%;
+    max-width: 100%;
+    padding: 17px 13px 100px;
+  }
+
+  .saved-heading {
+    gap: 10px;
+    margin-bottom: 19px;
+  }
+
+  .saved-heading h1 {
+    font-size: 21px;
+  }
+
+  .saved-heading p {
+    max-width: 250px;
+    margin-top: 5px;
+    font-size: 10px;
+    line-height: 1.5;
+  }
+
+  .saved-count {
+    min-width: 48px;
+    height: 37px;
+    gap: 5px;
+    padding: 0 9px;
+    border-radius: 10px;
+  }
+
+  .saved-count ion-icon {
+    font-size: 15px;
+  }
+
+  .saved-count span {
+    font-size: 14px;
+  }
+
+  .saved-section {
+    margin-bottom: 22px;
+  }
+
+  .saved-section-heading {
+    gap: 9px;
+    margin-bottom: 10px;
+  }
+
+  .saved-section-icon {
+    width: 33px;
+    height: 33px;
+    border-radius: 9px;
+  }
+
+  .saved-section-icon ion-icon {
+    font-size: 17px;
+  }
+
+  .saved-section-heading h2 {
+    font-size: 14px;
+  }
+
+  .saved-section-heading p {
+    font-size: 10px;
+  }
+
+  .saved-list {
+    gap: 9px;
+  }
+
+  .saved-scholarship-card {
+    padding: 10px 11px;
+    border-radius: 13px;
+  }
+
+  .saved-scholarship-main {
+    gap: 9px;
+  }
+
+  .saved-scholarship-logo {
+    width: 41px;
+    height: 41px;
+  }
+
+  .saved-scholarship-logo ion-icon {
+    font-size: 20px;
+  }
+
+  .saved-scholarship-info h3 {
+    font-size: 12px;
+  }
+
+  .saved-scholarship-amount {
+    font-size: 10px;
+  }
+
+  .saved-scholarship-deadline {
+    font-size: 9px;
+  }
+
+  .saved-scholarship-provider {
+    font-size: 9px;
+  }
+
+  .saved-bookmark-button {
+    width: 27px;
+    height: 32px;
+  }
+
+  .saved-bookmark-button ion-icon {
+    font-size: 19px;
+  }
+
+  .saved-card-footer {
+    margin-top: 8px;
+    padding-top: 7px;
+  }
+
+  .saved-view-button,
+  .saved-open-button {
+    min-height: 28px;
+    padding: 4px 7px;
+    font-size: 9px;
+  }
+
+  .saved-expanded-details {
+    padding: 10px;
+  }
+
+  .saved-expanded-details p {
+    font-size: 10px;
+  }
+
+  .saved-simple-card {
+    padding: 11px;
+    border-radius: 12px;
+  }
+
+  .saved-simple-icon {
+    width: 41px;
+    height: 41px;
+  }
+
+  .saved-simple-info h3 {
+    font-size: 12px;
+  }
+
+  .saved-simple-info p {
+    font-size: 9px;
+  }
+
+  .saved-simple-card > .saved-view-button {
+    margin-left: 49px;
+  }
+
+  .saved-empty {
+    min-height: 240px;
+    padding: 25px 16px;
+  }
+
+  .saved-empty-icon {
+    width: 53px;
+    height: 53px;
+  }
+
+  .saved-empty h2 {
+    font-size: 16px;
+  }
+
+  .saved-empty p {
+    font-size: 11px;
+  }
+
+  .saved-message {
+    min-height: 190px;
+  }
+
+  .saved-error {
+    padding: 10px 12px;
+    font-size: 10px;
+  }
+}
+
+/* SMALL MOBILE */
+
+@media (max-width: 360px) {
+  .saved-container {
+    padding-right: 10px;
+    padding-left: 10px;
+  }
+
+  .saved-heading h1 {
+    font-size: 19px;
+  }
+
+  .saved-heading p {
+    max-width: 205px;
+    font-size: 9px;
+  }
+
+  .saved-scholarship-card {
+    padding: 9px;
+  }
+
+  .saved-scholarship-logo {
+    width: 37px;
+    height: 37px;
+  }
+
+  .saved-scholarship-info h3 {
+    font-size: 11px;
+  }
+
+  .saved-card-footer {
+    gap: 5px;
+  }
+
+  .saved-view-button,
+  .saved-open-button {
+    font-size: 8px;
+  }
+}
+
+/* LARGE DESKTOP */
+
+@media (min-width: 1200px) {
+  .saved-container {
+    padding-top: 32px;
+  }
+
+  .saved-heading h1 {
+    font-size: 29px;
+  }
+
+  .saved-scholarship-card {
+    padding: 14px 16px;
+  }
+
+  .saved-scholarship-logo {
+    width: 50px;
+    height: 50px;
+  }
+}
+
+/* REDUCED MOTION */
+
+@media (prefers-reduced-motion: reduce) {
+  .saved-scholarship-card,
+  .saved-bookmark-button,
+  .saved-view-button,
+  .saved-open-button {
+    transition: none;
+  }
+}

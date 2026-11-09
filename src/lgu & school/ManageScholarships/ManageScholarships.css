@@ -1,0 +1,1474 @@
+
+/* =========================================================
+   GRANTACCESS - SCHOLARSHIP MANAGEMENT DASHBOARD
+   GREEN & WHITE PROFESSIONAL THEME
+   Responsive: Mobile | Tablet | Laptop | Desktop
+========================================================= */
+
+:root {
+  --ms-green: #159447;
+  --ms-green-dark: #087638;
+  --ms-green-deep: #075b2e;
+  --ms-green-light: #eaf8ef;
+  --ms-green-soft: #f3faf5;
+
+  --ms-white: #ffffff;
+  --ms-background: #f7faf7;
+
+  --ms-text: #202b23;
+  --ms-muted: #758078;
+  --ms-border: #e2eae3;
+
+  --ms-danger: #dc4545;
+  --ms-danger-light: #fff0f0;
+
+  --ms-radius: 13px;
+}
+
+/* =========================================================
+   GENERAL
+========================================================= */
+
+.ms-page {
+  --background: var(--ms-background);
+  background: var(--ms-background);
+  color: var(--ms-text);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.ms-page-modal {
+  height: 100%;
+  min-height: 0;
+}
+
+.ms-content {
+  --background: var(--ms-background);
+  background: var(--ms-background);
+}
+
+.ms-layout {
+  width: 100%;
+  min-height: 100%;
+  background: var(--ms-background);
+}
+
+.ms-main {
+  width: min(1440px, 94%);
+  margin: 0 auto;
+  padding: 30px 0 25px;
+  box-sizing: border-box;
+}
+
+/* =========================================================
+   TOP BAR
+========================================================= */
+
+.ms-topbar {
+  width: 100%;
+  min-height: 76px;
+  padding: 12px 4%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+
+  background: var(--ms-white);
+  border-bottom: 1px solid var(--ms-border);
+}
+
+.ms-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ms-brand-icon {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: var(--ms-white);
+  background: var(--ms-green);
+  border-radius: 12px;
+  font-size: 23px;
+  flex-shrink: 0;
+}
+
+.ms-brand strong {
+  display: block;
+  color: var(--ms-text);
+  font-size: 19px;
+  font-weight: 800;
+}
+
+.ms-brand small {
+  display: block;
+  margin-top: 3px;
+  color: var(--ms-muted);
+  font-size: 11px;
+}
+
+.ms-topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.ms-account {
+  max-width: 280px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  color: var(--ms-text);
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ms-account ion-icon {
+  color: var(--ms-green);
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.ms-logout-button {
+  min-height: 39px;
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  color: var(--ms-text);
+  background: var(--ms-white);
+  border: 1px solid var(--ms-border);
+  border-radius: 9px;
+
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.ms-logout-button:hover {
+  color: var(--ms-green-dark);
+  background: var(--ms-green-light);
+}
+
+.ms-logout-button ion-icon {
+  font-size: 17px;
+}
+
+/* =========================================================
+   WELCOME BANNER
+========================================================= */
+
+.ms-welcome {
+  position: relative;
+  min-height: 230px;
+  padding: 34px 40px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 25px;
+
+  overflow: hidden;
+
+  background: linear-gradient(
+    115deg,
+    var(--ms-green-deep) 0%,
+    var(--ms-green-dark) 55%,
+    var(--ms-green) 100%
+  );
+
+  border-radius: 18px;
+  color: var(--ms-white);
+}
+
+.ms-welcome > div:first-child {
+  position: relative;
+  z-index: 2;
+  max-width: 690px;
+}
+
+.ms-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+
+  color: #e1f6e8;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+}
+
+.ms-eyebrow ion-icon {
+  font-size: 15px;
+}
+
+.ms-welcome h1 {
+  margin: 13px 0 10px;
+  color: var(--ms-white);
+  font-size: clamp(25px, 3vw, 34px);
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.ms-welcome p {
+  max-width: 610px;
+  margin: 0;
+
+  color: #e4f3e8;
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+.ms-primary-button {
+  min-height: 43px;
+  margin-top: 20px;
+  padding: 0 18px;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+
+  color: var(--ms-green-dark);
+  background: var(--ms-white);
+  border: none;
+  border-radius: 9px;
+
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.ms-primary-button:hover {
+  background: var(--ms-green-light);
+  transform: translateY(-2px);
+}
+
+.ms-primary-button ion-icon {
+  font-size: 17px;
+}
+
+.ms-welcome-art {
+  position: relative;
+  z-index: 1;
+
+  width: 220px;
+  min-width: 180px;
+  min-height: 155px;
+  padding: 25px 18px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  text-align: center;
+  color: var(--ms-white);
+
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 18px;
+
+  backdrop-filter: blur(5px);
+}
+
+.ms-welcome-art ion-icon {
+  margin-bottom: 12px;
+  color: #ffffff;
+  font-size: 42px;
+}
+
+.ms-welcome-art strong {
+  color: #ffffff;
+  font-size: 13px;
+}
+
+.ms-welcome-art span {
+  margin-top: 7px;
+  color: #e4f3e8;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+/* =========================================================
+   PAGE HEADING
+========================================================= */
+
+.ms-heading-row {
+  margin: 34px 0 20px;
+
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 15px;
+}
+
+.ms-breadcrumb {
+  margin-bottom: 12px;
+
+  display: flex;
+  align-items: center;
+  gap: 9px;
+
+  color: var(--ms-muted);
+  font-size: 11px;
+}
+
+.ms-breadcrumb button {
+  padding: 0;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+
+  color: var(--ms-green-dark);
+  background: transparent;
+  border: none;
+
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.ms-breadcrumb button:hover {
+  color: var(--ms-green);
+}
+
+.ms-breadcrumb strong {
+  color: var(--ms-text);
+  font-weight: 700;
+}
+
+.ms-heading-row h2 {
+  margin: 0;
+  color: var(--ms-text);
+  font-size: 23px;
+  font-weight: 800;
+}
+
+.ms-heading-row p {
+  margin: 7px 0 0;
+  color: var(--ms-muted);
+  font-size: 12px;
+}
+
+.ms-live {
+  padding: 7px 11px;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+
+  color: var(--ms-green-dark);
+  background: var(--ms-green-light);
+  border-radius: 30px;
+
+  font-size: 10px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.ms-live span {
+  width: 7px;
+  height: 7px;
+  background: var(--ms-green);
+  border-radius: 50%;
+}
+
+/* =========================================================
+   SUMMARY CARDS
+========================================================= */
+
+.ms-summary-grid {
+  margin-bottom: 34px;
+
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.ms-summary-card {
+  min-height: 112px;
+  padding: 20px;
+
+  display: flex;
+  align-items: center;
+  gap: 15px;
+
+  background: var(--ms-white);
+  border: 1px solid var(--ms-border);
+  border-radius: var(--ms-radius);
+
+  transition: border-color 0.2s ease;
+}
+
+.ms-summary-card:hover {
+  border-color: #b8ddc3;
+}
+
+.ms-summary-icon {
+  width: 45px;
+  height: 45px;
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: var(--ms-green-dark);
+  background: var(--ms-green-light);
+  border-radius: 12px;
+  font-size: 22px;
+}
+
+.ms-summary-icon.green,
+.ms-summary-icon.blue,
+.ms-summary-icon.orange,
+.ms-summary-icon.red {
+  color: var(--ms-green-dark);
+  background: var(--ms-green-light);
+}
+
+.ms-summary-card small {
+  display: block;
+  margin-bottom: 7px;
+
+  color: var(--ms-muted);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.ms-summary-card strong {
+  display: block;
+  color: var(--ms-text);
+  font-size: 25px;
+  font-weight: 800;
+}
+
+.ms-summary-card ion-spinner {
+  width: 23px;
+  height: 23px;
+  color: var(--ms-green);
+}
+
+/* =========================================================
+   SCHOLARSHIP LIST SECTION
+========================================================= */
+
+.ms-list-section {
+  padding: 25px;
+
+  background: var(--ms-white);
+  border: 1px solid var(--ms-border);
+  border-radius: 15px;
+}
+
+.ms-list-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+}
+
+.ms-list-heading h2 {
+  margin: 0;
+  color: var(--ms-text);
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.ms-list-heading p {
+  margin: 6px 0 0;
+  color: var(--ms-muted);
+  font-size: 11px;
+}
+
+.ms-add-button {
+  min-height: 41px;
+  padding: 0 15px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+
+  color: var(--ms-white);
+  background: var(--ms-green);
+  border: none;
+  border-radius: 8px;
+
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s ease;
+}
+
+.ms-add-button:hover {
+  background: var(--ms-green-dark);
+}
+
+.ms-add-button ion-icon {
+  font-size: 17px;
+}
+
+/* =========================================================
+   SEARCH + FILTER
+========================================================= */
+
+.ms-toolbar {
+  margin: 22px 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+}
+
+.ms-search-box {
+  min-height: 43px;
+  width: min(440px, 100%);
+  padding: 0 12px;
+
+  display: flex;
+  align-items: center;
+  gap: 9px;
+
+  background: var(--ms-white);
+  border: 1px solid var(--ms-border);
+  border-radius: 8px;
+
+  transition: border-color 0.2s ease;
+}
+
+.ms-search-box:focus-within {
+  border-color: var(--ms-green);
+}
+
+.ms-search-box > ion-icon {
+  color: var(--ms-green);
+  font-size: 17px;
+}
+
+.ms-search-box ion-input {
+  --color: var(--ms-text);
+  --placeholder-color: var(--ms-muted);
+  --placeholder-opacity: 1;
+  font-size: 11px;
+}
+
+.ms-filter-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.ms-filter-group button {
+  min-height: 34px;
+  padding: 0 12px;
+
+  color: var(--ms-muted);
+  background: var(--ms-white);
+  border: 1px solid var(--ms-border);
+  border-radius: 7px;
+
+  font-size: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.ms-filter-group button:hover,
+.ms-filter-group button.active {
+  color: var(--ms-green-dark);
+  background: var(--ms-green-light);
+  border-color: #b9dfc4;
+}
+
+/* =========================================================
+   SCHOLARSHIP GRID + CARDS
+========================================================= */
+
+.ms-scholarship-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.ms-scholarship-card {
+  min-width: 0;
+  padding: 19px;
+
+  display: flex;
+  flex-direction: column;
+
+  background: var(--ms-white);
+  border: 1px solid var(--ms-border);
+  border-radius: 12px;
+
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.ms-scholarship-card:hover {
+  border-color: #acd8b8;
+  transform: translateY(-2px);
+}
+
+.ms-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.ms-card-icon {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: var(--ms-green-dark);
+  background: var(--ms-green-light);
+  border-radius: 10px;
+  font-size: 20px;
+}
+
+.ms-status {
+  padding: 6px 9px;
+
+  border-radius: 20px;
+  font-size: 9px;
+  font-weight: 800;
+  text-transform: capitalize;
+}
+
+.ms-status.published,
+.ms-status.approved {
+  color: #087638;
+  background: #e6f6eb;
+}
+
+.ms-status.pending {
+  color: #9a6500;
+  background: #fff5dc;
+}
+
+.ms-status.rejected {
+  color: #c13737;
+  background: #fff0f0;
+}
+
+.ms-scholarship-card h3 {
+  margin: 17px 0 8px;
+
+  color: var(--ms-text);
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1.45;
+
+  overflow-wrap: anywhere;
+}
+
+.ms-card-description {
+  min-height: 42px;
+  margin: 0 0 15px;
+
+  color: var(--ms-muted);
+  font-size: 11px;
+  line-height: 1.65;
+
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.ms-card-details {
+  padding: 13px 0;
+
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  border-top: 1px solid var(--ms-border);
+  border-bottom: 1px solid var(--ms-border);
+}
+
+.ms-card-details div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  color: var(--ms-muted);
+  font-size: 10px;
+}
+
+.ms-card-details ion-icon {
+  color: var(--ms-green);
+  font-size: 15px;
+  flex-shrink: 0;
+}
+
+.ms-card-details span {
+  overflow-wrap: anywhere;
+}
+
+.ms-card-actions {
+  margin-top: 14px;
+
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.ms-card-actions button {
+  min-height: 35px;
+  padding: 0 10px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+
+  border: 1px solid transparent;
+  border-radius: 7px;
+
+  font-size: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.ms-card-actions button ion-icon {
+  font-size: 14px;
+}
+
+.ms-view-button {
+  flex: 1;
+  color: var(--ms-green-dark);
+  background: var(--ms-green-light);
+}
+
+.ms-view-button:hover {
+  background: #d8f0df;
+}
+
+.ms-edit-button {
+  flex: 1;
+  color: var(--ms-text);
+  background: #f1f5f1;
+}
+
+.ms-edit-button:hover {
+  background: #e4ece5;
+}
+
+.ms-delete-button {
+  width: 35px;
+  color: var(--ms-danger);
+  background: var(--ms-danger-light);
+}
+
+.ms-delete-button:hover {
+  background: #ffe1e1;
+}
+
+/* =========================================================
+   LOADING + EMPTY STATES
+========================================================= */
+
+.ms-state {
+  min-height: 230px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  color: var(--ms-muted);
+  text-align: center;
+}
+
+.ms-state ion-spinner {
+  width: 32px;
+  height: 32px;
+  color: var(--ms-green);
+}
+
+.ms-state > ion-icon {
+  color: var(--ms-green);
+  font-size: 38px;
+}
+
+.ms-state p {
+  margin-top: 12px;
+  font-size: 12px;
+}
+
+.ms-empty {
+  min-height: 300px;
+  padding: 35px 20px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  text-align: center;
+}
+
+.ms-empty > span {
+  width: 65px;
+  height: 65px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: var(--ms-green);
+  background: var(--ms-green-light);
+  border-radius: 50%;
+  font-size: 29px;
+}
+
+.ms-empty h3 {
+  margin: 17px 0 7px;
+  color: var(--ms-text);
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.ms-empty p {
+  max-width: 430px;
+  margin: 0;
+
+  color: var(--ms-muted);
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+.ms-empty button {
+  min-height: 39px;
+  margin-top: 18px;
+  padding: 0 15px;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+
+  color: var(--ms-white);
+  background: var(--ms-green);
+  border: none;
+  border-radius: 8px;
+
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.ms-empty button:hover {
+  background: var(--ms-green-dark);
+}
+
+.ms-empty button ion-icon {
+  font-size: 16px;
+}
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+.ms-footer {
+  padding: 22px 0 10px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  color: var(--ms-muted);
+  font-size: 10px;
+}
+
+.ms-footer span:last-child {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--ms-green-dark);
+}
+
+.ms-footer ion-icon {
+  font-size: 14px;
+}
+
+/* =========================================================
+   VIEW / EDIT MODALS
+========================================================= */
+
+.ms-modal {
+  --width: 650px;
+  --max-width: 94%;
+  --height: 90%;
+  --border-radius: 16px;
+  --background: var(--ms-white);
+}
+
+.ms-modal-container {
+  height: 100%;
+
+  display: flex;
+  flex-direction: column;
+
+  background: var(--ms-white);
+  overflow: hidden;
+}
+
+.ms-modal-header {
+  min-height: 76px;
+  padding: 18px 23px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+
+  background: var(--ms-white);
+  border-bottom: 1px solid var(--ms-border);
+}
+
+.ms-modal-header span {
+  display: block;
+  margin-bottom: 5px;
+
+  color: var(--ms-green);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.7px;
+  text-transform: uppercase;
+}
+
+.ms-modal-header h2 {
+  margin: 0;
+  color: var(--ms-text);
+  font-size: 19px;
+  font-weight: 800;
+}
+
+.ms-modal-header button {
+  width: 35px;
+  height: 35px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: var(--ms-text);
+  background: var(--ms-green-light);
+  border: none;
+  border-radius: 9px;
+
+  font-size: 19px;
+  cursor: pointer;
+}
+
+.ms-modal-header button:hover {
+  background: #d8f0df;
+}
+
+.ms-modal-body {
+  flex: 1;
+  padding: 23px;
+  overflow-y: auto;
+}
+
+.ms-modal-footer {
+  padding: 14px 22px;
+  background: var(--ms-white);
+  border-top: 1px solid var(--ms-border);
+}
+
+.ms-modal-footer ion-button {
+  --background: var(--ms-green);
+  --background-hover: var(--ms-green-dark);
+  --color: #ffffff;
+  --border-radius: 8px;
+
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.ms-detail-title {
+  margin-bottom: 22px;
+
+  display: flex;
+  align-items: center;
+  gap: 13px;
+}
+
+.ms-detail-title > span {
+  width: 50px;
+  height: 50px;
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: var(--ms-green-dark);
+  background: var(--ms-green-light);
+  border-radius: 12px;
+  font-size: 25px;
+}
+
+.ms-detail-title h3 {
+  margin: 0 0 8px;
+  color: var(--ms-text);
+  font-size: 17px;
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+.ms-detail-grid {
+  margin-bottom: 22px;
+
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.ms-detail-grid > div {
+  padding: 14px;
+
+  background: var(--ms-green-soft);
+  border: 1px solid var(--ms-border);
+  border-radius: 9px;
+}
+
+.ms-detail-grid small {
+  display: block;
+  margin-bottom: 7px;
+  color: var(--ms-muted);
+  font-size: 10px;
+}
+
+.ms-detail-grid strong {
+  display: block;
+  color: var(--ms-text);
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+.ms-detail-section {
+  margin-top: 19px;
+}
+
+.ms-detail-section h4 {
+  margin: 0 0 8px;
+  color: var(--ms-green-dark);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.ms-detail-section p {
+  margin: 0;
+
+  color: var(--ms-text);
+  font-size: 12px;
+  line-height: 1.8;
+
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.ms-document-link {
+  width: fit-content;
+  max-width: 100%;
+  margin-top: 8px;
+  padding: 9px 11px;
+
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  color: var(--ms-green-dark);
+  background: var(--ms-green-light);
+  border: 1px solid #cce7d3;
+  border-radius: 8px;
+
+  font-size: 11px;
+  font-weight: 700;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+/* =========================================================
+   EDIT FORM
+========================================================= */
+
+.ms-edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.ms-edit-form label {
+  margin-top: 8px;
+  color: var(--ms-text);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.ms-requirements-count {
+  margin-top: -5px;
+  color: var(--ms-muted);
+  font-size: 10px;
+}
+
+.ms-edit-form ion-input,
+.ms-edit-form ion-textarea {
+  --background: #f8fbf8;
+  --color: var(--ms-text);
+  --placeholder-color: var(--ms-muted);
+  --placeholder-opacity: 1;
+  --padding-start: 12px;
+  --padding-end: 12px;
+
+  border: 1px solid var(--ms-border);
+  border-radius: 8px;
+  font-size: 12px;
+}
+
+.ms-edit-form ion-input:focus-within,
+.ms-edit-form ion-textarea:focus-within {
+  border-color: var(--ms-green);
+}
+
+.ms-edit-form ion-input {
+  min-height: 43px;
+}
+
+.ms-edit-form ion-textarea {
+  min-height: 85px;
+}
+
+.ms-form-two-columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 13px;
+}
+
+.ms-form-two-columns > div {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.ms-edit-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.ms-edit-footer ion-button {
+  --border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.ms-edit-footer ion-button[color="success"] {
+  --background: var(--ms-green);
+  --background-hover: var(--ms-green-dark);
+}
+
+/* =========================================================
+   OUTER DASHBOARD MODAL COMPATIBILITY
+========================================================= */
+
+.ms-page-modal .ms-layout {
+  min-height: 100%;
+}
+
+.ms-page-modal .ms-main {
+  padding-bottom: 25px;
+}
+
+/* =========================================================
+   RESPONSIVE: TABLETS
+========================================================= */
+
+@media (max-width: 1150px) {
+  .ms-scholarship-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .ms-summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .ms-welcome {
+    padding: 30px;
+  }
+}
+
+/* =========================================================
+   RESPONSIVE: MOBILE / SMALL TABLETS
+========================================================= */
+
+@media (max-width: 768px) {
+  .ms-main {
+    width: 92%;
+    padding-top: 20px;
+  }
+
+  .ms-topbar {
+    padding: 12px 4%;
+  }
+
+  .ms-account {
+    display: none;
+  }
+
+  .ms-welcome {
+    min-height: auto;
+    padding: 25px;
+  }
+
+  .ms-welcome-art {
+    display: none;
+  }
+
+  .ms-heading-row {
+    align-items: flex-start;
+  }
+
+  .ms-summary-grid {
+    gap: 10px;
+  }
+
+  .ms-summary-card {
+    min-height: 95px;
+    padding: 14px;
+    gap: 10px;
+  }
+
+  .ms-summary-icon {
+    width: 38px;
+    height: 38px;
+    font-size: 19px;
+  }
+
+  .ms-summary-card strong {
+    font-size: 21px;
+  }
+
+  .ms-list-section {
+    padding: 18px;
+  }
+
+  .ms-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .ms-search-box {
+    width: 100%;
+  }
+
+  .ms-filter-group {
+    width: 100%;
+  }
+
+  .ms-filter-group button {
+    flex: 1;
+  }
+
+  .ms-scholarship-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ms-footer {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+/* =========================================================
+   RESPONSIVE: SMALL MOBILE
+========================================================= */
+
+@media (max-width: 520px) {
+  .ms-main {
+    width: 92%;
+  }
+
+  .ms-brand strong {
+    font-size: 16px;
+  }
+
+  .ms-brand small {
+    font-size: 9px;
+  }
+
+  .ms-brand-icon {
+    width: 38px;
+    height: 38px;
+    font-size: 20px;
+  }
+
+  .ms-logout-button {
+    min-height: 35px;
+    padding: 0 9px;
+    font-size: 10px;
+  }
+
+  .ms-welcome {
+    padding: 22px 19px;
+    border-radius: 13px;
+  }
+
+  .ms-welcome h1 {
+    font-size: 24px;
+  }
+
+  .ms-welcome p {
+    font-size: 11px;
+  }
+
+  .ms-heading-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .ms-heading-row h2 {
+    font-size: 20px;
+  }
+
+  .ms-summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .ms-summary-card {
+    padding: 11px;
+  }
+
+  .ms-summary-card small {
+    font-size: 9px;
+  }
+
+  .ms-summary-card strong {
+    font-size: 19px;
+  }
+
+  .ms-list-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .ms-add-button {
+    width: 100%;
+  }
+
+  .ms-filter-group {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .ms-detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ms-form-two-columns {
+    grid-template-columns: 1fr;
+  }
+
+  .ms-modal {
+    --width: 96%;
+    --max-width: 96%;
+    --height: 94%;
+    --border-radius: 12px;
+  }
+
+  .ms-modal-body {
+    padding: 17px;
+  }
+
+  .ms-modal-header {
+    padding: 15px 17px;
+  }
+
+  .ms-edit-footer {
+    flex-direction: column-reverse;
+  }
+
+  .ms-edit-footer ion-button {
+    width: 100%;
+    margin: 0;
+  }
+}
+
+/* =========================================================
+   EXTRA SMALL SCREENS
+========================================================= */
+
+@media (max-width: 360px) {
+  .ms-main {
+    width: 94%;
+  }
+
+  .ms-summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ms-summary-card {
+    min-height: 78px;
+  }
+
+  .ms-breadcrumb {
+    flex-wrap: wrap;
+  }
+
+  .ms-card-actions button {
+    padding: 0 7px;
+    font-size: 9px;
+  }
+}
+
+/* =========================================================
+   ACCESSIBILITY / TOUCH INTERACTION
+========================================================= */
+
+.ms-page button,
+.ms-page-modal button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.ms-page button:focus-visible,
+.ms-page-modal button:focus-visible {
+  outline: 2px solid var(--ms-green);
+  outline-offset: 3px;
+}
+
+.ms-page ion-content::part(scroll) {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ms-page *,
+  .ms-page-modal * {
+    transition: none !important;
+    animation: none !important;
+    scroll-behavior: auto !important;
+  }
+}

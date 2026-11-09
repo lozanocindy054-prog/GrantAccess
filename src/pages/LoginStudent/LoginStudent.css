@@ -1,0 +1,362 @@
+
+
+/* ========================================
+   GRANTACCESS LOGIN - PLAIN DESIGN
+======================================== */
+
+.grant-login-content {
+  --background: var(--ga-blush-white);
+  background: var(--ga-blush-white);
+}
+
+.grant-login-content::part(background) {
+  background: var(--ga-blush-white);
+}
+
+.grant-login-wrapper {
+  min-height: 100%;
+  background: var(--ga-blush-white);
+  color: var(--ga-charcoal);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* HEADER */
+
+.grant-login-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 78px;
+  padding: 14px 7%;
+  background: #ffffff;
+  border-bottom: 1px solid var(--ga-rose);
+}
+
+.grant-login-brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--ga-charcoal);
+  text-align: left;
+  cursor: pointer;
+}
+
+.grant-login-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 43px;
+  height: 43px;
+  border-radius: 10px;
+  background: var(--ga-blush-white);
+  color: var(--ga-charcoal);
+  font-size: 25px;
+}
+
+.grant-login-brand-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.grant-login-brand-text strong {
+  color: var(--ga-charcoal);
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.6px;
+}
+
+.grant-login-brand-text strong span {
+  color: var(--ga-charcoal);
+}
+
+.grant-login-brand-text small {
+  color: var(--ga-charcoal);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.1px;
+}
+
+/* MAIN */
+
+.grant-login-main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding: 52px 20px 24px;
+}
+
+.grant-login-card {
+  width: 100%;
+  max-width: 440px;
+  padding: 34px;
+  border: 1px solid var(--ga-rose);
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: none;
+}
+
+/* HEADING */
+
+.grant-login-heading {
+  margin-bottom: 28px;
+  text-align: center;
+}
+
+.grant-login-eyebrow {
+  display: inline-block;
+  margin-bottom: 12px;
+  color: var(--ga-charcoal);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.6px;
+}
+
+.grant-login-heading h1 {
+  margin: 0 0 12px;
+  color: var(--ga-charcoal);
+  font-size: 27px;
+  font-weight: 750;
+  line-height: 1.3;
+}
+
+.grant-login-heading p {
+  margin: 0;
+  color: var(--ga-charcoal);
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+/* ERROR */
+
+.grant-login-error {
+  margin-bottom: 18px;
+  padding: 12px 14px;
+  border: 1px solid var(--ga-rose);
+  border-radius: 7px;
+  background: #ffffff;
+  color: var(--ga-charcoal);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* FORM FIELDS */
+
+.grant-login-field {
+  margin-bottom: 19px;
+}
+
+.grant-login-field label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--ga-charcoal);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+/* PLAIN WHITE INPUT CONTAINER */
+
+.grant-login-input-wrap {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 48px;
+  padding: 0 12px;
+  border: 1px solid var(--ga-rose);
+  border-radius: 7px;
+  background: #ffffff !important;
+  box-shadow: none !important;
+  transition: border-color 0.2s ease;
+}
+
+.grant-login-input-wrap:focus-within {
+  border-color: var(--ga-crimson);
+  background: #ffffff !important;
+  box-shadow: 0 0 0 2px rgba(127, 29, 45, 0.08) !important;
+}
+
+.grant-login-field-icon {
+  flex-shrink: 0;
+  color: var(--ga-charcoal);
+  font-size: 18px;
+}
+
+/* INPUT ITSELF */
+
+.grant-login-input-wrap input {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  height: 46px;
+  margin: 0;
+  padding: 0 10px;
+  border: none !important;
+  outline: none !important;
+  background: transparent !important;
+  color: var(--ga-charcoal) !important;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px;
+  box-shadow: none !important;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.grant-login-input-wrap input::placeholder {
+  color: var(--ga-charcoal) !important;
+  opacity: 1;
+}
+
+/* PREVENT GRAY AUTOFILL BACKGROUND */
+
+.grant-login-input-wrap input:-webkit-autofill,
+.grant-login-input-wrap input:-webkit-autofill:hover,
+.grant-login-input-wrap input:-webkit-autofill:focus,
+.grant-login-input-wrap input:-webkit-autofill:active {
+  -webkit-text-fill-color: var(--ga-charcoal) !important;
+  -webkit-box-shadow: 0 0 0 1000px var(--ga-burgundy) inset !important;
+  box-shadow: 0 0 0 1000px var(--ga-burgundy) inset !important;
+  transition: background-color 9999s ease-in-out 0s;
+}
+
+/* SHOW / HIDE PASSWORD */
+
+.grant-login-eye {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 36px;
+  margin: 0;
+  padding: 0;
+  border: none;
+  outline: none;
+  background: transparent !important;
+  color: var(--ga-charcoal);
+  cursor: pointer;
+  box-shadow: none !important;
+}
+
+.grant-login-eye ion-icon {
+  font-size: 19px;
+}
+
+/* FORGOT PASSWORD */
+
+.grant-login-forgot {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: -5px;
+  margin-bottom: 22px;
+}
+
+.grant-login-forgot a {
+  color: var(--ga-charcoal);
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.grant-login-forgot a:hover {
+  color: var(--ga-charcoal);
+  text-decoration: underline;
+}
+
+/* SIGN IN BUTTON */
+
+.grant-login-submit {
+  width: 100%;
+  margin: 0;
+  --background: var(--ga-crimson);
+  --background-hover: var(--ga-burgundy);
+  --background-activated: var(--ga-burgundy);
+  --color: #ffffff;
+  --border-radius: 7px;
+  --box-shadow: none;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: none;
+  letter-spacing: 0.2px;
+}
+
+.grant-login-submit::part(native) {
+  min-height: 47px;
+  box-shadow: none;
+}
+
+/* REGISTER LINK */
+
+.grant-login-register {
+  margin: 23px 0 0;
+  color: var(--ga-charcoal);
+  font-size: 12px;
+  line-height: 1.7;
+  text-align: center;
+}
+
+.grant-login-register a {
+  color: var(--ga-charcoal);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.grant-login-register a:hover {
+  text-decoration: underline;
+}
+
+/* FOOTER */
+
+.grant-login-footer {
+  margin-top: 25px;
+  color: var(--ga-charcoal);
+  font-size: 11px;
+  line-height: 1.6;
+  text-align: center;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 600px) {
+  .grant-login-header {
+    min-height: 68px;
+    padding: 12px 18px;
+  }
+
+  .grant-login-logo {
+    width: 39px;
+    height: 39px;
+    font-size: 23px;
+  }
+
+  .grant-login-brand-text strong {
+    font-size: 20px;
+  }
+
+  .grant-login-main {
+    padding: 32px 16px 22px;
+  }
+
+  .grant-login-card {
+    max-width: 440px;
+    padding: 25px 20px;
+    border-radius: 10px;
+  }
+
+  .grant-login-heading h1 {
+    font-size: 24px;
+  }
+}
+
+@media (max-width: 360px) {
+  .grant-login-card {
+    padding: 22px 15px;
+  }
+
+  .grant-login-heading h1 {
+    font-size: 22px;
+  }
+}

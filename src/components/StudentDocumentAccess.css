@@ -1,0 +1,97 @@
+.student-document-access {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid var(--ga-rose, #fce8ec);
+  border-radius: 12px;
+  background: var(--ga-white, #ffffff);
+}
+
+.student-document-copy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.student-document-copy strong {
+  overflow-wrap: anywhere;
+  color: var(--ga-charcoal, #29232a);
+  font-size: 13px;
+}
+
+.student-document-copy span,
+.student-document-copy small {
+  color: #74676c;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.student-document-actions {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 8px;
+}
+
+.student-document-actions ion-button {
+  margin: 0;
+}
+
+.student-document-download {
+  display: inline-flex;
+  min-height: 36px;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 11px;
+  border-radius: 10px;
+  background: var(--ga-crimson, #c6283d);
+  color: var(--ga-white, #ffffff);
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.student-document-download ion-icon {
+  font-size: 16px;
+}
+
+.student-document-download:hover {
+  background: var(--ga-burgundy, #7f1d2d);
+}
+
+.student-document-preview-modal {
+  --width: min(100%, 980px);
+  --height: min(92vh, 900px);
+}
+
+.student-document-preview-frame {
+  width: 100%;
+  height: 100%;
+  min-height: 60vh;
+  display: block;
+  border: 0;
+  background: var(--ga-blush-white, #fff7f8);
+}
+
+@media (max-width: 520px) {
+  .student-document-access {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .student-document-actions {
+    width: 100%;
+  }
+
+  .student-document-actions ion-button,
+  .student-document-download {
+    min-width: 0;
+    flex: 1;
+    justify-content: center;
+  }
+}

@@ -1,0 +1,227 @@
+.student-notifications-page,
+.student-notifications-content {
+  --background: var(--ga-blush-white);
+}
+
+.student-notifications-layout {
+  width: min(850px, calc(100% - 32px));
+  min-height: calc(100% - 50px);
+  margin: 30px auto 110px;
+}
+
+.student-notifications-heading {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+  padding: 23px 25px;
+  border: 1px solid var(--ga-rose);
+  border-radius: 15px;
+  background: #ffffff;
+  box-shadow: 0 8px 25px rgb(34 65 42 / 5%);
+}
+
+.student-notifications-heading-icon {
+  width: 48px;
+  height: 48px;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  color: var(--ga-charcoal);
+  background: var(--ga-blush-white);
+  font-size: 23px;
+}
+
+.student-notifications-heading > div:nth-child(2) {
+  flex: 1;
+  min-width: 0;
+}
+
+.student-notifications-heading > div:nth-child(2) > span {
+  color: var(--ga-charcoal);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.student-notifications-heading h1 {
+  margin: 4px 0;
+  color: var(--ga-charcoal);
+  font-size: 23px;
+}
+
+.student-notifications-heading p {
+  margin: 0;
+  color: var(--ga-charcoal);
+  font-size: 12px;
+}
+
+.student-notifications-heading > button {
+  min-height: 36px;
+  padding: 0 11px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--ga-rose);
+  border-radius: 8px;
+  color: var(--ga-charcoal);
+  background: var(--ga-blush-white);
+  font: inherit;
+  font-size: 10px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.student-notification-list {
+  display: grid;
+  gap: 10px;
+}
+
+.student-notification-card {
+  width: 100%;
+  padding: 17px;
+  display: flex;
+  align-items: flex-start;
+  gap: 13px;
+  border: 1px solid var(--ga-rose);
+  border-radius: 12px;
+  color: inherit;
+  background: #ffffff;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.student-notification-card:hover {
+  border-color: var(--ga-rose);
+  box-shadow: 0 6px 20px rgb(34 65 42 / 7%);
+}
+
+.student-notification-card.unread {
+  border-left: 4px solid var(--ga-crimson);
+  background: #ffffff;
+}
+
+.student-notification-icon {
+  width: 39px;
+  height: 39px;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  border-radius: 11px;
+  color: var(--ga-charcoal);
+  background: var(--ga-blush-white);
+  font-size: 19px;
+}
+
+.student-notification-copy {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: 5px;
+}
+
+.student-notification-copy > strong {
+  color: var(--ga-charcoal);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.student-notification-copy > span {
+  color: var(--ga-charcoal);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.student-notification-copy > small {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 2px;
+  color: var(--ga-charcoal);
+  font-size: 10px;
+}
+
+.student-notification-new {
+  padding: 5px 7px;
+  border-radius: 20px;
+  color: var(--ga-charcoal);
+  background: var(--ga-blush-white);
+  font-size: 8px;
+  font-weight: 800;
+}
+
+.student-notifications-loading,
+.student-notifications-empty {
+  min-height: 230px;
+  padding: 25px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid var(--ga-rose);
+  border-radius: 14px;
+  color: var(--ga-charcoal);
+  background: #ffffff;
+  text-align: center;
+}
+
+.student-notifications-empty > ion-icon {
+  color: var(--ga-charcoal);
+  font-size: 34px;
+}
+
+.student-notifications-empty h2 {
+  margin: 0;
+  color: var(--ga-charcoal);
+  font-size: 17px;
+}
+
+.student-notifications-empty p {
+  margin: 0;
+  font-size: 12px;
+}
+
+.student-notifications-empty button {
+  min-height: 39px;
+  margin-top: 7px;
+  padding: 0 15px;
+  border: 0;
+  border-radius: 8px;
+  color: #ffffff;
+  background: var(--ga-burgundy);
+  font: inherit;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.student-notifications-error {
+  padding: 12px;
+  border-radius: 8px;
+  color: var(--ga-charcoal);
+  background: var(--ga-blush-white);
+  font-size: 12px;
+}
+
+@media (max-width: 600px) {
+  .student-notifications-layout {
+    width: calc(100% - 22px);
+    margin: 17px auto 100px;
+  }
+
+  .student-notifications-heading {
+    align-items: flex-start;
+    flex-wrap: wrap;
+    padding: 17px;
+  }
+
+  .student-notifications-heading > button {
+    margin-left: 64px;
+  }
+
+  .student-notification-card {
+    padding: 13px;
+  }
+}

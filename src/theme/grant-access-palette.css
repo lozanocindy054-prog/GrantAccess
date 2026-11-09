@@ -1,0 +1,65 @@
+:root {
+  color-scheme: light;
+  --ga-burgundy: #7f1d2d;
+  --ga-crimson: #c6283d;
+  --ga-rose: #fce8ec;
+  --ga-blush-white: #fff7f8;
+  --ga-white: #ffffff;
+  --ga-charcoal: #29232a;
+
+  --grant-navy: var(--ga-burgundy);
+  --grant-royal-blue: var(--ga-crimson);
+  --grant-lavender-blue: var(--ga-rose);
+  --grant-cloud-white: var(--ga-blush-white);
+  --grant-pure-white: var(--ga-white);
+  --grant-text: var(--ga-charcoal);
+  --grant-slate: var(--ga-charcoal);
+
+  --ion-background-color: var(--grant-cloud-white);
+  --ion-text-color: var(--grant-text);
+  --ion-color-primary: var(--grant-royal-blue);
+  --ion-color-primary-rgb: 198, 40, 61;
+  --ion-color-primary-contrast: var(--grant-pure-white);
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: #a51f33;
+  --ion-color-primary-tint: #d74457;
+  --ion-color-secondary: var(--grant-navy);
+  --ion-color-secondary-rgb: 127, 29, 45;
+  --ion-color-secondary-contrast: var(--grant-pure-white);
+  --ion-color-secondary-contrast-rgb: 255, 255, 255;
+  --ion-color-secondary-shade: #6f1928;
+  --ion-color-secondary-tint: #8b3442;
+  --ion-item-background: var(--grant-pure-white);
+  --ion-card-background: var(--grant-pure-white);
+
+  --student-primary: var(--ga-crimson);
+  --student-primary-dark: var(--ga-burgundy);
+  --student-primary-light: var(--ga-rose);
+  --student-secondary: var(--ga-charcoal);
+  --student-text: var(--ga-charcoal);
+  --student-muted: #74676c;
+  --student-border: var(--ga-rose);
+  --student-white: var(--ga-white);
+  --student-shadow: 0 8px 24px rgba(127, 29, 45, 0.08);
+}
+
+html,
+body,
+#root,
+ion-app {
+  min-height: 100%;
+  background: var(--grant-cloud-white);
+  color: var(--grant-text);
+}
+
+input,
+textarea,
+select {
+  color: var(--grant-text);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--ga-charcoal);
+  opacity: 0.62;
+}

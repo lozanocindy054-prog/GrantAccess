@@ -1,0 +1,366 @@
+.lgu-student-map-page {
+  --background: var(--ga-blush-white);
+  color: var(--ga-charcoal);
+}
+
+.lgu-student-map-layout {
+  width: min(1440px, 100%);
+  min-height: 100%;
+  margin: 0 auto;
+  padding: 28px;
+  box-sizing: border-box;
+}
+
+.lgu-student-map-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.lgu-student-map-header > ion-button {
+  --color: var(--ga-burgundy);
+  --background: var(--ga-blush-white);
+  width: 44px;
+  height: 44px;
+  margin: 0;
+  border-radius: 50%;
+}
+
+.lgu-student-map-title {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 13px;
+  min-width: 0;
+}
+
+.lgu-student-map-title-icon {
+  display: grid;
+  width: 46px;
+  height: 46px;
+  flex: 0 0 46px;
+  place-items: center;
+  border-radius: 14px;
+  background: var(--ga-blush-white);
+  color: var(--ga-charcoal);
+  font-size: 23px;
+}
+
+.lgu-student-map-title h1 {
+  margin: 0;
+  color: var(--ga-charcoal);
+  font-size: 23px;
+  font-weight: 800;
+}
+
+.lgu-student-map-title p {
+  margin: 4px 0 0;
+  color: var(--ga-charcoal);
+  font-size: 13px;
+}
+
+.lgu-student-map-count {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 13px;
+  border: 1px solid var(--ga-rose);
+  border-radius: 999px;
+  background: #ffffff;
+  color: var(--ga-charcoal);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.lgu-student-map-privacy {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+  padding: 13px 16px;
+  border: 1px solid var(--ga-rose);
+  border-radius: 12px;
+  background: var(--ga-blush-white);
+  color: var(--ga-charcoal);
+}
+
+.lgu-student-map-privacy > ion-icon {
+  flex: 0 0 auto;
+  font-size: 21px;
+}
+
+.lgu-student-map-privacy p {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.lgu-student-map-content {
+  display: grid;
+  min-height: min(690px, calc(100vh - 190px));
+  grid-template-columns: minmax(280px, 340px) minmax(0, 1fr);
+  gap: 16px;
+}
+
+.lgu-student-map-list-panel,
+.lgu-student-map-canvas-panel {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--ga-rose);
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 8px 26px rgba(127, 29, 45, 0.06);
+}
+
+.lgu-student-map-list-panel {
+  display: flex;
+  flex-direction: column;
+  padding: 17px;
+}
+
+.lgu-student-map-list-panel h2 {
+  margin: 3px 0 9px;
+  color: var(--ga-charcoal);
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.lgu-student-map-list-panel ion-searchbar {
+  --background: var(--ga-blush-white);
+  --border-radius: 10px;
+  --box-shadow: none;
+  --placeholder-color: var(--ga-charcoal);
+  padding: 4px 0 12px;
+}
+
+.lgu-student-map-list {
+  display: flex;
+  min-height: 140px;
+  flex: 1;
+  flex-direction: column;
+  gap: 7px;
+  overflow-y: auto;
+}
+
+.lgu-student-map-row {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 11px;
+  padding: 11px 9px;
+  border: 1px solid transparent;
+  border-radius: 11px;
+  background: #ffffff;
+  color: var(--ga-charcoal);
+  text-align: left;
+  cursor: pointer;
+  transition: background 150ms ease, border-color 150ms ease;
+}
+
+.lgu-student-map-row:hover,
+.lgu-student-map-row.selected {
+  border-color: var(--ga-rose);
+  background: var(--ga-blush-white);
+}
+
+.lgu-student-map-avatar {
+  display: grid;
+  width: 40px;
+  height: 40px;
+  flex: 0 0 40px;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--ga-rose);
+  color: var(--ga-charcoal);
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.lgu-student-map-row-copy {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.lgu-student-map-row-copy strong,
+.lgu-student-map-row-copy small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lgu-student-map-row-copy strong {
+  font-size: 12px;
+}
+
+.lgu-student-map-row-copy small {
+  color: var(--ga-charcoal);
+  font-size: 10px;
+}
+
+.lgu-student-map-row > ion-icon {
+  color: var(--ga-charcoal);
+  font-size: 18px;
+}
+
+.lgu-student-map-state {
+  display: grid;
+  min-height: 120px;
+  place-items: center;
+  padding: 18px;
+  color: var(--ga-charcoal);
+  font-size: 12px;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.lgu-student-map-state.error {
+  color: var(--ga-charcoal);
+}
+
+.lgu-student-map-canvas-panel {
+  position: relative;
+  min-height: 480px;
+}
+
+.lgu-student-map-canvas {
+  position: absolute;
+  inset: 0;
+  min-height: 480px;
+  background: var(--ga-crimson);
+}
+
+.lgu-student-map-canvas .leaflet-control-attribution {
+  font-size: 9px;
+}
+
+.lgu-student-map-legend {
+  position: absolute;
+  z-index: 500;
+  right: 14px;
+  bottom: 24px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid rgba(233, 237, 255, 0.9);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 4px 12px rgba(127, 29, 45, 0.12);
+  color: var(--ga-charcoal);
+  font-size: 10px;
+}
+
+.lgu-student-map-legend span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.lgu-student-map-legend i {
+  width: 10px;
+  height: 10px;
+  border: 2px solid var(--ga-rose);
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px rgba(127, 29, 45, 0.24);
+}
+
+.lgu-student-map-legend .student-dot {
+  background: var(--ga-burgundy);
+}
+
+.lgu-student-map-legend .organization-dot {
+  background: var(--ga-burgundy);
+}
+
+.lgu-student-map-popup {
+  display: flex;
+  min-width: 150px;
+  flex-direction: column;
+  gap: 5px;
+  color: var(--ga-charcoal);
+}
+
+.lgu-student-map-popup strong {
+  font-size: 13px;
+}
+
+.lgu-student-map-popup span {
+  font-size: 11px;
+}
+
+.lgu-student-map-popup small {
+  color: var(--ga-charcoal);
+  font-size: 10px;
+}
+
+@media (max-width: 820px) {
+  .lgu-student-map-layout {
+    padding: 18px 14px;
+  }
+
+  .lgu-student-map-content {
+    min-height: calc(100vh - 205px);
+    grid-template-columns: 1fr;
+  }
+
+  .lgu-student-map-list-panel {
+    max-height: 320px;
+  }
+
+  .lgu-student-map-list {
+    min-height: 100px;
+  }
+
+  .lgu-student-map-canvas-panel,
+  .lgu-student-map-canvas {
+    min-height: 400px;
+  }
+}
+
+@media (max-width: 480px) {
+  .lgu-student-map-header {
+    gap: 8px;
+  }
+
+  .lgu-student-map-title {
+    gap: 9px;
+  }
+
+  .lgu-student-map-title-icon {
+    width: 39px;
+    height: 39px;
+    flex-basis: 39px;
+    font-size: 20px;
+  }
+
+  .lgu-student-map-title h1 {
+    font-size: 18px;
+  }
+
+  .lgu-student-map-title p {
+    font-size: 10px;
+  }
+
+  .lgu-student-map-count {
+    gap: 5px;
+    padding: 8px 9px;
+    font-size: 11px;
+  }
+
+  .lgu-student-map-privacy {
+    align-items: flex-start;
+    padding: 11px 12px;
+  }
+
+  .lgu-student-map-legend {
+    right: 8px;
+    bottom: 23px;
+    gap: 7px;
+    padding: 8px;
+    font-size: 9px;
+  }
+}
