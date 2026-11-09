@@ -1,7 +1,7 @@
 
 /* ==========================================
    GRANTACCESS - PREMIUM THEME
-   GREEN & WHITE DESIGN
+   GREEN & PURE WHITE DESIGN
    RESPONSIVE DESKTOP, TABLET AND MOBILE
 ========================================== */
 
@@ -17,7 +17,7 @@
   --ga-green-soft: #e9f5ec;
 
   --ga-white: #ffffff;
-  --ga-blush-white: #f7faf7;
+  --ga-blush-white: #ffffff;
 
   --ga-charcoal: #202b23;
   --ga-muted: #758078;
@@ -53,19 +53,30 @@
   --ion-toolbar-color: #202b23;
   --ion-item-background: #ffffff;
   --ion-card-background: #ffffff;
-  --ion-background-color: #f7faf7;
+  --ion-background-color: #ffffff;
   --ion-text-color: #202b23;
-  --ion-color-step-50: #f7faf7;
-  --ion-color-step-100: #e9f5ec;
+
+  --ion-color-step-50: #ffffff;
+  --ion-color-step-100: #ffffff;
 }
 
 /* ==========================================
-   GLOBAL
+   GLOBAL BACKGROUND
+   PURE WHITE EVERYWHERE
 ========================================== */
 
-html {
-  background: var(--ga-blush-white);
+html,
+body,
+ion-app,
+ion-router-outlet,
+ion-page {
+  background: #ffffff !important;
+  color: var(--ga-charcoal);
   font-family: var(--ga-font-family);
+}
+
+html {
+  color-scheme: light;
   -webkit-text-size-adjust: 100%;
 }
 
@@ -77,12 +88,30 @@ select {
   font-family: var(--ga-font-family);
 }
 
-body,
-ion-app {
-  color: var(--ga-charcoal);
-  background: var(--ga-blush-white);
+/* Ionic content background */
+ion-content {
+  --background: #ffffff !important;
+  --color: var(--ga-charcoal);
 }
 
+/* Ionic page background */
+ion-page {
+  --background: #ffffff;
+  background: #ffffff !important;
+}
+
+/* Common page containers */
+.student-home-page,
+.student-home-content,
+.student-messages-page,
+.student-application-page,
+.admin-page,
+.lgu-dashboard-content {
+  background: #ffffff;
+  color: var(--ga-charcoal);
+}
+
+/* Remove tap highlight */
 button,
 a,
 ion-button,
@@ -91,6 +120,7 @@ ion-segment-button {
   -webkit-tap-highlight-color: transparent;
 }
 
+/* Button transitions */
 button,
 ion-button {
   transition:
@@ -155,6 +185,19 @@ ion-select {
 }
 
 /* ==========================================
+   IONIC TOOLBARS
+========================================== */
+
+ion-toolbar {
+  --background: #ffffff;
+  --color: var(--ga-charcoal);
+}
+
+ion-header {
+  background: #ffffff;
+}
+
+/* ==========================================
    MODALS AND TOASTS
 ========================================== */
 
@@ -162,7 +205,7 @@ ion-modal::part(content) {
   border: var(--ga-border);
   border-radius: var(--ga-radius-lg);
   box-shadow: var(--ga-shadow-md);
-  background: var(--ga-white);
+  background: #ffffff;
 }
 
 ion-toast {
@@ -173,25 +216,12 @@ ion-toast {
 }
 
 /* ==========================================
-   PAGE COLORS
-========================================== */
-
-.student-home-page,
-.student-home-content,
-.student-messages-page,
-.student-application-page,
-.admin-page,
-.lgu-dashboard-content {
-  color: var(--ga-charcoal);
-}
-
-/* ==========================================
    STUDENT HEADER
 ========================================== */
 
 .student-global-header {
   border-color: var(--ga-border-color);
-  background: rgba(255, 255, 255, 0.97);
+  background: rgba(255, 255, 255, 0.98);
   box-shadow: 0 4px 18px rgba(21, 148, 71, 0.045);
   backdrop-filter: blur(14px);
 }
@@ -226,7 +256,7 @@ ion-toast {
 
 .student-bottom-navigation {
   border-color: var(--ga-border-color);
-  background: rgba(255, 255, 255, 0.98);
+  background: rgba(255, 255, 255, 0.99);
   box-shadow: 0 -8px 26px rgba(21, 148, 71, 0.1);
   backdrop-filter: blur(16px);
 }
@@ -252,6 +282,7 @@ ion-toast {
 .lgu-home-menu-item,
 .lgu-home-application-card,
 .lgu-home-stat-card {
+  background: #ffffff;
   border-color: var(--ga-border-color);
   border-radius: var(--ga-radius-md);
   box-shadow: var(--ga-shadow-sm);
@@ -283,7 +314,7 @@ ion-toast {
 ========================================== */
 
 .admin-sidebar {
-  background: var(--ga-white);
+  background: #ffffff;
   border-color: var(--ga-border-color);
 }
 
@@ -305,12 +336,15 @@ ion-toast {
 ========================================== */
 
 .admin-main,
-.admin-content {
-  background: var(--ga-blush-white);
+.admin-content,
+.aal-main,
+.aal-content {
+  background: #ffffff !important;
+  color: var(--ga-charcoal);
 }
 
 /* ==========================================
-   RESPONSIVE TABLES
+   TABLES
 ========================================== */
 
 [class*="table-wrapper"],
@@ -327,12 +361,12 @@ ion-toast {
 ========================================== */
 
 ion-list {
-  background: transparent;
+  background: #ffffff;
 }
 
 ion-item {
   --border-color: var(--ga-border-color);
-  --background: var(--ga-white);
+  --background: #ffffff;
   --color: var(--ga-charcoal);
 }
 
@@ -354,7 +388,7 @@ ion-item {
   .student-bottom-navigation {
     min-height: 66px;
     padding: 6px 6px max(6px, env(safe-area-inset-bottom));
-    background: var(--ga-white);
+    background: #ffffff;
     border-color: var(--ga-border-color);
   }
 
@@ -384,6 +418,7 @@ ion-item {
     display: block;
     min-height: 100%;
     padding-bottom: calc(76px + env(safe-area-inset-bottom));
+    background: #ffffff;
   }
 
   .admin-page .admin-sidebar,
@@ -402,7 +437,7 @@ ion-item {
     padding: 6px 7px max(6px, env(safe-area-inset-bottom));
     border: 0;
     border-top: 1px solid var(--ga-border-color);
-    background: rgba(255, 255, 255, 0.98);
+    background: rgba(255, 255, 255, 0.99);
     box-shadow: 0 -8px 26px rgba(21, 148, 71, 0.1);
     backdrop-filter: blur(16px);
   }
@@ -494,11 +529,13 @@ ion-item {
     width: 100%;
     min-width: 0;
     height: auto;
+    background: #ffffff;
   }
 
   .admin-page .admin-content,
   .aal-page .aal-content {
     --padding-bottom: calc(76px + env(safe-area-inset-bottom));
+    background: #ffffff !important;
   }
 
   ion-modal::part(content) {
@@ -535,6 +572,7 @@ ion-item {
   .aal-page-content {
     padding-right: 14px;
     padding-left: 14px;
+    background: #ffffff;
   }
 }
 
