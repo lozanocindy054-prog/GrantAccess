@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import {
   Navigate,
@@ -115,13 +114,8 @@ import '@ionic/react/css/flex-utils.css';
 import '@ionic/react/css/display.css';
 
 // ==========================================
-// THEME
-// GREEN AND WHITE - LIGHT MODE
+// IONIC CONFIGURATION
 // ==========================================
-import './theme/variables.css';
-import './theme/grant-access-palette.css';
-
-// Ionic configuration
 setupIonicReact({
   mode: 'md',
 });
@@ -158,9 +152,7 @@ const App: React.FC = () => {
 
         <IonRouterOutlet animated={false}>
 
-          {/* ======================================
-              STUDENT REGISTRATION AND AUTHENTICATION
-          ====================================== */}
+          {/* STUDENT REGISTRATION AND AUTHENTICATION */}
 
           <Route
             path="/register-choice"
@@ -182,9 +174,7 @@ const App: React.FC = () => {
             element={<ForgotPassword />}
           />
 
-          {/* ======================================
-              LGU / SCHOOL REGISTRATION AND LOGIN
-          ====================================== */}
+          {/* LGU / SCHOOL REGISTRATION AND LOGIN */}
 
           <Route
             path="/lgu-register"
@@ -196,9 +186,7 @@ const App: React.FC = () => {
             element={<LGUSchoolLogin />}
           />
 
-          {/* ======================================
-              LGU / SCHOOL DASHBOARD
-          ====================================== */}
+          {/* LGU / SCHOOL DASHBOARD */}
 
           <Route
             path="/lgu-dashboard"
@@ -210,9 +198,7 @@ const App: React.FC = () => {
             element={<StudentMap />}
           />
 
-          {/* ======================================
-              LGU / SCHOOL PROFILE
-          ====================================== */}
+          {/* LGU / SCHOOL PROFILE */}
 
           <Route
             path="/lgu-school-profile"
@@ -229,9 +215,7 @@ const App: React.FC = () => {
             }
           />
 
-          {/* ======================================
-              LGU / SCHOOL SCHOLARSHIP MANAGEMENT
-          ====================================== */}
+          {/* LGU / SCHOOL SCHOLARSHIP MANAGEMENT */}
 
           <Route
             path="/lgu-scholarships"
@@ -258,27 +242,18 @@ const App: React.FC = () => {
             }
           />
 
-          {/* ======================================
-              LGU / SCHOOL APPLICATIONS
-          ====================================== */}
+          {/* LGU / SCHOOL APPLICATIONS */}
 
           <Route
             path="/lgu-applications"
             element={<Applications />}
           />
 
-          {/* ======================================
-              LGU / SCHOOL OTHER MENU ROUTES
-          ====================================== */}
+          {/* LGU / SCHOOL OTHER MENU ROUTES */}
 
           <Route
             path="/lgu-requirements"
-            element={
-              <Navigate
-                to="/lgu-dashboard"
-                replace
-              />
-            }
+            element={<Navigate to="/lgu-dashboard" replace />}
           />
 
           <Route
@@ -288,47 +263,25 @@ const App: React.FC = () => {
 
           <Route
             path="/lgu-notifications"
-            element={
-              <Navigate
-                to="/lgu-dashboard"
-                replace
-              />
-            }
+            element={<Navigate to="/lgu-dashboard" replace />}
           />
 
           <Route
             path="/lgu-announcements"
-            element={
-              <Navigate
-                to="/lgu-dashboard"
-                replace
-              />
-            }
+            element={<Navigate to="/lgu-dashboard" replace />}
           />
 
           <Route
             path="/lgu-reports"
-            element={
-              <Navigate
-                to="/lgu-dashboard"
-                replace
-              />
-            }
+            element={<Navigate to="/lgu-dashboard" replace />}
           />
 
           <Route
             path="/lgu-settings"
-            element={
-              <Navigate
-                to="/lgu-dashboard"
-                replace
-              />
-            }
+            element={<Navigate to="/lgu-dashboard" replace />}
           />
 
-          {/* ======================================
-              ADMIN REGISTRATION AND LOGIN
-          ====================================== */}
+          {/* ADMIN REGISTRATION AND LOGIN */}
 
           <Route
             path="/admin-register"
@@ -340,18 +293,14 @@ const App: React.FC = () => {
             element={<LoginAdmin />}
           />
 
-          {/* ======================================
-              ADMIN DASHBOARD
-          ====================================== */}
+          {/* ADMIN DASHBOARD */}
 
           <Route
             path="/admin-dashboard"
             element={<AdminDashboard />}
           />
 
-          {/* ======================================
-              ADMIN MANAGEMENT PAGES
-          ====================================== */}
+          {/* ADMIN MANAGEMENT PAGES */}
 
           <Route
             path="/admin-students"
@@ -373,36 +322,28 @@ const App: React.FC = () => {
             element={<AdminApplications />}
           />
 
-          {/* ======================================
-              ADMIN REPORTS
-          ====================================== */}
+          {/* ADMIN REPORTS */}
 
           <Route
             path="/admin-reports"
             element={<AdminReports />}
           />
 
-          {/* ======================================
-              ADMIN NOTIFICATIONS
-          ====================================== */}
+          {/* ADMIN NOTIFICATIONS */}
 
           <Route
             path="/admin-notifications"
             element={<AdminNotifications />}
           />
 
-          {/* ======================================
-              ADMIN ACTIVITY LOGS
-          ====================================== */}
+          {/* ADMIN ACTIVITY LOGS */}
 
           <Route
             path="/admin-activity-logs"
             element={<AdminActivityLogs />}
           />
 
-          {/* ======================================
-              STUDENT PAGES
-          ====================================== */}
+          {/* STUDENT PAGES */}
 
           <Route
             path="/student-dashboard"
@@ -439,9 +380,7 @@ const App: React.FC = () => {
             element={<Profile />}
           />
 
-          {/* ======================================
-              STUDENT MESSAGING
-          ====================================== */}
+          {/* STUDENT MESSAGING */}
 
           <Route
             path="/student-messages"
@@ -458,9 +397,7 @@ const App: React.FC = () => {
             }
           />
 
-          {/* ======================================
-              STUDENT REDIRECTS
-          ====================================== */}
+          {/* STUDENT REDIRECTS */}
 
           <Route
             path="/application"
@@ -474,17 +411,10 @@ const App: React.FC = () => {
 
           <Route
             path="/scholarship-details/:id"
-            element={
-              <Navigate
-                to="/scholarships"
-                replace
-              />
-            }
+            element={<Navigate to="/scholarships" replace />}
           />
 
-          {/* ======================================
-              DEFAULT ROUTE
-          ====================================== */}
+          {/* DEFAULT ROUTE */}
 
           <Route
             path="/"
@@ -496,9 +426,7 @@ const App: React.FC = () => {
             }
           />
 
-          {/* ======================================
-              UNKNOWN ROUTES
-          ====================================== */}
+          {/* UNKNOWN ROUTES */}
 
           <Route
             path="*"

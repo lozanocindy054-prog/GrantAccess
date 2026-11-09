@@ -1,2 +1,112 @@
-/* For information on how to create your own theme, please refer to:
-http://ionicframework.com/docs/theming/ */
+/* ==========================================
+   GRANTACCESS - GLOBAL WHITE & GREEN THEME
+========================================== */
+
+:root {
+  color-scheme: light;
+
+  --ga-primary: #159447;
+  --ga-primary-dark: #087638;
+  --ga-primary-deep: #075b2e;
+  --ga-green-light: #eaf8ef;
+  --ga-green-soft: #e9f5ec;
+
+  --ga-white: #ffffff;
+  --ga-blush-white: #ffffff;
+  --ga-charcoal: #202b23;
+  --ga-muted: #758078;
+  --ga-border-color: #e2eae3;
+
+  --ion-background-color: #ffffff;
+  --ion-background-color-rgb: 255, 255, 255;
+
+  --ion-text-color: #202b23;
+  --ion-text-color-rgb: 32, 43, 35;
+
+  --ion-item-background: #ffffff;
+  --ion-card-background: #ffffff;
+  --ion-toolbar-background: #ffffff;
+
+  --ion-color-primary: #159447;
+  --ion-color-primary-rgb: 21, 148, 71;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: #12833e;
+  --ion-color-primary-tint: #2ca05a;
+
+  --ion-color-step-50: #ffffff;
+  --ion-color-step-100: #ffffff;
+  --ion-color-step-150: #ffffff;
+  --ion-color-step-200: #ffffff;
+}
+
+/* GLOBAL BACKGROUND */
+
+html,
+body,
+ion-app,
+ion-router-outlet {
+  background: #ffffff;
+  color: #202b23;
+}
+
+/* IONIC CONTENT */
+
+ion-content {
+  --background: #ffffff;
+  --color: #202b23;
+}
+
+/* TOOLBAR */
+
+ion-toolbar {
+  --background: #ffffff;
+  --color: #202b23;
+}
+
+/* CARDS */
+
+ion-card {
+  --background: #ffffff;
+  --color: #202b23;
+}
+
+/* INPUTS */
+
+ion-input,
+ion-textarea,
+ion-select {
+  --background: #ffffff;
+  --color: #202b23;
+}
+
+/* LISTS */
+
+ion-list,
+ion-item {
+  --background: #ffffff;
+  --color: #202b23;
+}
+
+/* BUTTONS */
+
+ion-button {
+  --background: #159447;
+  --background-hover: #087638;
+  --color: #ffffff;
+}
+
+/* LIGHT MODE ONLY */
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: light;
+    --ion-background-color: #ffffff;
+    --ion-text-color: #202b23;
+  }
+
+  ion-content {
+    --background: #ffffff;
+    --color: #202b23;
+  }
+}
