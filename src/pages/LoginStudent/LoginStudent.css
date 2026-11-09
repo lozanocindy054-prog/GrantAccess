@@ -1,362 +1,511 @@
 
+/* =========================================================
+   GRANTACCESS - STUDENT LOGIN
+   Modern Green & White Responsive Design
+========================================================= */
 
-/* ========================================
-   GRANTACCESS LOGIN - PLAIN DESIGN
-======================================== */
-
-.grant-login-content {
-  --background: var(--ga-blush-white);
-  background: var(--ga-blush-white);
+:root {
+  --login-primary: #24783b;
+  --login-primary-dark: #195d2c;
+  --login-primary-light: #e9f5ec;
+  --login-background: #f5faf6;
+  --login-white: #ffffff;
+  --login-text: #202b23;
+  --login-muted: #758078;
+  --login-border: #e2eae3;
+  --login-error: #dc3545;
+  --login-error-bg: #fff1f2;
 }
 
-.grant-login-content::part(background) {
-  background: var(--ga-blush-white);
+/* =========================================================
+   PAGE BACKGROUND
+========================================================= */
+
+.grant-login-content {
+  --background: var(--login-background);
+}
+
+.grant-login-content::part(scroll) {
+  min-height: 100%;
 }
 
 .grant-login-wrapper {
   min-height: 100%;
-  background: var(--ga-blush-white);
-  color: var(--ga-charcoal);
-  font-family: Arial, Helvetica, sans-serif;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  background:
+    radial-gradient(
+      circle at 10% 15%,
+      rgba(36, 120, 59, 0.08),
+      transparent 30%
+    ),
+    radial-gradient(
+      circle at 90% 85%,
+      rgba(36, 120, 59, 0.06),
+      transparent 30%
+    ),
+    var(--login-background);
 }
 
-/* HEADER */
+/* =========================================================
+   HEADER
+========================================================= */
 
 .grant-login-header {
+  width: 100%;
+  padding: 25px 7%;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  min-height: 78px;
-  padding: 14px 7%;
-  background: #ffffff;
-  border-bottom: 1px solid var(--ga-rose);
+  justify-content: flex-start;
 }
 
 .grant-login-brand {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 11px;
+  gap: 12px;
   padding: 0;
   border: none;
   background: transparent;
-  color: var(--ga-charcoal);
-  text-align: left;
   cursor: pointer;
+  text-align: left;
+}
+
+.grant-login-brand:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .grant-login-logo {
+  width: 48px;
+  height: 48px;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 43px;
-  height: 43px;
-  border-radius: 10px;
-  background: var(--ga-blush-white);
-  color: var(--ga-charcoal);
-  font-size: 25px;
+  background: var(--login-primary);
+  color: var(--login-white);
+  border-radius: 14px;
+  font-size: 27px;
+  box-shadow: 0 5px 14px rgba(36, 120, 59, 0.2);
 }
 
 .grant-login-brand-text {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 3px;
 }
 
 .grant-login-brand-text strong {
-  color: var(--ga-charcoal);
-  font-size: 22px;
+  color: var(--login-text);
+  font-size: 23px;
   font-weight: 800;
-  letter-spacing: -0.6px;
+  letter-spacing: -0.7px;
 }
 
 .grant-login-brand-text strong span {
-  color: var(--ga-charcoal);
+  color: var(--login-primary);
 }
 
 .grant-login-brand-text small {
-  color: var(--ga-charcoal);
+  color: var(--login-muted);
   font-size: 9px;
   font-weight: 700;
-  letter-spacing: 1.1px;
+  letter-spacing: 1.5px;
 }
 
-/* MAIN */
+/* =========================================================
+   MAIN CONTENT
+========================================================= */
 
 .grant-login-main {
+  flex: 1;
+  width: 100%;
   display: flex;
   flex-direction: column;
+  justify-content: center;
   align-items: center;
-  width: 100%;
-  padding: 52px 20px 24px;
+  padding: 25px 20px 40px;
 }
+
+/* =========================================================
+   LOGIN CARD
+========================================================= */
 
 .grant-login-card {
   width: 100%;
-  max-width: 440px;
-  padding: 34px;
-  border: 1px solid var(--ga-rose);
-  border-radius: 12px;
-  background: #ffffff;
-  box-shadow: none;
+  max-width: 460px;
+  padding: 42px 38px;
+  background: var(--login-white);
+  border: 1px solid rgba(226, 234, 227, 0.9);
+  border-radius: 22px;
+  box-shadow:
+    0 15px 45px rgba(28, 70, 39, 0.07),
+    0 2px 8px rgba(28, 70, 39, 0.03);
 }
 
-/* HEADING */
+/* =========================================================
+   HEADING
+========================================================= */
 
 .grant-login-heading {
-  margin-bottom: 28px;
-  text-align: center;
+  margin-bottom: 30px;
+  text-align: left;
 }
 
 .grant-login-eyebrow {
   display: inline-block;
   margin-bottom: 12px;
-  color: var(--ga-charcoal);
-  font-size: 10px;
+  color: var(--login-primary);
+  font-size: 11px;
   font-weight: 800;
-  letter-spacing: 1.6px;
+  letter-spacing: 2px;
 }
 
 .grant-login-heading h1 {
-  margin: 0 0 12px;
-  color: var(--ga-charcoal);
-  font-size: 27px;
-  font-weight: 750;
-  line-height: 1.3;
+  margin: 0 0 11px;
+  color: var(--login-text);
+  font-size: 29px;
+  line-height: 1.25;
+  font-weight: 800;
+  letter-spacing: -0.8px;
 }
 
 .grant-login-heading p {
   margin: 0;
-  color: var(--ga-charcoal);
-  font-size: 13px;
+  color: var(--login-muted);
+  font-size: 14px;
   line-height: 1.7;
 }
 
-/* ERROR */
+/* =========================================================
+   ERROR MESSAGE
+========================================================= */
 
 .grant-login-error {
-  margin-bottom: 18px;
-  padding: 12px 14px;
-  border: 1px solid var(--ga-rose);
-  border-radius: 7px;
-  background: #ffffff;
-  color: var(--ga-charcoal);
+  width: 100%;
+  margin-bottom: 20px;
+  padding: 13px 15px;
+  background: var(--login-error-bg);
+  color: var(--login-error);
+  border: 1px solid #f5c6cb;
+  border-radius: 10px;
   font-size: 13px;
   line-height: 1.5;
 }
 
-/* FORM FIELDS */
+/* =========================================================
+   FORM FIELDS
+========================================================= */
 
 .grant-login-field {
-  margin-bottom: 19px;
+  width: 100%;
+  margin-bottom: 21px;
 }
 
 .grant-login-field label {
   display: block;
-  margin-bottom: 8px;
-  color: var(--ga-charcoal);
+  margin-bottom: 9px;
+  color: var(--login-text);
   font-size: 13px;
   font-weight: 700;
 }
 
-/* PLAIN WHITE INPUT CONTAINER */
-
 .grant-login-input-wrap {
+  width: 100%;
+  height: 53px;
   display: flex;
   align-items: center;
-  width: 100%;
-  min-height: 48px;
-  padding: 0 12px;
-  border: 1px solid var(--ga-rose);
-  border-radius: 7px;
-  background: #ffffff !important;
-  box-shadow: none !important;
-  transition: border-color 0.2s ease;
+  gap: 12px;
+  padding: 0 15px;
+  background: #ffffff;
+  border: 1px solid var(--login-border);
+  border-radius: 11px;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
 }
 
 .grant-login-input-wrap:focus-within {
-  border-color: var(--ga-crimson);
-  background: #ffffff !important;
-  box-shadow: 0 0 0 2px rgba(127, 29, 45, 0.08) !important;
+  border-color: var(--login-primary);
+  background: #fcfffd;
+  box-shadow: 0 0 0 3px rgba(36, 120, 59, 0.1);
 }
 
 .grant-login-field-icon {
   flex-shrink: 0;
-  color: var(--ga-charcoal);
-  font-size: 18px;
+  color: var(--login-muted);
+  font-size: 19px;
 }
-
-/* INPUT ITSELF */
 
 .grant-login-input-wrap input {
   flex: 1;
   min-width: 0;
   width: 100%;
-  height: 46px;
-  margin: 0;
-  padding: 0 10px;
-  border: none !important;
-  outline: none !important;
-  background: transparent !important;
-  color: var(--ga-charcoal) !important;
-  font-family: Arial, Helvetica, sans-serif;
+  height: 100%;
+  padding: 0;
+  outline: none;
+  border: none;
+  background: transparent;
+  color: var(--login-text);
+  font-family: inherit;
   font-size: 14px;
-  box-shadow: none !important;
-  appearance: none;
-  -webkit-appearance: none;
+  font-weight: 500;
 }
 
 .grant-login-input-wrap input::placeholder {
-  color: var(--ga-charcoal) !important;
-  opacity: 1;
+  color: #a1aaa3;
+  font-weight: 400;
 }
 
-/* PREVENT GRAY AUTOFILL BACKGROUND */
-
-.grant-login-input-wrap input:-webkit-autofill,
-.grant-login-input-wrap input:-webkit-autofill:hover,
-.grant-login-input-wrap input:-webkit-autofill:focus,
-.grant-login-input-wrap input:-webkit-autofill:active {
-  -webkit-text-fill-color: var(--ga-charcoal) !important;
-  -webkit-box-shadow: 0 0 0 1000px var(--ga-burgundy) inset !important;
-  box-shadow: 0 0 0 1000px var(--ga-burgundy) inset !important;
-  transition: background-color 9999s ease-in-out 0s;
+.grant-login-input-wrap input:disabled {
+  opacity: 0.65;
 }
 
-/* SHOW / HIDE PASSWORD */
+/* =========================================================
+   SHOW / HIDE PASSWORD
+========================================================= */
 
 .grant-login-eye {
-  display: flex;
   flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
   align-items: center;
   justify-content: center;
-  width: 34px;
-  height: 36px;
-  margin: 0;
   padding: 0;
   border: none;
   outline: none;
-  background: transparent !important;
-  color: var(--ga-charcoal);
-  cursor: pointer;
-  box-shadow: none !important;
-}
-
-.grant-login-eye ion-icon {
+  background: transparent;
+  color: var(--login-muted);
   font-size: 19px;
+  cursor: pointer;
+  transition: color 0.2s ease;
 }
 
-/* FORGOT PASSWORD */
+.grant-login-eye:hover {
+  color: var(--login-primary);
+}
+
+.grant-login-eye:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* =========================================================
+   FORGOT PASSWORD
+========================================================= */
 
 .grant-login-forgot {
   display: flex;
   justify-content: flex-end;
-  margin-top: -5px;
-  margin-bottom: 22px;
+  margin-top: -8px;
+  margin-bottom: 25px;
 }
 
 .grant-login-forgot a {
-  color: var(--ga-charcoal);
-  font-size: 12px;
-  font-weight: 600;
+  color: var(--login-primary);
+  font-size: 13px;
+  font-weight: 700;
   text-decoration: none;
+  transition: color 0.2s ease;
 }
 
 .grant-login-forgot a:hover {
-  color: var(--ga-charcoal);
+  color: var(--login-primary-dark);
   text-decoration: underline;
 }
 
-/* SIGN IN BUTTON */
+/* =========================================================
+   SIGN IN BUTTON
+========================================================= */
 
 .grant-login-submit {
   width: 100%;
+  height: 51px;
   margin: 0;
-  --background: var(--ga-crimson);
-  --background-hover: var(--ga-burgundy);
-  --background-activated: var(--ga-burgundy);
+  --background: var(--login-primary);
+  --background-hover: var(--login-primary-dark);
+  --background-activated: var(--login-primary-dark);
+  --background-focused: var(--login-primary-dark);
   --color: #ffffff;
-  --border-radius: 7px;
-  --box-shadow: none;
+  --border-radius: 11px;
+  --box-shadow: 0 5px 13px rgba(36, 120, 59, 0.19);
   font-size: 14px;
   font-weight: 700;
+  letter-spacing: 0.3px;
   text-transform: none;
-  letter-spacing: 0.2px;
 }
 
 .grant-login-submit::part(native) {
-  min-height: 47px;
-  box-shadow: none;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
-/* REGISTER LINK */
+.grant-login-submit:not([disabled]):hover::part(native) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 17px rgba(36, 120, 59, 0.25);
+}
+
+.grant-login-submit[disabled] {
+  opacity: 0.7;
+}
+
+/* =========================================================
+   REGISTER LINK
+========================================================= */
 
 .grant-login-register {
-  margin: 23px 0 0;
-  color: var(--ga-charcoal);
-  font-size: 12px;
-  line-height: 1.7;
+  margin: 27px 0 0;
+  color: var(--login-muted);
+  font-size: 13px;
   text-align: center;
+  line-height: 1.6;
 }
 
 .grant-login-register a {
-  color: var(--ga-charcoal);
-  font-weight: 700;
+  color: var(--login-primary);
+  font-weight: 800;
   text-decoration: none;
 }
 
 .grant-login-register a:hover {
+  color: var(--login-primary-dark);
   text-decoration: underline;
 }
 
-/* FOOTER */
+/* =========================================================
+   FOOTER
+========================================================= */
 
 .grant-login-footer {
-  margin-top: 25px;
-  color: var(--ga-charcoal);
+  margin-top: 30px;
+  color: #929c94;
   font-size: 11px;
-  line-height: 1.6;
   text-align: center;
+  line-height: 1.6;
 }
 
-/* RESPONSIVE */
+/* =========================================================
+   TABLET RESPONSIVE
+========================================================= */
 
-@media (max-width: 600px) {
+@media (max-width: 768px) {
   .grant-login-header {
-    min-height: 68px;
-    padding: 12px 18px;
-  }
-
-  .grant-login-logo {
-    width: 39px;
-    height: 39px;
-    font-size: 23px;
-  }
-
-  .grant-login-brand-text strong {
-    font-size: 20px;
+    padding: 22px 6%;
   }
 
   .grant-login-main {
-    padding: 32px 16px 22px;
+    padding: 20px 18px 35px;
   }
 
   .grant-login-card {
-    max-width: 440px;
-    padding: 25px 20px;
-    border-radius: 10px;
+    max-width: 430px;
+    padding: 36px 30px;
   }
 
   .grant-login-heading h1 {
-    font-size: 24px;
+    font-size: 26px;
   }
 }
 
-@media (max-width: 360px) {
+/* =========================================================
+   MOBILE RESPONSIVE
+========================================================= */
+
+@media (max-width: 480px) {
+  .grant-login-header {
+    padding: 19px 20px;
+  }
+
+  .grant-login-logo {
+    width: 43px;
+    height: 43px;
+    border-radius: 12px;
+    font-size: 24px;
+  }
+
+  .grant-login-brand-text strong {
+    font-size: 21px;
+  }
+
+  .grant-login-brand-text small {
+    font-size: 8px;
+  }
+
+  .grant-login-main {
+    justify-content: center;
+    padding: 18px 16px 30px;
+  }
+
   .grant-login-card {
-    padding: 22px 15px;
+    max-width: 100%;
+    padding: 32px 23px;
+    border-radius: 18px;
+  }
+
+  .grant-login-heading {
+    margin-bottom: 26px;
+  }
+
+  .grant-login-heading h1 {
+    font-size: 25px;
+  }
+
+  .grant-login-heading p {
+    font-size: 13px;
+  }
+
+  .grant-login-field {
+    margin-bottom: 19px;
+  }
+
+  .grant-login-input-wrap {
+    height: 51px;
+    padding: 0 13px;
+  }
+
+  .grant-login-submit {
+    height: 49px;
+  }
+
+  .grant-login-footer {
+    margin-top: 24px;
+    font-size: 10px;
+  }
+}
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media (max-width: 350px) {
+  .grant-login-card {
+    padding: 27px 18px;
   }
 
   .grant-login-heading h1 {
     font-size: 22px;
+  }
+
+  .grant-login-input-wrap input {
+    font-size: 13px;
+  }
+
+  .grant-login-register {
+    font-size: 12px;
+  }
+}
+
+/* =========================================================
+   ACCESSIBILITY
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .grant-login-input-wrap,
+  .grant-login-eye,
+  .grant-login-submit::part(native) {
+    transition: none;
   }
 }

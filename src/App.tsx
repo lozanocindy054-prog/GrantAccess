@@ -162,6 +162,7 @@ const App: React.FC = () => {
   return (
     <IonApp>
       <IonReactRouter>
+
         <RouteFocusHandler />
 
         <GlobalBackButton />
@@ -179,7 +180,6 @@ const App: React.FC = () => {
 
           {/* ==========================================
               STUDENT REGISTRATION AND LOGIN
-              NO EMAIL VERIFICATION / NO OTP ROUTE
           ========================================== */}
 
           <Route
@@ -408,13 +408,16 @@ const App: React.FC = () => {
           />
 
           {/* ==========================================
-              STUDENT DASHBOARD
+              STUDENT HOME / DASHBOARD
+              MAIN STUDENT LANDING PAGE
           ========================================== */}
 
           <Route
             path="/student-dashboard"
             element={<StudentHome />}
           />
+
+          {/* STUDENT HOME ALIAS */}
 
           <Route
             path="/student-home"
@@ -533,6 +536,7 @@ const App: React.FC = () => {
 
           {/* ==========================================
               ROOT ROUTE
+              FIRST VISIT = REGISTRATION CHOICE
           ========================================== */}
 
           <Route
@@ -560,6 +564,7 @@ const App: React.FC = () => {
           />
 
         </IonRouterOutlet>
+
       </IonReactRouter>
     </IonApp>
   );
