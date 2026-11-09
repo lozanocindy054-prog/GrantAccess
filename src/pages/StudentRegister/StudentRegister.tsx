@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef, useState } from 'react';
 
 import {
@@ -45,7 +44,7 @@ import {
 } from 'firebase/firestore';
 
 import * as blazeface from '@tensorflow-models/blazeface';
-import '@tensorflow/tfjs';
+import * as tf from '@tensorflow/tfjs';
 
 import { auth, db } from '../../Firebase/config';
 
@@ -126,7 +125,7 @@ const courses = [
 ];
 
 // =====================================================
-// PENDING STUDENT PROFILE
+// TYPES
 // =====================================================
 
 interface PendingStudentProfile {
@@ -137,6 +136,8 @@ interface PendingStudentProfile {
   course: string;
   yearLevel: string;
 }
+
+type FaceModel = Awaited<ReturnType<typeof blazeface.load>>;
 
 const PENDING_PROFILE_KEY = 'grantAccessPendingStudentProfile';
 
@@ -161,12 +162,7 @@ const StudentRegister: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  // Registration steps:
-  // 1 = Email
-  // 2 = Password
-  // 3 = Student Information
-  // 4 = Face Verification
-  // 5 = Email Verification
+  // Registration steps
   const [registrationStep, setRegistrationStep] = useState(1);
 
   // General states
@@ -176,10 +172,10 @@ const StudentRegister: React.FC = () => {
   const [successMessage, setSuccessMessage] = useState('');
   const [currentUser, setCurrentUser] = useState<User | null>(null);
 
-  // Face verification states
+  // Face verification
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
-  const modelRef = useRef<blazeface.BlazeFaceModel | null>(null);
+  const modelRef = useRef<FaceModel | null>(null);
 
   const [cameraStarted, setCameraStarted] = useState(false);
   const [cameraLoading, setCameraLoading] = useState(false);
@@ -203,10 +199,47 @@ const StudentRegister: React.FC = () => {
     }
 
     if (videoRef.current) {
+      videoRef.current.pause();
       videoRef.current.srcObject = null;
     }
 
     setCameraStarted(false);
+  };
+
+  // =====================================================
+  // WAIT FOR MOBILE VIDEO TO BE READY
+  // =====================================================
+
+  const waitForVideoReady = async (
+    video: HTMLVideoElement
+  ): Promise<void> => {
+    return new Promise((resolve, reject) => {
+      const startTime = Date.now();
+
+      const checkVideo = () => {
+        if (
+          video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA &&
+          video.videoWidth > 0 &&
+          video.videoHeight > 0
+        ) {
+          resolve();
+          return;
+        }
+
+        if (Date.now() - startTime > 10000) {
+          reject(
+            new Error(
+              'Camera opened, but no video frame was received. Please try again.'
+            )
+          );
+          return;
+        }
+
+        requestAnimationFrame(checkVideo);
+      };
+
+      checkVideo();
+    });
   };
 
   // =====================================================
@@ -233,8 +266,6 @@ const StudentRegister: React.FC = () => {
           setCourse(profile.course);
           setYearLevel(profile.yearLevel);
 
-          // Account was already created.
-          // Continue to email verification.
           setRegistrationStep(5);
         } catch (restoreError) {
           console.error(
@@ -248,25 +279,25 @@ const StudentRegister: React.FC = () => {
     return () => unsubscribe();
   }, []);
 
-  // Stop camera when leaving face verification
+  // =====================================================
+  // CAMERA CLEANUP WHEN CHANGING STEP
+  // =====================================================
+
   useEffect(() => {
     if (registrationStep !== 4) {
       stopCamera();
     }
 
     return () => {
-      stopCamera();
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach((track) => {
+          track.stop();
+        });
+
+        streamRef.current = null;
+      }
     };
   }, [registrationStep]);
-
-  // Stop camera when component is removed
-  useEffect(() => {
-    return () => {
-      streamRef.current?.getTracks().forEach((track) => {
-        track.stop();
-      });
-    };
-  }, []);
 
   // =====================================================
   // STEP 1: EMAIL
@@ -309,39 +340,73 @@ const StudentRegister: React.FC = () => {
   };
 
   // =====================================================
-  // START CAMERA
+  // START CAMERA - MOBILE AND DESKTOP
   // =====================================================
 
   const startCamera = async () => {
     setError('');
     setFaceVerified(false);
     setCameraLoading(true);
-    setFaceStatus('Requesting camera access...');
+    setFaceStatus('Requesting camera permission...');
 
     try {
-      if (!navigator.mediaDevices?.getUserMedia) {
+      if (
+        !window.isSecureContext ||
+        !navigator.mediaDevices?.getUserMedia
+      ) {
         throw new Error(
-          'Your browser does not support camera access. Please use an updated browser and HTTPS connection.'
+          'Camera access requires HTTPS. Please open GrantAccess using its secure HTTPS website.'
         );
       }
 
       stopCamera();
 
-      const stream = await navigator.mediaDevices.getUserMedia({
-        audio: false,
-        video: {
-          facingMode: 'user',
-          width: { ideal: 640 },
-          height: { ideal: 480 },
-        },
-      });
+      let stream: MediaStream;
+
+      try {
+        // Preferred: front-facing camera
+        stream = await navigator.mediaDevices.getUserMedia({
+          audio: false,
+          video: {
+            facingMode: { ideal: 'user' },
+            width: { ideal: 640 },
+            height: { ideal: 480 },
+          },
+        });
+      } catch (firstError) {
+        console.warn(
+          'Preferred camera settings failed. Trying fallback:',
+          firstError
+        );
+
+        // Fallback for devices with different camera constraints
+        stream = await navigator.mediaDevices.getUserMedia({
+          audio: false,
+          video: true,
+        });
+      }
 
       streamRef.current = stream;
 
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        await videoRef.current.play();
+      const video = videoRef.current;
+
+      if (!video) {
+        stream.getTracks().forEach((track) => track.stop());
+        streamRef.current = null;
+
+        throw new Error('Camera preview element was not found.');
       }
+
+      video.srcObject = stream;
+      video.autoplay = true;
+      video.muted = true;
+      video.playsInline = true;
+
+      // Important for mobile Safari and mobile Chrome
+      await video.play();
+
+      // Wait for real video frames before enabling face detection
+      await waitForVideoReady(video);
 
       setCameraStarted(true);
       setFaceStatus(
@@ -350,25 +415,64 @@ const StudentRegister: React.FC = () => {
     } catch (cameraError: unknown) {
       console.error('Camera error:', cameraError);
 
-      setFaceStatus('Camera access was not successful.');
+      stopCamera();
 
-      setError(
-        cameraError instanceof Error
-          ? cameraError.message
-          : 'Unable to access your camera. Please check your camera permission.'
-      );
+      const errorName =
+        typeof cameraError === 'object' &&
+        cameraError !== null &&
+        'name' in cameraError
+          ? String(cameraError.name)
+          : '';
+
+      if (errorName === 'NotAllowedError' || errorName === 'PermissionDeniedError') {
+        setError(
+          'Camera permission was denied. Please allow camera access in your browser settings.'
+        );
+      } else if (errorName === 'NotFoundError') {
+        setError(
+          'No camera was found on this device.'
+        );
+      } else if (errorName === 'NotReadableError') {
+        setError(
+          'Your camera may be in use by another application. Close other camera apps and try again.'
+        );
+      } else {
+        setError(
+          cameraError instanceof Error
+            ? cameraError.message
+            : 'Unable to access your camera. Please try again.'
+        );
+      }
+
+      setFaceStatus('Camera could not be started.');
     } finally {
       setCameraLoading(false);
     }
   };
 
   // =====================================================
-  // LOAD FACE DETECTION MODEL
+  // LOAD TENSORFLOW AND BLAZEFACE MODEL
   // =====================================================
 
   const loadFaceModel = async () => {
     if (modelRef.current) {
       return modelRef.current;
+    }
+
+    setFaceStatus('Preparing face detection system...');
+
+    // Try WebGL first. If unavailable, use CPU.
+    try {
+      await tf.setBackend('webgl');
+      await tf.ready();
+    } catch (webglError) {
+      console.warn(
+        'WebGL backend unavailable. Trying CPU backend:',
+        webglError
+      );
+
+      await tf.setBackend('cpu');
+      await tf.ready();
     }
 
     setFaceStatus('Loading face detection model...');
@@ -390,16 +494,37 @@ const StudentRegister: React.FC = () => {
 
     const video = videoRef.current;
 
-    if (!cameraStarted || !video || video.readyState < 2) {
-      setError('Please start the camera first.');
+    if (!cameraStarted || !video) {
+      setError('Please start your camera first.');
+      return;
+    }
+
+    if (
+      video.readyState < HTMLMediaElement.HAVE_CURRENT_DATA ||
+      video.videoWidth === 0 ||
+      video.videoHeight === 0
+    ) {
+      setError(
+        'Camera is not ready yet. Please wait for the preview and try again.'
+      );
       return;
     }
 
     setFaceChecking(true);
-    setFaceStatus('Analyzing camera image...');
+    setFaceStatus('Analyzing your face...');
 
     try {
       const model = await loadFaceModel();
+
+      // Recheck video after model loading
+      if (
+        video.readyState < HTMLMediaElement.HAVE_CURRENT_DATA ||
+        video.videoWidth === 0
+      ) {
+        throw new Error(
+          'The camera preview stopped. Please restart your camera.'
+        );
+      }
 
       const predictions = await model.estimateFaces(
         video,
@@ -409,7 +534,7 @@ const StudentRegister: React.FC = () => {
       if (predictions.length === 0) {
         setFaceVerified(false);
         setFaceStatus(
-          'No face detected. Please move closer and face the camera.'
+          'No face detected. Move closer and face the camera directly.'
         );
         return;
       }
@@ -417,21 +542,23 @@ const StudentRegister: React.FC = () => {
       if (predictions.length > 1) {
         setFaceVerified(false);
         setFaceStatus(
-          'More than one face detected. Please make sure you are alone in the camera frame.'
+          'Multiple faces detected. Make sure only one person is visible.'
         );
         return;
       }
 
       setFaceVerified(true);
+
       setFaceStatus(
         'One face detected successfully. You may continue.'
       );
 
       stopCamera();
     } catch (faceError: unknown) {
-      console.error('Face verification error:', faceError);
+      console.error('Face detection error:', faceError);
 
       setFaceVerified(false);
+
       setFaceStatus(
         'Unable to analyze your face. Please try again.'
       );
@@ -503,7 +630,7 @@ const StudentRegister: React.FC = () => {
   };
 
   // =====================================================
-  // STEP 5: CHECK EMAIL VERIFICATION
+  // CHECK EMAIL VERIFICATION
   // =====================================================
 
   const checkEmailVerification = async () => {
@@ -514,7 +641,7 @@ const StudentRegister: React.FC = () => {
 
     if (!user) {
       setError(
-        'Your registration session has expired. Please sign in using the email and password you registered.'
+        'Your registration session has expired. Please sign in using your registered email and password.'
       );
       return;
     }
@@ -528,7 +655,7 @@ const StudentRegister: React.FC = () => {
 
       if (!refreshedUser?.emailVerified) {
         setError(
-          'Your email is not verified yet. Please open the verification link sent to your email, then try again.'
+          'Your email is not verified yet. Open the verification link sent to your email, then try again.'
         );
         return;
       }
@@ -613,14 +740,10 @@ const StudentRegister: React.FC = () => {
   };
 
   // =====================================================
-  // STEP 4: CREATE ACCOUNT AFTER FACE CHECK
+  // CREATE STUDENT ACCOUNT
   // =====================================================
 
-  const createStudentAccount = async (
-    event: React.FormEvent<HTMLFormElement>
-  ) => {
-    event.preventDefault();
-
+  const createStudentAccount = async () => {
     setError('');
     setSuccessMessage('');
 
@@ -629,7 +752,12 @@ const StudentRegister: React.FC = () => {
       return;
     }
 
-    if (!fullName.trim() || !school.trim() || !course || !yearLevel) {
+    if (
+      !fullName.trim() ||
+      !school.trim() ||
+      !course ||
+      !yearLevel
+    ) {
       setError('Please complete all required fields.');
       return;
     }
@@ -729,7 +857,7 @@ const StudentRegister: React.FC = () => {
   // MAIN FORM SUBMISSION
   // =====================================================
 
-  const handleRegister = async (
+  const handleRegister = (
     event: React.FormEvent<HTMLFormElement>
   ) => {
     event.preventDefault();
@@ -815,7 +943,7 @@ const StudentRegister: React.FC = () => {
             </button>
           </header>
 
-          {/* MAIN CONTENT */}
+          {/* MAIN */}
           <main className="student-register-main">
 
             <section className="student-register-intro">
@@ -837,6 +965,7 @@ const StudentRegister: React.FC = () => {
             <form
               className="student-register-form"
               onSubmit={handleRegister}
+              noValidate
             >
               {/* STEP HEADING */}
               <div className="student-register-form-heading">
@@ -897,7 +1026,7 @@ const StudentRegister: React.FC = () => {
                 </div>
               )}
 
-              {/* STEP 1: EMAIL */}
+              {/* STEP 1 */}
               {registrationStep === 1 && (
                 <div className="student-register-field">
                   <label htmlFor="email">
@@ -917,13 +1046,12 @@ const StudentRegister: React.FC = () => {
                         setEmail(event.target.value)
                       }
                       disabled={loading}
-                      required
                     />
                   </div>
                 </div>
               )}
 
-              {/* STEP 2: PASSWORD */}
+              {/* STEP 2 */}
               {registrationStep === 2 && (
                 <>
                   <div className="student-register-field">
@@ -943,7 +1071,6 @@ const StudentRegister: React.FC = () => {
                         onChange={(event) =>
                           setPassword(event.target.value)
                         }
-                        required
                       />
 
                       <button
@@ -951,11 +1078,6 @@ const StudentRegister: React.FC = () => {
                         className="student-register-eye"
                         onClick={() =>
                           setShowPassword(!showPassword)
-                        }
-                        aria-label={
-                          showPassword
-                            ? 'Hide password'
-                            : 'Show password'
                         }
                       >
                         <IonIcon
@@ -988,7 +1110,6 @@ const StudentRegister: React.FC = () => {
                         onChange={(event) =>
                           setConfirmPassword(event.target.value)
                         }
-                        required
                       />
 
                       <button
@@ -998,11 +1119,6 @@ const StudentRegister: React.FC = () => {
                           setShowConfirmPassword(
                             !showConfirmPassword
                           )
-                        }
-                        aria-label={
-                          showConfirmPassword
-                            ? 'Hide confirm password'
-                            : 'Show confirm password'
                         }
                       >
                         <IonIcon
@@ -1018,7 +1134,7 @@ const StudentRegister: React.FC = () => {
                 </>
               )}
 
-              {/* STEP 3: STUDENT INFORMATION */}
+              {/* STEP 3 */}
               {registrationStep === 3 && (
                 <>
                   <div className="student-register-field">
@@ -1038,7 +1154,6 @@ const StudentRegister: React.FC = () => {
                         onChange={(event) =>
                           setFullName(event.target.value)
                         }
-                        required
                       />
                     </div>
                   </div>
@@ -1080,7 +1195,6 @@ const StudentRegister: React.FC = () => {
                         onChange={(event) =>
                           setSchool(event.target.value)
                         }
-                        required
                       />
                     </div>
                   </div>
@@ -1099,7 +1213,6 @@ const StudentRegister: React.FC = () => {
                         onChange={(event) =>
                           setCourse(event.target.value)
                         }
-                        required
                       >
                         <option value="">
                           Select your course or program
@@ -1125,7 +1238,6 @@ const StudentRegister: React.FC = () => {
                       onChange={(event) =>
                         setYearLevel(event.target.value)
                       }
-                      required
                     >
                       <option value="">
                         Select your year level
@@ -1171,8 +1283,8 @@ const StudentRegister: React.FC = () => {
 
                     <p>
                       Make sure your face is clearly visible.
-                      Remove anything that covers your face
-                      and look directly at the camera.
+                      Look directly at the camera and stay in
+                      a well-lit area.
                     </p>
                   </div>
 
@@ -1245,7 +1357,9 @@ const StudentRegister: React.FC = () => {
                       <span>01</span>
                       <div>
                         <strong>Face the camera</strong>
-                        <small>Look directly at your device camera.</small>
+                        <small>
+                          Look directly at your device camera.
+                        </small>
                       </div>
                     </div>
 
@@ -1253,7 +1367,9 @@ const StudentRegister: React.FC = () => {
                       <span>02</span>
                       <div>
                         <strong>Good lighting</strong>
-                        <small>Make sure your face is well-lit.</small>
+                        <small>
+                          Make sure your face is well-lit.
+                        </small>
                       </div>
                     </div>
 
@@ -1261,7 +1377,9 @@ const StudentRegister: React.FC = () => {
                       <span>03</span>
                       <div>
                         <strong>One person only</strong>
-                        <small>Only your face should appear.</small>
+                        <small>
+                          Only your face should appear.
+                        </small>
                       </div>
                     </div>
                   </div>
@@ -1284,7 +1402,7 @@ const StudentRegister: React.FC = () => {
                           type="button"
                           expand="block"
                           className="face-primary-button"
-                          disabled={cameraLoading}
+                          disabled={cameraLoading || loading}
                           onClick={startCamera}
                         >
                           {cameraLoading ? (
@@ -1308,7 +1426,7 @@ const StudentRegister: React.FC = () => {
                             type="button"
                             expand="block"
                             className="face-primary-button"
-                            disabled={faceChecking}
+                            disabled={faceChecking || cameraLoading}
                             onClick={verifyFace}
                           >
                             {faceChecking ? (
@@ -1368,9 +1486,10 @@ const StudentRegister: React.FC = () => {
                     <p>
                       <strong>Your privacy matters.</strong>
                       This basic face check analyzes the camera
-                      preview to detect a face. The captured image
-                      is not uploaded or saved by this registration
-                      page.
+                      preview to detect whether a face is visible.
+                      It does not identify the person or perform
+                      liveness detection. The captured image is
+                      not uploaded or saved by this page.
                     </p>
                   </div>
                 </div>
@@ -1437,14 +1556,18 @@ const StudentRegister: React.FC = () => {
                     expand="block"
                     fill="outline"
                     className="student-register-back"
-                    disabled={loading || cameraLoading || faceChecking}
+                    disabled={
+                      loading ||
+                      cameraLoading ||
+                      faceChecking
+                    }
                     onClick={goBack}
                   >
                     Back
                   </IonButton>
                 )}
 
-              {/* CONTINUE / CREATE ACCOUNT */}
+              {/* CONTINUE BUTTON */}
               {registrationStep < 4 && (
                 <IonButton
                   type="submit"
@@ -1463,24 +1586,14 @@ const StudentRegister: React.FC = () => {
                 </IonButton>
               )}
 
+              {/* CREATE ACCOUNT AFTER FACE CHECK */}
               {registrationStep === 4 && faceVerified && (
                 <IonButton
                   type="button"
                   expand="block"
                   className="student-register-submit"
                   disabled={loading}
-                  onClick={(event) => {
-                    const form = event.currentTarget.closest('form');
-
-                    if (form) {
-                      const submitEvent = new Event('submit', {
-                        bubbles: true,
-                        cancelable: true,
-                      });
-
-                      form.dispatchEvent(submitEvent);
-                    }
-                  }}
+                  onClick={createStudentAccount}
                 >
                   {loading ? (
                     <>
