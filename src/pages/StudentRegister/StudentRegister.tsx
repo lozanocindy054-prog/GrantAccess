@@ -1,4 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
+
+import React, { useEffect, useState } from 'react';
 
 import {
   IonButton,
@@ -17,12 +18,8 @@ import {
   eyeOffOutline,
   businessOutline,
   bookOutline,
-  cameraOutline,
-  scanOutline,
   checkmarkCircle,
   shieldCheckmarkOutline,
-  refreshOutline,
-  videocamOutline,
 } from 'ionicons/icons';
 
 import { Link, useNavigate } from 'react-router-dom';
@@ -43,10 +40,9 @@ import {
   setDoc,
 } from 'firebase/firestore';
 
-import * as blazeface from '@tensorflow-models/blazeface';
-import * as tf from '@tensorflow/tfjs';
-
 import { auth, db } from '../../Firebase/config';
+
+import FaceLiveness from '../../components/FaceVerification/FaceLiveness';
 
 import './StudentRegister.css';
 
@@ -137,8 +133,6 @@ interface PendingStudentProfile {
   yearLevel: string;
 }
 
-type FaceModel = Awaited<ReturnType<typeof blazeface.load>>;
-
 const PENDING_PROFILE_KEY = 'grantAccessPendingStudentProfile';
 
 // =====================================================
@@ -172,75 +166,8 @@ const StudentRegister: React.FC = () => {
   const [successMessage, setSuccessMessage] = useState('');
   const [currentUser, setCurrentUser] = useState<User | null>(null);
 
-  // Face verification
-  const videoRef = useRef<HTMLVideoElement | null>(null);
-  const streamRef = useRef<MediaStream | null>(null);
-  const modelRef = useRef<FaceModel | null>(null);
-
-  const [cameraStarted, setCameraStarted] = useState(false);
-  const [cameraLoading, setCameraLoading] = useState(false);
-  const [faceChecking, setFaceChecking] = useState(false);
+  // Face liveness verification
   const [faceVerified, setFaceVerified] = useState(false);
-  const [faceStatus, setFaceStatus] = useState(
-    'Position your face inside the guide.'
-  );
-
-  // =====================================================
-  // STOP CAMERA
-  // =====================================================
-
-  const stopCamera = () => {
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach((track) => {
-        track.stop();
-      });
-
-      streamRef.current = null;
-    }
-
-    if (videoRef.current) {
-      videoRef.current.pause();
-      videoRef.current.srcObject = null;
-    }
-
-    setCameraStarted(false);
-  };
-
-  // =====================================================
-  // WAIT FOR MOBILE VIDEO TO BE READY
-  // =====================================================
-
-  const waitForVideoReady = async (
-    video: HTMLVideoElement
-  ): Promise<void> => {
-    return new Promise((resolve, reject) => {
-      const startTime = Date.now();
-
-      const checkVideo = () => {
-        if (
-          video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA &&
-          video.videoWidth > 0 &&
-          video.videoHeight > 0
-        ) {
-          resolve();
-          return;
-        }
-
-        if (Date.now() - startTime > 10000) {
-          reject(
-            new Error(
-              'Camera opened, but no video frame was received. Please try again.'
-            )
-          );
-          return;
-        }
-
-        requestAnimationFrame(checkVideo);
-      };
-
-      checkVideo();
-    });
-  };
 
   // =====================================================
   // RESTORE PENDING REGISTRATION
@@ -280,26 +207,6 @@ const StudentRegister: React.FC = () => {
   }, []);
 
   // =====================================================
-  // CAMERA CLEANUP WHEN CHANGING STEP
-  // =====================================================
-
-  useEffect(() => {
-    if (registrationStep !== 4) {
-      stopCamera();
-    }
-
-    return () => {
-      if (streamRef.current) {
-        streamRef.current.getTracks().forEach((track) => {
-          track.stop();
-        });
-
-        streamRef.current = null;
-      }
-    };
-  }, [registrationStep]);
-
-  // =====================================================
   // STEP 1: EMAIL
   // =====================================================
 
@@ -337,251 +244,6 @@ const StudentRegister: React.FC = () => {
     }
 
     setRegistrationStep(3);
-  };
-
-  // =====================================================
-  // START CAMERA - MOBILE AND DESKTOP
-  // =====================================================
-
-  const startCamera = async () => {
-    setError('');
-    setFaceVerified(false);
-    setCameraLoading(true);
-    setFaceStatus('Requesting camera permission...');
-
-    try {
-      if (
-        !window.isSecureContext ||
-        !navigator.mediaDevices?.getUserMedia
-      ) {
-        throw new Error(
-          'Camera access requires HTTPS. Please open GrantAccess using its secure HTTPS website.'
-        );
-      }
-
-      stopCamera();
-
-      let stream: MediaStream;
-
-      try {
-        // Preferred: front-facing camera
-        stream = await navigator.mediaDevices.getUserMedia({
-          audio: false,
-          video: {
-            facingMode: { ideal: 'user' },
-            width: { ideal: 640 },
-            height: { ideal: 480 },
-          },
-        });
-      } catch (firstError) {
-        console.warn(
-          'Preferred camera settings failed. Trying fallback:',
-          firstError
-        );
-
-        // Fallback for devices with different camera constraints
-        stream = await navigator.mediaDevices.getUserMedia({
-          audio: false,
-          video: true,
-        });
-      }
-
-      streamRef.current = stream;
-
-      const video = videoRef.current;
-
-      if (!video) {
-        stream.getTracks().forEach((track) => track.stop());
-        streamRef.current = null;
-
-        throw new Error('Camera preview element was not found.');
-      }
-
-      video.srcObject = stream;
-      video.autoplay = true;
-      video.muted = true;
-      video.playsInline = true;
-
-      // Important for mobile Safari and mobile Chrome
-      await video.play();
-
-      // Wait for real video frames before enabling face detection
-      await waitForVideoReady(video);
-
-      setCameraStarted(true);
-      setFaceStatus(
-        'Camera is ready. Position your face inside the guide.'
-      );
-    } catch (cameraError: unknown) {
-      console.error('Camera error:', cameraError);
-
-      stopCamera();
-
-      const errorName =
-        typeof cameraError === 'object' &&
-        cameraError !== null &&
-        'name' in cameraError
-          ? String(cameraError.name)
-          : '';
-
-      if (errorName === 'NotAllowedError' || errorName === 'PermissionDeniedError') {
-        setError(
-          'Camera permission was denied. Please allow camera access in your browser settings.'
-        );
-      } else if (errorName === 'NotFoundError') {
-        setError(
-          'No camera was found on this device.'
-        );
-      } else if (errorName === 'NotReadableError') {
-        setError(
-          'Your camera may be in use by another application. Close other camera apps and try again.'
-        );
-      } else {
-        setError(
-          cameraError instanceof Error
-            ? cameraError.message
-            : 'Unable to access your camera. Please try again.'
-        );
-      }
-
-      setFaceStatus('Camera could not be started.');
-    } finally {
-      setCameraLoading(false);
-    }
-  };
-
-  // =====================================================
-  // LOAD TENSORFLOW AND BLAZEFACE MODEL
-  // =====================================================
-
-  const loadFaceModel = async () => {
-    if (modelRef.current) {
-      return modelRef.current;
-    }
-
-    setFaceStatus('Preparing face detection system...');
-
-    // Try WebGL first. If unavailable, use CPU.
-    try {
-      await tf.setBackend('webgl');
-      await tf.ready();
-    } catch (webglError) {
-      console.warn(
-        'WebGL backend unavailable. Trying CPU backend:',
-        webglError
-      );
-
-      await tf.setBackend('cpu');
-      await tf.ready();
-    }
-
-    setFaceStatus('Loading face detection model...');
-
-    const model = await blazeface.load();
-
-    modelRef.current = model;
-
-    return model;
-  };
-
-  // =====================================================
-  // VERIFY FACE
-  // =====================================================
-
-  const verifyFace = async () => {
-    setError('');
-    setSuccessMessage('');
-
-    const video = videoRef.current;
-
-    if (!cameraStarted || !video) {
-      setError('Please start your camera first.');
-      return;
-    }
-
-    if (
-      video.readyState < HTMLMediaElement.HAVE_CURRENT_DATA ||
-      video.videoWidth === 0 ||
-      video.videoHeight === 0
-    ) {
-      setError(
-        'Camera is not ready yet. Please wait for the preview and try again.'
-      );
-      return;
-    }
-
-    setFaceChecking(true);
-    setFaceStatus('Analyzing your face...');
-
-    try {
-      const model = await loadFaceModel();
-
-      // Recheck video after model loading
-      if (
-        video.readyState < HTMLMediaElement.HAVE_CURRENT_DATA ||
-        video.videoWidth === 0
-      ) {
-        throw new Error(
-          'The camera preview stopped. Please restart your camera.'
-        );
-      }
-
-      const predictions = await model.estimateFaces(
-        video,
-        false
-      );
-
-      if (predictions.length === 0) {
-        setFaceVerified(false);
-        setFaceStatus(
-          'No face detected. Move closer and face the camera directly.'
-        );
-        return;
-      }
-
-      if (predictions.length > 1) {
-        setFaceVerified(false);
-        setFaceStatus(
-          'Multiple faces detected. Make sure only one person is visible.'
-        );
-        return;
-      }
-
-      setFaceVerified(true);
-
-      setFaceStatus(
-        'One face detected successfully. You may continue.'
-      );
-
-      stopCamera();
-    } catch (faceError: unknown) {
-      console.error('Face detection error:', faceError);
-
-      setFaceVerified(false);
-
-      setFaceStatus(
-        'Unable to analyze your face. Please try again.'
-      );
-
-      setError(
-        faceError instanceof Error
-          ? faceError.message
-          : 'Face detection failed. Please try again.'
-      );
-    } finally {
-      setFaceChecking(false);
-    }
-  };
-
-  // =====================================================
-  // RETAKE FACE VERIFICATION
-  // =====================================================
-
-  const retakeFaceVerification = () => {
-    setFaceVerified(false);
-    setFaceStatus('Start your camera to try again.');
-    setError('');
-    setSuccessMessage('');
   };
 
   // =====================================================
@@ -748,7 +410,7 @@ const StudentRegister: React.FC = () => {
     setSuccessMessage('');
 
     if (!faceVerified) {
-      setError('Please complete face verification first.');
+      setError('Please complete face liveness verification first.');
       return;
     }
 
@@ -907,7 +569,6 @@ const StudentRegister: React.FC = () => {
     } else if (registrationStep === 3) {
       setRegistrationStep(2);
     } else if (registrationStep === 4) {
-      stopCamera();
       setFaceVerified(false);
       setRegistrationStep(3);
     }
@@ -1001,7 +662,7 @@ const StudentRegister: React.FC = () => {
                     : registrationStep === 3
                     ? 'Complete your student information. Fields marked with * are required.'
                     : registrationStep === 4
-                    ? 'We will check that one face is visible through your camera.'
+                    ? 'Complete the face liveness challenges to verify that you are present.'
                     : 'Please check your email and click the verification link we sent you.'}
                 </p>
               </div>
@@ -1270,7 +931,7 @@ const StudentRegister: React.FC = () => {
                 </>
               )}
 
-              {/* STEP 4: FACE VERIFICATION */}
+              {/* STEP 4: MEDIA PIPE FACE LIVENESS */}
               {registrationStep === 4 && (
                 <div className="face-verification">
 
@@ -1282,216 +943,39 @@ const StudentRegister: React.FC = () => {
                     <h3>Let's verify your face</h3>
 
                     <p>
-                      Make sure your face is clearly visible.
-                      Look directly at the camera and stay in
-                      a well-lit area.
+                      Complete the face movement challenges
+                      using your front camera. Follow the
+                      instructions shown on screen.
                     </p>
                   </div>
 
-                  <div className="face-verification-camera-card">
+                  <FaceLiveness
+                    onVerified={() => {
+                      setFaceVerified(true);
+                      setError('');
+                      setSuccessMessage(
+                        'Face liveness verification completed successfully.'
+                      );
+                    }}
+                  />
 
-                    <div className="face-verification-camera-top">
-                      <span>
-                        <span className="face-live-dot" />
-                        CAMERA PREVIEW
-                      </span>
-
-                      <span className="face-camera-label">
-                        {cameraStarted ? 'Camera On' : 'Camera Off'}
-                      </span>
-                    </div>
-
-                    <div className="face-verification-camera">
-                      <video
-                        ref={videoRef}
-                        className="face-verification-video"
-                        autoPlay
-                        muted
-                        playsInline
-                      />
-
-                      {!cameraStarted && (
-                        <div className="face-camera-placeholder">
-                          <div className="face-placeholder-icon">
-                            <IonIcon icon={videocamOutline} />
-                          </div>
-
-                          <strong>Camera preview</strong>
-
-                          <span>
-                            Start your camera to begin
-                          </span>
-                        </div>
-                      )}
-
-                      {cameraStarted && !faceVerified && (
-                        <div className="face-guide">
-                          <div className="face-guide-oval" />
-                          <span>Position your face here</span>
-                        </div>
-                      )}
-
-                      {faceVerified && (
-                        <div className="face-camera-success-overlay">
-                          <IonIcon icon={checkmarkCircle} />
-                          <strong>Face detected</strong>
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="face-camera-status">
-                      <span
-                        className={
-                          faceVerified
-                            ? 'face-status-indicator verified'
-                            : 'face-status-indicator'
-                        }
-                      />
-
-                      <p>{faceStatus}</p>
-                    </div>
-                  </div>
-
-                  <div className="face-verification-instructions">
-                    <div className="face-instruction">
-                      <span>01</span>
-                      <div>
-                        <strong>Face the camera</strong>
-                        <small>
-                          Look directly at your device camera.
-                        </small>
-                      </div>
-                    </div>
-
-                    <div className="face-instruction">
-                      <span>02</span>
-                      <div>
-                        <strong>Good lighting</strong>
-                        <small>
-                          Make sure your face is well-lit.
-                        </small>
-                      </div>
-                    </div>
-
-                    <div className="face-instruction">
-                      <span>03</span>
-                      <div>
-                        <strong>One person only</strong>
-                        <small>
-                          Only your face should appear.
-                        </small>
-                      </div>
-                    </div>
-                  </div>
-
-                  {faceVerified ? (
+                  {faceVerified && (
                     <div className="face-verification-complete">
                       <IonIcon icon={checkmarkCircle} />
 
                       <div>
-                        <strong>Face check completed!</strong>
+                        <strong>
+                          Face verification completed!
+                        </strong>
+
                         <span>
-                          You can now continue to create your account.
+                          You can now continue to create your
+                          student account.
                         </span>
                       </div>
                     </div>
-                  ) : (
-                    <div className="face-verification-actions">
-                      {!cameraStarted ? (
-                        <IonButton
-                          type="button"
-                          expand="block"
-                          className="face-primary-button"
-                          disabled={cameraLoading || loading}
-                          onClick={startCamera}
-                        >
-                          {cameraLoading ? (
-                            <>
-                              <IonSpinner name="crescent" />
-                              &nbsp; Starting Camera...
-                            </>
-                          ) : (
-                            <>
-                              <IonIcon
-                                slot="start"
-                                icon={cameraOutline}
-                              />
-                              Start Camera
-                            </>
-                          )}
-                        </IonButton>
-                      ) : (
-                        <>
-                          <IonButton
-                            type="button"
-                            expand="block"
-                            className="face-primary-button"
-                            disabled={faceChecking || cameraLoading}
-                            onClick={verifyFace}
-                          >
-                            {faceChecking ? (
-                              <>
-                                <IonSpinner name="crescent" />
-                                &nbsp; Checking Face...
-                              </>
-                            ) : (
-                              <>
-                                <IonIcon
-                                  slot="start"
-                                  icon={scanOutline}
-                                />
-                                Verify My Face
-                              </>
-                            )}
-                          </IonButton>
-
-                          <IonButton
-                            type="button"
-                            expand="block"
-                            fill="outline"
-                            className="face-secondary-button"
-                            onClick={() => {
-                              stopCamera();
-                              setFaceStatus(
-                                'Camera stopped. Start again when ready.'
-                              );
-                            }}
-                          >
-                            Stop Camera
-                          </IonButton>
-                        </>
-                      )}
-                    </div>
                   )}
 
-                  {faceVerified && (
-                    <IonButton
-                      type="button"
-                      expand="block"
-                      fill="outline"
-                      className="face-secondary-button"
-                      onClick={retakeFaceVerification}
-                    >
-                      <IonIcon
-                        slot="start"
-                        icon={refreshOutline}
-                      />
-                      Retake Face Check
-                    </IonButton>
-                  )}
-
-                  <div className="face-privacy-note">
-                    <IonIcon icon={shieldCheckmarkOutline} />
-
-                    <p>
-                      <strong>Your privacy matters.</strong>
-                      This basic face check analyzes the camera
-                      preview to detect whether a face is visible.
-                      It does not identify the person or perform
-                      liveness detection. The captured image is
-                      not uploaded or saved by this page.
-                    </p>
-                  </div>
                 </div>
               )}
 
@@ -1556,11 +1040,7 @@ const StudentRegister: React.FC = () => {
                     expand="block"
                     fill="outline"
                     className="student-register-back"
-                    disabled={
-                      loading ||
-                      cameraLoading ||
-                      faceChecking
-                    }
+                    disabled={loading}
                     onClick={goBack}
                   >
                     Back
@@ -1617,6 +1097,7 @@ const StudentRegister: React.FC = () => {
               © {new Date().getFullYear()} GrantAccess.
               All rights reserved.
             </footer>
+
           </main>
         </div>
       </IonContent>
