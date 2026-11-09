@@ -1,0 +1,483 @@
+
+/* =====================================================
+   GRANTACCESS - FACE LIVENESS VERIFICATION
+   Responsive Green and White Design
+===================================================== */
+
+.ga-liveness {
+  width: 100%;
+  max-width: 540px;
+  margin: 0 auto;
+  padding: 12px 0 24px;
+  color: #202b23;
+  font-family: inherit;
+}
+
+/* INTRO */
+
+.ga-liveness-intro {
+  text-align: center;
+  margin-bottom: 22px;
+}
+
+.ga-liveness-icon {
+  width: 58px;
+  height: 58px;
+  margin: 0 auto 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #e9f5ec;
+  color: #24783b;
+  border-radius: 18px;
+  font-size: 29px;
+}
+
+.ga-liveness-intro h3 {
+  margin: 0 0 8px;
+  color: #195d2c;
+  font-size: 21px;
+  font-weight: 800;
+}
+
+.ga-liveness-intro p {
+  max-width: 420px;
+  margin: 0 auto;
+  color: #758078;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* CAMERA CARD */
+
+.ga-liveness-camera-card {
+  width: 100%;
+  overflow: hidden;
+  background: #ffffff;
+  border: 1px solid #e2eae3;
+  border-radius: 20px;
+  box-shadow: 0 5px 20px rgba(25, 93, 44, 0.07);
+}
+
+.ga-liveness-camera-heading {
+  min-height: 48px;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border-bottom: 1px solid #edf2ee;
+}
+
+.ga-liveness-camera-heading > span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #202b23;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.7px;
+}
+
+.ga-liveness-camera-heading small {
+  color: #758078;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.ga-liveness-dot {
+  width: 8px;
+  height: 8px;
+  display: inline-block;
+  border-radius: 50%;
+  background: #aab4ac;
+}
+
+.ga-liveness-dot.active {
+  background: #159447;
+  box-shadow: 0 0 0 4px rgba(21, 148, 71, 0.12);
+}
+
+/* VIDEO PREVIEW */
+
+.ga-liveness-preview {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  min-height: 220px;
+  max-height: 430px;
+  overflow: hidden;
+  background: #18221b;
+}
+
+.ga-liveness-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  transform: scaleX(-1);
+  background: #18221b;
+}
+
+.ga-liveness-placeholder {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  color: #ffffff;
+  background: linear-gradient(
+    145deg,
+    #26352a,
+    #142019
+  );
+}
+
+.ga-liveness-placeholder ion-icon {
+  font-size: 46px;
+  color: #8bd59e;
+}
+
+.ga-liveness-placeholder strong {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.ga-liveness-placeholder span {
+  color: #c5d3c8;
+  font-size: 12px;
+}
+
+/* FACE GUIDE */
+
+.ga-liveness-guide {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.ga-liveness-oval {
+  width: 57%;
+  height: 78%;
+  max-width: 250px;
+  border: 2px solid rgba(125, 235, 157, 0.95);
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 999px rgba(0, 0, 0, 0.12),
+    0 0 18px rgba(21, 148, 71, 0.2);
+}
+
+/* STATUS */
+
+.ga-liveness-status {
+  min-height: 54px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #ffffff;
+}
+
+.ga-liveness-status > span {
+  width: 9px;
+  height: 9px;
+  flex: 0 0 9px;
+  border-radius: 50%;
+  background: #e5a52b;
+}
+
+.ga-liveness-status > span.verified {
+  background: #159447;
+}
+
+.ga-liveness-status p {
+  margin: 0;
+  color: #48554b;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* CHALLENGE */
+
+.ga-liveness-challenge {
+  margin-top: 16px;
+  padding: 18px;
+  background: #f3fbf5;
+  border: 1px solid #dcefe1;
+  border-radius: 16px;
+  text-align: center;
+}
+
+.ga-liveness-challenge-label {
+  display: block;
+  margin-bottom: 9px;
+  color: #758078;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.ga-liveness-challenge > strong {
+  display: block;
+  color: #195d2c;
+  font-size: 17px;
+  font-weight: 900;
+}
+
+.ga-liveness-challenge > p {
+  margin: 8px 0 15px;
+  color: #5d6b60;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.ga-liveness-progress {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 7px;
+  margin-bottom: 9px;
+}
+
+.ga-liveness-progress span {
+  width: 48px;
+  height: 6px;
+  border-radius: 10px;
+  background: #dce5de;
+  transition: background 0.2s ease;
+}
+
+.ga-liveness-progress span.current {
+  background: #e4aa35;
+}
+
+.ga-liveness-progress span.done {
+  background: #159447;
+}
+
+.ga-liveness-challenge > small {
+  color: #758078;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+/* SUCCESS */
+
+.ga-liveness-success-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: #ffffff;
+  background: rgba(13, 75, 35, 0.82);
+  text-align: center;
+}
+
+.ga-liveness-success-overlay ion-icon {
+  font-size: 58px;
+  color: #9af0b0;
+}
+
+.ga-liveness-success-overlay strong {
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.ga-liveness-complete {
+  margin-top: 17px;
+  padding: 15px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #eaf8ef;
+  border: 1px solid #c8e8d1;
+  border-radius: 14px;
+}
+
+.ga-liveness-complete > ion-icon {
+  flex: 0 0 auto;
+  font-size: 30px;
+  color: #159447;
+}
+
+.ga-liveness-complete > div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ga-liveness-complete strong {
+  color: #195d2c;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.ga-liveness-complete span {
+  color: #627267;
+  font-size: 11px;
+}
+
+/* ERROR */
+
+.ga-liveness-error {
+  margin-top: 14px;
+  padding: 12px 14px;
+  color: #a52c2c;
+  background: #fff0f0;
+  border: 1px solid #f2cccc;
+  border-radius: 12px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* BUTTONS */
+
+.ga-liveness-primary {
+  width: 100%;
+  margin: 17px 0 0;
+  --background: #24783b;
+  --background-hover: #195d2c;
+  --background-activated: #195d2c;
+  --color: #ffffff;
+  --border-radius: 13px;
+  --box-shadow: 0 5px 13px rgba(36, 120, 59, 0.16);
+  font-size: 13px;
+  font-weight: 800;
+  min-height: 48px;
+}
+
+.ga-liveness-primary::part(native) {
+  min-height: 48px;
+}
+
+.ga-liveness-secondary {
+  width: 100%;
+  margin: 10px 0 0;
+  --color: #24783b;
+  --border-color: #b9d9c1;
+  --border-radius: 13px;
+  font-size: 12px;
+  font-weight: 700;
+  min-height: 44px;
+}
+
+.ga-liveness-secondary::part(native) {
+  min-height: 44px;
+}
+
+/* PRIVACY */
+
+.ga-liveness-privacy {
+  margin-top: 18px;
+  padding: 13px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: #f7faf7;
+  border: 1px solid #e6eee7;
+  border-radius: 12px;
+}
+
+.ga-liveness-privacy ion-icon {
+  flex: 0 0 auto;
+  margin-top: 2px;
+  color: #24783b;
+  font-size: 18px;
+}
+
+.ga-liveness-privacy p {
+  margin: 0;
+  color: #758078;
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+/* TABLET */
+
+@media (min-width: 768px) {
+  .ga-liveness {
+    max-width: 500px;
+    padding-top: 18px;
+  }
+
+  .ga-liveness-preview {
+    max-height: 390px;
+  }
+
+  .ga-liveness-intro h3 {
+    font-size: 23px;
+  }
+}
+
+/* MOBILE */
+
+@media (max-width: 480px) {
+  .ga-liveness {
+    padding: 8px 0 20px;
+  }
+
+  .ga-liveness-intro {
+    margin-bottom: 17px;
+  }
+
+  .ga-liveness-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 16px;
+    font-size: 26px;
+  }
+
+  .ga-liveness-intro h3 {
+    font-size: 19px;
+  }
+
+  .ga-liveness-intro p {
+    padding: 0 8px;
+    font-size: 12px;
+  }
+
+  .ga-liveness-preview {
+    min-height: 210px;
+    aspect-ratio: 3 / 4;
+    max-height: 390px;
+  }
+
+  .ga-liveness-oval {
+    width: 67%;
+    height: 75%;
+  }
+
+  .ga-liveness-challenge {
+    padding: 15px 12px;
+  }
+
+  .ga-liveness-challenge > strong {
+    font-size: 15px;
+  }
+
+  .ga-liveness-camera-heading {
+    min-height: 44px;
+    padding: 0 12px;
+  }
+
+  .ga-liveness-status {
+    padding: 11px 12px;
+  }
+
+  .ga-liveness-privacy {
+    padding: 11px;
+  }
+}

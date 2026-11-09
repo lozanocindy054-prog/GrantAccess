@@ -20,6 +20,7 @@
     "@capacitor/status-bar": "8.0.4",
     "@ionic/react": "^9.0.0",
     "@ionic/react-router": "^9.0.0",
+    "@mediapipe/tasks-vision": "^1.2.2",
     "@tensorflow-models/blazeface": "^0.1.0",
     "@tensorflow/tfjs": "^4.22.0",
     "ionicons": "^8.1.0",
