@@ -140,6 +140,7 @@ const StudentRegister: React.FC = () => {
   ------------------------------------------------------- */
 
   const [faceVerified, setFaceVerified] = useState(false);
+
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] =
     useState(false);
@@ -148,6 +149,16 @@ const StudentRegister: React.FC = () => {
 
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+
+  /*
+    Store the newly created Firebase user.
+
+    This prevents creating another Firebase Auth account
+    when only the Firestore profile saving needs to be retried.
+  */
+
+  const [createdAuthUser, setCreatedAuthUser] =
+    useState<User | null>(null);
 
   /* =========================================================
      VALIDATION
@@ -249,6 +260,10 @@ const StudentRegister: React.FC = () => {
   const createStudentAccount = async (
     faceLivenessPassed = faceVerified
   ) => {
+    if (loading) {
+      return;
+    }
+
     setError('');
     setSuccessMessage('');
 
@@ -282,24 +297,47 @@ const StudentRegister: React.FC = () => {
     setLoading(true);
 
     try {
-      /* CREATE FIREBASE AUTH ACCOUNT */
+      let user: User;
 
-      const userCredential =
-        await createUserWithEmailAndPassword(
-          auth,
-          normalizedEmail,
-          password
-        );
+      /*
+        STEP 1:
+        Reuse the Firebase user if account creation already
+        succeeded during a previous attempt.
+      */
 
-      const user: User = userCredential.user;
+      if (createdAuthUser) {
+        user = createdAuthUser;
+      } else {
+        /*
+          STEP 2:
+          Create a new Firebase Authentication account.
+        */
 
-      /* UPDATE FIREBASE DISPLAY NAME */
+        const userCredential =
+          await createUserWithEmailAndPassword(
+            auth,
+            normalizedEmail,
+            password
+          );
+
+        user = userCredential.user;
+
+        setCreatedAuthUser(user);
+      }
+
+      /*
+        STEP 3:
+        Update Firebase display name.
+      */
 
       await updateProfile(user, {
         displayName: fullName.trim(),
       });
 
-      /* STUDENT PROFILE DATA */
+      /*
+        STEP 4:
+        Prepare student profile.
+      */
 
       const studentProfile: StudentProfile = {
         uid: user.uid,
@@ -314,20 +352,27 @@ const StudentRegister: React.FC = () => {
         createdAt: serverTimestamp(),
       };
 
-      /* SAVE STUDENT PROFILE TO FIRESTORE */
+      /*
+        STEP 5:
+        Save student profile to Firestore.
+      */
 
       await setDoc(
         doc(db, 'students', user.uid),
         studentProfile
       );
 
+      /*
+        STEP 6:
+        Registration successful.
+        Proceed directly to Student Dashboard.
+      */
+
       setSuccessMessage(
         'Your GrantAccess account has been created successfully!'
       );
 
-      /* GO DIRECTLY TO STUDENT DASHBOARD */
-
-      navigate('/student-home', {
+      navigate('/student-dashboard', {
         replace: true,
         state: {
           registrationSuccess: true,
@@ -386,6 +431,10 @@ const StudentRegister: React.FC = () => {
   ========================================================= */
 
   const handleFaceVerified = async () => {
+    if (loading || faceVerified) {
+      return;
+    }
+
     setFaceVerified(true);
     setError('');
 
@@ -394,8 +443,8 @@ const StudentRegister: React.FC = () => {
     );
 
     /*
-      Pass true directly because React state updates are asynchronous.
-      This avoids reading the previous faceVerified value.
+      Pass true directly because React state updates are
+      asynchronous. This avoids reading the previous state.
     */
 
     await createStudentAccount(true);

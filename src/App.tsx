@@ -418,12 +418,24 @@ const App: React.FC = () => {
           />
 
           {/* ==========================================
-              STUDENT DASHBOARD
+              STUDENT HOME / DASHBOARD
           ========================================== */}
 
           <Route
             path="/student-dashboard"
             element={<StudentHome />}
+          />
+
+          {/* OLD STUDENT HOME URL REDIRECT */}
+
+          <Route
+            path="/student-home"
+            element={
+              <Navigate
+                to="/student-dashboard"
+                replace
+              />
+            }
           />
 
           {/* ==========================================
