@@ -20,6 +20,8 @@ import {
   bookOutline,
   checkmarkCircle,
   shieldCheckmarkOutline,
+  arrowBackOutline,
+  arrowForwardOutline,
 } from 'ionicons/icons';
 
 import { Link, useNavigate } from 'react-router-dom';
@@ -42,83 +44,9 @@ import FaceLiveness from '../../components/FaceVerification/FaceLiveness';
 
 import './StudentRegister.css';
 
-// =====================================================
-// COURSE OPTIONS
-// =====================================================
-
-const courses = [
-  'BS Information Technology',
-  'BS Computer Science',
-  'BS Information Systems',
-  'BS Computer Engineering',
-  'BS Electronics Engineering',
-  'BS Electrical Engineering',
-  'BS Civil Engineering',
-  'BS Mechanical Engineering',
-  'BS Industrial Engineering',
-  'BS Architecture',
-  'BS Accountancy',
-  'BS Accounting Information System',
-  'BS Business Administration',
-  'BS Entrepreneurship',
-  'BS Management Accounting',
-  'BS Hospitality Management',
-  'BS Tourism Management',
-  'BS Office Administration',
-  'BS Marketing Management',
-  'BS Financial Management',
-  'BS Real Estate Management',
-  'BS Psychology',
-  'BS Biology',
-  'BS Mathematics',
-  'BS Statistics',
-  'BS Chemistry',
-  'BS Physics',
-  'BS Nursing',
-  'BS Pharmacy',
-  'BS Medical Technology / Medical Laboratory Science',
-  'BS Physical Therapy',
-  'BS Midwifery',
-  'BS Nutrition and Dietetics',
-  'BS Public Health',
-  'BS Radiologic Technology',
-  'BS Respiratory Therapy',
-  'BS Social Work',
-  'BS Criminology',
-  'BS Agriculture',
-  'BS Agricultural Technology',
-  'BS Fisheries',
-  'BS Forestry',
-  'BS Environmental Science',
-  'BS Development Communication',
-  'Bachelor of Elementary Education',
-  'Bachelor of Secondary Education',
-  'Bachelor of Early Childhood Education',
-  'Bachelor of Special Needs Education',
-  'Bachelor of Physical Education',
-  'Bachelor of Technology and Livelihood Education',
-  'Bachelor of Technical-Vocational Teacher Education',
-  'BA Communication',
-  'BA English Language Studies',
-  'BA Political Science',
-  'BA Sociology',
-  'BA Filipino',
-  'BA History',
-  'BA Philosophy',
-  'Bachelor of Public Administration',
-  'BS Marine Transportation',
-  'BS Marine Engineering',
-  'Bachelor of Library and Information Science',
-  'Bachelor of Fine Arts',
-  'Bachelor of Multimedia Arts',
-  'Bachelor of Music',
-  'Bachelor of Science in Entrepreneurship',
-  'Other',
-];
-
-// =====================================================
-// TYPES
-// =====================================================
+/* =========================================================
+   TYPES
+========================================================= */
 
 interface StudentProfile {
   uid: string;
@@ -133,130 +61,213 @@ interface StudentProfile {
   createdAt: ReturnType<typeof serverTimestamp>;
 }
 
-// =====================================================
-// COMPONENT
-// =====================================================
+/* =========================================================
+   COURSE OPTIONS
+========================================================= */
+
+const courseOptions = [
+  'BS Information Technology',
+  'BS Computer Science',
+  'BS Information Systems',
+  'BS Computer Engineering',
+  'BS Electronics Engineering',
+  'BS Electrical Engineering',
+  'BS Civil Engineering',
+  'BS Mechanical Engineering',
+  'BS Industrial Engineering',
+  'BS Accountancy',
+  'BS Accounting Information System',
+  'BS Business Administration',
+  'BS Entrepreneurship',
+  'BS Hospitality Management',
+  'BS Tourism Management',
+  'BS Criminology',
+  'BS Nursing',
+  'BS Medical Technology',
+  'BS Pharmacy',
+  'BS Psychology',
+  'BS Biology',
+  'BS Agriculture',
+  'BS Agricultural Technology',
+  'BS Fisheries',
+  'BS Environmental Science',
+  'Bachelor of Elementary Education',
+  'Bachelor of Secondary Education',
+  'Bachelor of Early Childhood Education',
+  'Bachelor of Physical Education',
+  'Bachelor of Arts in Communication',
+  'Bachelor of Arts in English',
+  'Bachelor of Arts in Political Science',
+  'Bachelor of Arts in Psychology',
+  'Other',
+];
+
+const yearLevelOptions = [
+  '1st Year',
+  '2nd Year',
+  '3rd Year',
+  '4th Year',
+  '5th Year',
+];
+
+/* =========================================================
+   STUDENT REGISTER
+========================================================= */
 
 const StudentRegister: React.FC = () => {
   const navigate = useNavigate();
 
-  // STUDENT ACCOUNT INFORMATION
+  /* -------------------------------------------------------
+     FORM STATES
+  ------------------------------------------------------- */
+
+  const [registrationStep, setRegistrationStep] = useState(1);
+
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
-  // STUDENT DETAILS
   const [studentId, setStudentId] = useState('');
   const [school, setSchool] = useState('');
   const [course, setCourse] = useState('');
   const [yearLevel, setYearLevel] = useState('');
 
-  // PASSWORD VISIBILITY
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
+
+  /* -------------------------------------------------------
+     VERIFICATION AND UI STATES
+  ------------------------------------------------------- */
+
+  const [faceVerified, setFaceVerified] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] =
     useState(false);
 
-  // REGISTRATION STATE
-  const [registrationStep, setRegistrationStep] = useState(1);
-  const [acceptedTerms, setAcceptedTerms] = useState(false);
-  const [faceVerified, setFaceVerified] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // MESSAGES
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
 
-  // =====================================================
-  // STEP 1: EMAIL
-  // =====================================================
+  /* =========================================================
+     VALIDATION
+  ========================================================= */
 
-  const continueWithEmail = () => {
+  const validateCurrentStep = (): boolean => {
     setError('');
     setSuccessMessage('');
 
-    const normalizedEmail = email.trim().toLowerCase();
+    if (registrationStep === 1) {
+      if (!email.trim()) {
+        setError('Please enter your email address.');
+        return false;
+      }
 
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
-      setError('Please enter a valid email address.');
-      return;
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+      if (!emailPattern.test(email.trim())) {
+        setError('Please enter a valid email address.');
+        return false;
+      }
+
+      return true;
     }
 
-    setEmail(normalizedEmail);
-    setRegistrationStep(2);
+    if (registrationStep === 2) {
+      if (!password) {
+        setError('Please enter your password.');
+        return false;
+      }
+
+      if (password.length < 6) {
+        setError('Password must contain at least 6 characters.');
+        return false;
+      }
+
+      if (password !== confirmPassword) {
+        setError('Passwords do not match.');
+        return false;
+      }
+
+      return true;
+    }
+
+    if (registrationStep === 3) {
+      if (
+        !fullName.trim() ||
+        !studentId.trim() ||
+        !school.trim() ||
+        !course ||
+        !yearLevel
+      ) {
+        setError('Please complete all required student information.');
+        return false;
+      }
+
+      if (!acceptedTerms) {
+        setError('Please accept the Terms and Conditions.');
+        return false;
+      }
+
+      return true;
+    }
+
+    return true;
   };
 
-  // =====================================================
-  // STEP 2: PASSWORD
-  // =====================================================
+  /* =========================================================
+     NEXT STEP
+  ========================================================= */
 
-  const continueWithPassword = () => {
+  const handleNextStep = () => {
+    if (!validateCurrentStep()) {
+      return;
+    }
+
+    setRegistrationStep((previousStep) => previousStep + 1);
     setError('');
     setSuccessMessage('');
-
-    if (password.length < 6) {
-      setError('Password must contain at least 6 characters.');
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      setError('Passwords do not match.');
-      return;
-    }
-
-    setRegistrationStep(3);
   };
 
-  // =====================================================
-  // STEP 3: STUDENT INFORMATION
-  // =====================================================
+  /* =========================================================
+     PREVIOUS STEP
+  ========================================================= */
 
-  const continueWithStudentInformation = () => {
+  const handlePreviousStep = () => {
+    if (registrationStep > 1 && !loading) {
+      setRegistrationStep((previousStep) => previousStep - 1);
+      setError('');
+      setSuccessMessage('');
+    }
+  };
+
+  /* =========================================================
+     CREATE FIREBASE ACCOUNT
+     AUTOMATICALLY CALLED AFTER FACE LIVENESS
+  ========================================================= */
+
+  const createStudentAccount = async (
+    faceLivenessPassed = faceVerified
+  ) => {
     setError('');
     setSuccessMessage('');
+
+    if (!faceLivenessPassed) {
+      setError('Please complete face liveness verification first.');
+      return;
+    }
 
     if (
+      !email.trim() ||
+      !password ||
       !fullName.trim() ||
+      !studentId.trim() ||
       !school.trim() ||
       !course ||
       !yearLevel
     ) {
-      setError('Please complete all required fields.');
-      return;
-    }
-
-    if (!acceptedTerms) {
-      setError('Please accept the Terms and Conditions.');
-      return;
-    }
-
-    setFaceVerified(false);
-    setRegistrationStep(4);
-  };
-
-  // =====================================================
-  // CREATE FIREBASE ACCOUNT AND SAVE STUDENT PROFILE
-  // =====================================================
-
-  const createStudentAccount = async () => {
-    setError('');
-    setSuccessMessage('');
-
-    if (!faceVerified) {
-      setError(
-        'Please complete face liveness verification first.'
-      );
-      return;
-    }
-
-    if (
-      !fullName.trim() ||
-      !school.trim() ||
-      !course ||
-      !yearLevel
-    ) {
-      setError('Please complete all required student information.');
-      setRegistrationStep(3);
+      setError('Some required information is missing.');
+      setRegistrationStep(1);
       return;
     }
 
@@ -271,39 +282,25 @@ const StudentRegister: React.FC = () => {
     setLoading(true);
 
     try {
-      let user: User;
+      /* CREATE FIREBASE AUTH ACCOUNT */
 
-      // If a previous attempt already created the Firebase account,
-      // reuse the current account instead of creating another one.
-      const existingUser = auth.currentUser;
+      const userCredential =
+        await createUserWithEmailAndPassword(
+          auth,
+          normalizedEmail,
+          password
+        );
 
-      if (existingUser) {
-        if (
-          existingUser.email?.toLowerCase() !== normalizedEmail
-        ) {
-          throw new Error(
-            'Another account is currently signed in. Please sign out first.'
-          );
-        }
+      const user: User = userCredential.user;
 
-        user = existingUser;
-      } else {
-        const userCredential =
-          await createUserWithEmailAndPassword(
-            auth,
-            normalizedEmail,
-            password
-          );
+      /* UPDATE FIREBASE DISPLAY NAME */
 
-        user = userCredential.user;
-      }
-
-      // UPDATE FIREBASE AUTH DISPLAY NAME
       await updateProfile(user, {
         displayName: fullName.trim(),
       });
 
-      // STUDENT FIRESTORE PROFILE
+      /* STUDENT PROFILE DATA */
+
       const studentProfile: StudentProfile = {
         uid: user.uid,
         fullName: fullName.trim(),
@@ -313,25 +310,23 @@ const StudentRegister: React.FC = () => {
         course,
         yearLevel,
         role: 'student',
-
-        // No email verification is required in this registration flow.
-        // This field reflects Firebase Auth's actual verification state.
         emailVerified: user.emailVerified,
-
         createdAt: serverTimestamp(),
       };
 
-      // SAVE STUDENT INFORMATION
+      /* SAVE STUDENT PROFILE TO FIRESTORE */
+
       await setDoc(
         doc(db, 'students', user.uid),
         studentProfile
       );
 
       setSuccessMessage(
-        'Your student account has been created successfully!'
+        'Your GrantAccess account has been created successfully!'
       );
 
-      // DIRECT TO STUDENT DASHBOARD
+      /* GO DIRECTLY TO STUDENT DASHBOARD */
+
       navigate('/student-home', {
         replace: true,
         state: {
@@ -357,30 +352,21 @@ const StudentRegister: React.FC = () => {
         setError(
           'This email is already registered. Please sign in instead.'
         );
-
       } else if (errorCode === 'auth/invalid-email') {
         setError('Please enter a valid email address.');
-
       } else if (errorCode === 'auth/weak-password') {
-        setError(
-          'Please choose a stronger password with at least 6 characters.'
-        );
-
+        setError('Please choose a stronger password.');
       } else if (errorCode === 'auth/network-request-failed') {
         setError(
           'Network error. Please check your internet connection.'
         );
-
-      } else if (errorCode === 'auth/too-many-requests') {
-        setError(
-          'Too many requests. Please wait before trying again.'
-        );
-
-      } else if (errorCode === 'permission-denied') {
+      } else if (
+        errorCode === 'permission-denied' ||
+        errorCode === 'firestore/permission-denied'
+      ) {
         setError(
           'Unable to save your student profile. Please check your Firestore security rules.'
         );
-
       } else {
         setError(
           registrationError instanceof Error
@@ -394,417 +380,410 @@ const StudentRegister: React.FC = () => {
     }
   };
 
-  // =====================================================
-  // FORM SUBMISSION
-  // =====================================================
+  /* =========================================================
+     FACE LIVENESS SUCCESS
+     AUTOMATIC ACCOUNT CREATION
+  ========================================================= */
 
-  const handleRegister = (
-    event: React.FormEvent<HTMLFormElement>
-  ) => {
-    event.preventDefault();
-
-    if (loading) return;
-
-    if (registrationStep === 1) {
-      continueWithEmail();
-      return;
-    }
-
-    if (registrationStep === 2) {
-      continueWithPassword();
-      return;
-    }
-
-    if (registrationStep === 3) {
-      continueWithStudentInformation();
-    }
-  };
-
-  // =====================================================
-  // FACE LIVENESS CALLBACK
-  // =====================================================
-
-  const handleFaceVerified = () => {
+  const handleFaceVerified = async () => {
     setFaceVerified(true);
     setError('');
 
     setSuccessMessage(
-      'Face liveness verification completed successfully.'
+      'Face verification successful! Creating your student account...'
     );
+
+    /*
+      Pass true directly because React state updates are asynchronous.
+      This avoids reading the previous faceVerified value.
+    */
+
+    await createStudentAccount(true);
   };
 
-  // =====================================================
-  // BACK BUTTON
-  // =====================================================
-
-  const goBack = () => {
-    if (loading) return;
-
-    setError('');
-    setSuccessMessage('');
-
-    if (registrationStep === 2) {
-      setRegistrationStep(1);
-
-    } else if (registrationStep === 3) {
-      setRegistrationStep(2);
-
-    } else if (registrationStep === 4) {
-      setFaceVerified(false);
-      setRegistrationStep(3);
-    }
-  };
-
-  // =====================================================
-  // USER INTERFACE
-  // =====================================================
+  /* =========================================================
+     RENDER
+  ========================================================= */
 
   return (
     <IonPage>
-      <IonContent className="student-register-content">
-        <div className="student-register-wrapper">
+      <IonContent fullscreen>
+        <div className="student-register-page">
 
           {/* HEADER */}
 
-          <header className="student-register-header">
-            <button
-              type="button"
-              className="student-register-brand"
-              onClick={() => navigate('/')}
-              aria-label="Go to GrantAccess home"
-            >
-              <span className="student-register-logo">
+          <div className="student-register-header">
+            <div className="student-register-brand">
+              <div className="student-register-logo">
                 <IonIcon icon={schoolOutline} />
-              </span>
+              </div>
 
-              <span className="student-register-brand-text">
-                <strong>
-                  Grant<span>Access</span>
-                </strong>
+              <div>
+                <h1>GrantAccess</h1>
+                <p>Scholarship Listing and Application System</p>
+              </div>
+            </div>
 
-                <small>YOUR FUTURE STARTS HERE</small>
-              </span>
-            </button>
-          </header>
-
-          <main className="student-register-main">
-
-            {/* INTRO */}
-
-            <section className="student-register-intro">
-              <span className="student-register-eyebrow">
-                STUDENT REGISTRATION
-              </span>
-
-              <h1>
-                Create Your <span>Student Account</span>
-              </h1>
-
+            <div className="student-register-header-text">
+              <h2>Create Student Account</h2>
               <p>
-                Join GrantAccess to discover scholarship
-                opportunities and manage your applications
-                in one place.
+                Join GrantAccess and discover scholarship opportunities.
               </p>
-            </section>
+            </div>
+          </div>
 
-            {/* REGISTRATION FORM */}
+          {/* REGISTRATION CARD */}
 
-            <form
-              className="student-register-form"
-              onSubmit={handleRegister}
-              noValidate
-            >
+          <div className="student-register-container">
+            <div className="student-register-card">
 
-              {/* STEP HEADING */}
+              {/* STEP INDICATOR */}
 
-              <div className="student-register-form-heading">
-                <div className="student-register-step-label">
-                  STEP {registrationStep} OF 4
+              <div className="student-register-steps">
+
+                <div
+                  className={`student-register-step ${
+                    registrationStep >= 1 ? 'active' : ''
+                  }`}
+                >
+                  <span>1</span>
+                  <small>Email</small>
                 </div>
 
-                <div className="student-register-progress">
-                  <span
-                    style={{
-                      width: `${registrationStep * 25}%`,
-                    }}
-                  />
+                <div className="student-register-step-line" />
+
+                <div
+                  className={`student-register-step ${
+                    registrationStep >= 2 ? 'active' : ''
+                  }`}
+                >
+                  <span>2</span>
+                  <small>Password</small>
                 </div>
 
+                <div className="student-register-step-line" />
+
+                <div
+                  className={`student-register-step ${
+                    registrationStep >= 3 ? 'active' : ''
+                  }`}
+                >
+                  <span>3</span>
+                  <small>Information</small>
+                </div>
+
+                <div className="student-register-step-line" />
+
+                <div
+                  className={`student-register-step ${
+                    registrationStep >= 4 ? 'active' : ''
+                  }`}
+                >
+                  <span>
+                    {faceVerified ? (
+                      <IonIcon icon={checkmarkCircle} />
+                    ) : (
+                      '4'
+                    )}
+                  </span>
+                  <small>Face Check</small>
+                </div>
+
+              </div>
+
+              {/* CARD TITLE */}
+
+              <div className="student-register-title">
                 <h2>
-                  {registrationStep === 1
-                    ? 'Enter Your Email'
-                    : registrationStep === 2
-                    ? 'Create Your Password'
-                    : registrationStep === 3
-                    ? 'Student Information'
-                    : 'Face Liveness Verification'}
+                  {registrationStep === 1 && 'Email Address'}
+                  {registrationStep === 2 && 'Create Password'}
+                  {registrationStep === 3 && 'Student Information'}
+                  {registrationStep === 4 && 'Face Liveness Verification'}
                 </h2>
 
                 <p>
-                  {registrationStep === 1
-                    ? 'Enter your active email address to get started.'
-                    : registrationStep === 2
-                    ? 'Create a secure password for your account.'
-                    : registrationStep === 3
-                    ? 'Complete your student information. Fields marked with * are required.'
-                    : 'Complete the face liveness challenges using your front camera.'}
+                  {registrationStep === 1 &&
+                    'Enter your email address to get started.'}
+
+                  {registrationStep === 2 &&
+                    'Create a secure password for your account.'}
+
+                  {registrationStep === 3 &&
+                    'Provide your student details.'}
+
+                  {registrationStep === 4 &&
+                    'Complete the face liveness check to create your account.'}
                 </p>
               </div>
 
-              {/* ERROR */}
+              {/* ERROR MESSAGE */}
 
               {error && (
-                <div
-                  className="student-register-error"
-                  role="alert"
-                >
+                <div className="student-register-error">
                   {error}
                 </div>
               )}
 
-              {/* SUCCESS */}
+              {/* SUCCESS MESSAGE */}
 
               {successMessage && (
-                <div
-                  className="student-register-success"
-                  role="status"
-                >
-                  {successMessage}
+                <div className="student-register-success">
+                  <IonIcon icon={checkmarkCircle} />
+                  <span>{successMessage}</span>
                 </div>
               )}
 
-              {/* STEP 1: EMAIL */}
+              {/* =================================================
+                  STEP 1 - EMAIL
+              ================================================= */}
 
               {registrationStep === 1 && (
-                <div className="student-register-field">
-                  <label htmlFor="email">
-                    Email Address *
-                  </label>
+                <div className="student-register-form">
 
-                  <div className="student-register-input-wrap">
+                  <label>Email Address</label>
+
+                  <div className="student-register-input">
                     <IonIcon icon={mailOutline} />
 
                     <input
-                      id="email"
                       type="email"
-                      placeholder="you@example.com"
-                      autoComplete="email"
+                      placeholder="Enter your email address"
                       value={email}
                       onChange={(event) =>
                         setEmail(event.target.value)
                       }
-                      disabled={loading}
+                      autoComplete="email"
                     />
                   </div>
+
+                  <p className="student-register-hint">
+                    Your email will be used to sign in to GrantAccess.
+                    Email verification and OTP are not required.
+                  </p>
+
+                  <IonButton
+                    expand="block"
+                    className="student-register-submit"
+                    onClick={handleNextStep}
+                  >
+                    Continue
+                    <IonIcon
+                      slot="end"
+                      icon={arrowForwardOutline}
+                    />
+                  </IonButton>
+
                 </div>
               )}
 
-              {/* STEP 2: PASSWORD */}
+              {/* =================================================
+                  STEP 2 - PASSWORD
+              ================================================= */}
 
               {registrationStep === 2 && (
-                <>
-                  <div className="student-register-field">
-                    <label htmlFor="password">
-                      Password *
-                    </label>
+                <div className="student-register-form">
 
-                    <div className="student-register-input-wrap">
-                      <IonIcon icon={lockClosedOutline} />
+                  <label>Password</label>
 
-                      <input
-                        id="password"
-                        type={showPassword ? 'text' : 'password'}
-                        placeholder="At least 6 characters"
-                        autoComplete="new-password"
-                        value={password}
-                        onChange={(event) =>
-                          setPassword(event.target.value)
+                  <div className="student-register-input">
+                    <IonIcon icon={lockClosedOutline} />
+
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      placeholder="Create your password"
+                      value={password}
+                      onChange={(event) =>
+                        setPassword(event.target.value)
+                      }
+                      autoComplete="new-password"
+                    />
+
+                    <button
+                      type="button"
+                      className="student-register-eye"
+                      onClick={() =>
+                        setShowPassword(!showPassword)
+                      }
+                      aria-label="Toggle password visibility"
+                    >
+                      <IonIcon
+                        icon={
+                          showPassword
+                            ? eyeOffOutline
+                            : eyeOutline
                         }
                       />
-
-                      <button
-                        type="button"
-                        className="student-register-eye"
-                        onClick={() =>
-                          setShowPassword(!showPassword)
-                        }
-                        aria-label="Toggle password visibility"
-                      >
-                        <IonIcon
-                          icon={
-                            showPassword
-                              ? eyeOffOutline
-                              : eyeOutline
-                          }
-                        />
-                      </button>
-                    </div>
+                    </button>
                   </div>
 
-                  <div className="student-register-field">
-                    <label htmlFor="confirmPassword">
-                      Confirm Password *
-                    </label>
+                  <label>Confirm Password</label>
 
-                    <div className="student-register-input-wrap">
-                      <IonIcon icon={lockClosedOutline} />
+                  <div className="student-register-input">
+                    <IonIcon icon={lockClosedOutline} />
 
-                      <input
-                        id="confirmPassword"
-                        type={
-                          showConfirmPassword ? 'text' : 'password'
-                        }
-                        placeholder="Re-enter your password"
-                        autoComplete="new-password"
-                        value={confirmPassword}
-                        onChange={(event) =>
-                          setConfirmPassword(event.target.value)
+                    <input
+                      type={
+                        showConfirmPassword ? 'text' : 'password'
+                      }
+                      placeholder="Confirm your password"
+                      value={confirmPassword}
+                      onChange={(event) =>
+                        setConfirmPassword(event.target.value)
+                      }
+                      autoComplete="new-password"
+                    />
+
+                    <button
+                      type="button"
+                      className="student-register-eye"
+                      onClick={() =>
+                        setShowConfirmPassword(
+                          !showConfirmPassword
+                        )
+                      }
+                      aria-label="Toggle confirm password visibility"
+                    >
+                      <IonIcon
+                        icon={
+                          showConfirmPassword
+                            ? eyeOffOutline
+                            : eyeOutline
                         }
                       />
-
-                      <button
-                        type="button"
-                        className="student-register-eye"
-                        onClick={() =>
-                          setShowConfirmPassword(
-                            !showConfirmPassword
-                          )
-                        }
-                        aria-label="Toggle confirm password visibility"
-                      >
-                        <IonIcon
-                          icon={
-                            showConfirmPassword
-                              ? eyeOffOutline
-                              : eyeOutline
-                          }
-                        />
-                      </button>
-                    </div>
+                    </button>
                   </div>
-                </>
+
+                  <p className="student-register-hint">
+                    Your password must contain at least 6 characters.
+                  </p>
+
+                  <div className="student-register-actions">
+                    <IonButton
+                      fill="outline"
+                      className="student-register-back"
+                      onClick={handlePreviousStep}
+                    >
+                      <IonIcon
+                        slot="start"
+                        icon={arrowBackOutline}
+                      />
+                      Back
+                    </IonButton>
+
+                    <IonButton
+                      className="student-register-submit"
+                      onClick={handleNextStep}
+                    >
+                      Continue
+                      <IonIcon
+                        slot="end"
+                        icon={arrowForwardOutline}
+                      />
+                    </IonButton>
+                  </div>
+
+                </div>
               )}
 
-              {/* STEP 3: STUDENT INFORMATION */}
+              {/* =================================================
+                  STEP 3 - STUDENT INFORMATION
+              ================================================= */}
 
               {registrationStep === 3 && (
-                <>
-                  <div className="student-register-field">
-                    <label htmlFor="fullName">
-                      Full Name *
-                    </label>
+                <div className="student-register-form">
 
-                    <div className="student-register-input-wrap">
-                      <IonIcon icon={personOutline} />
+                  <label>Full Name</label>
 
-                      <input
-                        id="fullName"
-                        type="text"
-                        placeholder="Enter your full name"
-                        autoComplete="name"
-                        value={fullName}
-                        onChange={(event) =>
-                          setFullName(event.target.value)
-                        }
-                      />
-                    </div>
+                  <div className="student-register-input">
+                    <IonIcon icon={personOutline} />
+
+                    <input
+                      type="text"
+                      placeholder="Enter your complete name"
+                      value={fullName}
+                      onChange={(event) =>
+                        setFullName(event.target.value)
+                      }
+                      autoComplete="name"
+                    />
                   </div>
 
-                  <div className="student-register-field">
-                    <label htmlFor="studentId">
-                      Student ID <span>(Optional)</span>
-                    </label>
+                  <label>Student ID</label>
 
-                    <div className="student-register-input-wrap">
-                      <IonIcon icon={personOutline} />
+                  <div className="student-register-input">
+                    <IonIcon icon={personOutline} />
 
-                      <input
-                        id="studentId"
-                        type="text"
-                        placeholder="Enter your student ID"
-                        value={studentId}
-                        onChange={(event) =>
-                          setStudentId(event.target.value)
-                        }
-                      />
-                    </div>
+                    <input
+                      type="text"
+                      placeholder="Enter your student ID"
+                      value={studentId}
+                      onChange={(event) =>
+                        setStudentId(event.target.value)
+                      }
+                    />
                   </div>
 
-                  <div className="student-register-field">
-                    <label htmlFor="school">
-                      School / University *
-                    </label>
+                  <label>School / University</label>
 
-                    <div className="student-register-input-wrap">
-                      <IonIcon icon={businessOutline} />
+                  <div className="student-register-input">
+                    <IonIcon icon={businessOutline} />
 
-                      <input
-                        id="school"
-                        type="text"
-                        placeholder="Enter your school or university"
-                        autoComplete="organization"
-                        value={school}
-                        onChange={(event) =>
-                          setSchool(event.target.value)
-                        }
-                      />
-                    </div>
+                    <input
+                      type="text"
+                      placeholder="Enter your school or university"
+                      value={school}
+                      onChange={(event) =>
+                        setSchool(event.target.value)
+                      }
+                    />
                   </div>
 
-                  <div className="student-register-field">
-                    <label htmlFor="course">
-                      Course / Program *
-                    </label>
+                  <label>Course / Program</label>
 
-                    <div className="student-register-select-wrap">
-                      <IonIcon icon={bookOutline} />
-
-                      <select
-                        id="course"
-                        value={course}
-                        onChange={(event) =>
-                          setCourse(event.target.value)
-                        }
-                      >
-                        <option value="">
-                          Select your course or program
-                        </option>
-
-                        {courses.map((item) => (
-                          <option key={item} value={item}>
-                            {item}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-
-                  <div className="student-register-field">
-                    <label htmlFor="yearLevel">
-                      Year Level *
-                    </label>
+                  <div className="student-register-input">
+                    <IonIcon icon={bookOutline} />
 
                     <select
-                      id="yearLevel"
+                      value={course}
+                      onChange={(event) =>
+                        setCourse(event.target.value)
+                      }
+                    >
+                      <option value="">Select your course</option>
+
+                      {courseOptions.map((courseOption) => (
+                        <option
+                          key={courseOption}
+                          value={courseOption}
+                        >
+                          {courseOption}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <label>Year Level</label>
+
+                  <div className="student-register-input">
+                    <IonIcon icon={schoolOutline} />
+
+                    <select
                       value={yearLevel}
                       onChange={(event) =>
                         setYearLevel(event.target.value)
                       }
                     >
-                      <option value="">
-                        Select your year level
-                      </option>
+                      <option value="">Select your year level</option>
 
-                      <option value="1st Year">1st Year</option>
-                      <option value="2nd Year">2nd Year</option>
-                      <option value="3rd Year">3rd Year</option>
-                      <option value="4th Year">4th Year</option>
-                      <option value="5th Year">5th Year</option>
-                      <option value="Graduate Student">
-                        Graduate Student
-                      </option>
+                      {yearLevelOptions.map((year) => (
+                        <option key={year} value={year}>
+                          {year}
+                        </option>
+                      ))}
                     </select>
                   </div>
+
+                  {/* TERMS */}
 
                   <label className="student-register-terms">
                     <input
@@ -816,122 +795,138 @@ const StudentRegister: React.FC = () => {
                     />
 
                     <span>
-                      I agree to the Terms and Conditions
+                      I agree to the GrantAccess Terms and Conditions
                       and Privacy Policy.
                     </span>
                   </label>
-                </>
-              )}
 
-              {/* STEP 4: FACE LIVENESS */}
+                  <div className="student-register-actions">
+                    <IonButton
+                      fill="outline"
+                      className="student-register-back"
+                      onClick={handlePreviousStep}
+                    >
+                      <IonIcon
+                        slot="start"
+                        icon={arrowBackOutline}
+                      />
+                      Back
+                    </IonButton>
 
-              {registrationStep === 4 && (
-                <div className="face-verification">
-
-                  <div className="face-verification-intro">
-                    <div className="face-verification-main-icon">
-                      <IonIcon icon={shieldCheckmarkOutline} />
-                    </div>
-
-                    <h3>Let's verify your face</h3>
-
-                    <p>
-                      Complete the face movement challenges
-                      using your front camera. Follow the
-                      instructions shown on screen.
-                    </p>
+                    <IonButton
+                      className="student-register-submit"
+                      onClick={handleNextStep}
+                    >
+                      Continue
+                      <IonIcon
+                        slot="end"
+                        icon={arrowForwardOutline}
+                      />
+                    </IonButton>
                   </div>
 
-                  <FaceLiveness
-                    key="grantaccess-student-face-verification"
-                    onVerified={handleFaceVerified}
-                  />
+                </div>
+              )}
 
-                  {faceVerified && (
-                    <div className="face-verification-complete">
+              {/* =================================================
+                  STEP 4 - FACE LIVENESS
+              ================================================= */}
+
+              {registrationStep === 4 && (
+                <div className="student-register-face-section">
+
+                  <div className="student-register-face-icon">
+                    <IonIcon icon={shieldCheckmarkOutline} />
+                  </div>
+
+                  <h3>Verify That You Are Present</h3>
+
+                  <p>
+                    Follow the instructions on your screen to complete
+                    the face liveness verification.
+                  </p>
+
+                  {!faceVerified && !loading && (
+                    <div className="student-register-face-camera">
+                      <FaceLiveness
+                        onVerified={handleFaceVerified}
+                      />
+                    </div>
+                  )}
+
+                  {loading && (
+                    <div className="student-register-creating">
+                      <IonSpinner name="crescent" />
+
+                      <p>
+                        Creating your student account...
+                        <br />
+                        Please wait while we prepare your dashboard.
+                      </p>
+                    </div>
+                  )}
+
+                  {faceVerified && !loading && !error && (
+                    <div className="student-register-face-success">
                       <IonIcon icon={checkmarkCircle} />
 
-                      <div>
-                        <strong>
-                          Face liveness verification completed!
-                        </strong>
+                      <h3>Face Verification Successful!</h3>
 
-                        <span>
-                          Your student account is ready to be created.
-                        </span>
-                      </div>
+                      <p>
+                        Your account is being prepared.
+                      </p>
                     </div>
+                  )}
+
+                  {faceVerified && !loading && error && (
+                    <IonButton
+                      expand="block"
+                      className="student-register-submit"
+                      onClick={() => createStudentAccount(true)}
+                    >
+                      Retry Account Creation
+                    </IonButton>
+                  )}
+
+                  {!faceVerified && !loading && (
+                    <IonButton
+                      fill="outline"
+                      expand="block"
+                      className="student-register-back"
+                      onClick={handlePreviousStep}
+                    >
+                      <IonIcon
+                        slot="start"
+                        icon={arrowBackOutline}
+                      />
+                      Back to Student Information
+                    </IonButton>
                   )}
 
                 </div>
               )}
 
-              {/* BACK BUTTON */}
+              {/* FOOTER */}
 
-              {registrationStep > 1 && (
-                <IonButton
-                  type="button"
-                  expand="block"
-                  fill="outline"
-                  className="student-register-back"
-                  disabled={loading}
-                  onClick={goBack}
-                >
-                  Back
-                </IonButton>
+              {registrationStep !== 4 && (
+                <div className="student-register-footer">
+                  <p>
+                    Already have an account?{' '}
+                    <Link to="/login">Sign In</Link>
+                  </p>
+                </div>
               )}
 
-              {/* CONTINUE BUTTON */}
+            </div>
 
-              {registrationStep < 4 && (
-                <IonButton
-                  type="submit"
-                  expand="block"
-                  className="student-register-submit"
-                  disabled={loading}
-                >
-                  Continue
-                </IonButton>
-              )}
+            <div className="student-register-security">
+              <IonIcon icon={shieldCheckmarkOutline} />
+              <span>
+                Your information is securely stored in GrantAccess.
+              </span>
+            </div>
 
-              {/* CREATE ACCOUNT AFTER FACE LIVENESS */}
-
-              {registrationStep === 4 && faceVerified && (
-                <IonButton
-                  type="button"
-                  expand="block"
-                  className="student-register-submit"
-                  disabled={loading}
-                  onClick={createStudentAccount}
-                >
-                  {loading ? (
-                    <>
-                      <IonSpinner name="crescent" />
-                      &nbsp; Creating Account...
-                    </>
-                  ) : (
-                    'Create Account and Go to Dashboard'
-                  )}
-                </IonButton>
-              )}
-
-              {/* LOGIN LINK */}
-
-              <p className="student-register-login-link">
-                Already have an account?{' '}
-                <Link to="/login">Sign in here</Link>
-              </p>
-
-            </form>
-
-            {/* FOOTER */}
-
-            <footer className="student-register-footer">
-              © {new Date().getFullYear()} GrantAccess.
-              All rights reserved.
-            </footer>
-
-          </main>
+          </div>
         </div>
       </IonContent>
     </IonPage>
