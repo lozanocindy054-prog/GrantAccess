@@ -1,46 +1,58 @@
+
 :root {
   color-scheme: light;
-  --ga-burgundy: #7f1d2d;
-  --ga-crimson: #c6283d;
-  --ga-rose: #fce8ec;
-  --ga-blush-white: #fff7f8;
-  --ga-white: #ffffff;
-  --ga-charcoal: #29232a;
 
-  --grant-navy: var(--ga-burgundy);
-  --grant-royal-blue: var(--ga-crimson);
-  --grant-lavender-blue: var(--ga-rose);
+  /* GRANTACCESS GREEN THEME */
+  --ga-primary: #159447;
+  --ga-primary-dark: #087638;
+  --ga-primary-deep: #075b2e;
+  --ga-green-light: #eaf8ef;
+  --ga-green-soft: #e9f5ec;
+  --ga-white: #ffffff;
+  --ga-blush-white: #f7faf7;
+  --ga-charcoal: #202b23;
+  --ga-muted: #758078;
+  --ga-border: #e2eae3;
+
+  --grant-navy: var(--ga-primary-dark);
+  --grant-royal-blue: var(--ga-primary);
+  --grant-lavender-blue: var(--ga-green-light);
   --grant-cloud-white: var(--ga-blush-white);
   --grant-pure-white: var(--ga-white);
   --grant-text: var(--ga-charcoal);
   --grant-slate: var(--ga-charcoal);
 
+  /* IONIC COLORS */
   --ion-background-color: var(--grant-cloud-white);
   --ion-text-color: var(--grant-text);
-  --ion-color-primary: var(--grant-royal-blue);
-  --ion-color-primary-rgb: 198, 40, 61;
-  --ion-color-primary-contrast: var(--grant-pure-white);
+
+  --ion-color-primary: #159447;
+  --ion-color-primary-rgb: 21, 148, 71;
+  --ion-color-primary-contrast: #ffffff;
   --ion-color-primary-contrast-rgb: 255, 255, 255;
-  --ion-color-primary-shade: #a51f33;
-  --ion-color-primary-tint: #d74457;
-  --ion-color-secondary: var(--grant-navy);
-  --ion-color-secondary-rgb: 127, 29, 45;
-  --ion-color-secondary-contrast: var(--grant-pure-white);
+  --ion-color-primary-shade: #13823e;
+  --ion-color-primary-tint: #2da45a;
+
+  --ion-color-secondary: #087638;
+  --ion-color-secondary-rgb: 8, 118, 56;
+  --ion-color-secondary-contrast: #ffffff;
   --ion-color-secondary-contrast-rgb: 255, 255, 255;
-  --ion-color-secondary-shade: #6f1928;
-  --ion-color-secondary-tint: #8b3442;
+  --ion-color-secondary-shade: #076832;
+  --ion-color-secondary-tint: #21864d;
+
   --ion-item-background: var(--grant-pure-white);
   --ion-card-background: var(--grant-pure-white);
 
-  --student-primary: var(--ga-crimson);
-  --student-primary-dark: var(--ga-burgundy);
-  --student-primary-light: var(--ga-rose);
-  --student-secondary: var(--ga-charcoal);
+  /* STUDENT THEME */
+  --student-primary: var(--ga-primary);
+  --student-primary-dark: var(--ga-primary-dark);
+  --student-primary-light: var(--ga-green-light);
+  --student-secondary: var(--ga-primary-deep);
   --student-text: var(--ga-charcoal);
-  --student-muted: #74676c;
-  --student-border: var(--ga-rose);
+  --student-muted: var(--ga-muted);
+  --student-border: var(--ga-border);
   --student-white: var(--ga-white);
-  --student-shadow: 0 8px 24px rgba(127, 29, 45, 0.08);
+  --student-shadow: 0 8px 24px rgba(21, 148, 71, 0.08);
 }
 
 html,
@@ -60,6 +72,6 @@ select {
 
 input::placeholder,
 textarea::placeholder {
-  color: var(--ga-charcoal);
-  opacity: 0.62;
+  color: var(--ga-muted);
+  opacity: 0.75;
 }
