@@ -11,6 +11,13 @@
   padding: 12px 0 24px;
   color: #202b23;
   font-family: inherit;
+  box-sizing: border-box;
+}
+
+.ga-liveness *,
+.ga-liveness *::before,
+.ga-liveness *::after {
+  box-sizing: border-box;
 }
 
 /* INTRO */
@@ -108,17 +115,26 @@
   max-height: 430px;
   overflow: hidden;
   background: #18221b;
+  isolation: isolate;
 }
 
 .ga-liveness-video {
   position: absolute;
   inset: 0;
+  z-index: 1;
   width: 100%;
   height: 100%;
   display: block;
   object-fit: cover;
   transform: scaleX(-1);
+  -webkit-transform: scaleX(-1);
   background: #18221b;
+}
+
+/* Hide video only while camera is inactive */
+
+.ga-liveness-preview:not(.is-active) .ga-liveness-video {
+  visibility: hidden;
 }
 
 .ga-liveness-placeholder {
@@ -130,16 +146,24 @@
   align-items: center;
   justify-content: center;
   gap: 9px;
+  padding: 15px;
   color: #ffffff;
   background: linear-gradient(
     145deg,
     #26352a,
     #142019
   );
+  text-align: center;
 }
 
 .ga-liveness-placeholder ion-icon {
   font-size: 46px;
+  color: #8bd59e;
+}
+
+.ga-liveness-placeholder ion-spinner {
+  width: 34px;
+  height: 34px;
   color: #8bd59e;
 }
 
@@ -158,7 +182,7 @@
 .ga-liveness-guide {
   position: absolute;
   inset: 0;
-  z-index: 2;
+  z-index: 3;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -275,7 +299,7 @@
 .ga-liveness-success-overlay {
   position: absolute;
   inset: 0;
-  z-index: 3;
+  z-index: 4;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -341,6 +365,24 @@
   border-radius: 12px;
   font-size: 12px;
   line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+/* LOADING */
+
+.ga-liveness-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 9px;
+  color: #24783b;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.ga-liveness-loading ion-spinner {
+  width: 20px;
+  height: 20px;
 }
 
 /* BUTTONS */
@@ -426,6 +468,7 @@
 
 @media (max-width: 480px) {
   .ga-liveness {
+    max-width: 100%;
     padding: 8px 0 20px;
   }
 
@@ -479,5 +522,21 @@
 
   .ga-liveness-privacy {
     padding: 11px;
+  }
+}
+
+/* SMALL MOBILE */
+
+@media (max-width: 360px) {
+  .ga-liveness-preview {
+    min-height: 230px;
+  }
+
+  .ga-liveness-intro h3 {
+    font-size: 17px;
+  }
+
+  .ga-liveness-challenge > strong {
+    font-size: 14px;
   }
 }

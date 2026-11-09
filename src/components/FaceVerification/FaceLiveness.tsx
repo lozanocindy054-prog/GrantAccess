@@ -48,11 +48,14 @@ const challengeInstructions: Record<Challenge, string> = {
   smile: 'Show a natural smile.',
 };
 
-const MODEL_URL =
-  'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task';
+// Keep the npm package and WASM version synchronized.
+const MEDIAPIPE_VERSION = '0.10.14';
 
 const WASM_URL =
-  'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm';
+  `https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@${MEDIAPIPE_VERSION}/wasm`;
+
+const MODEL_URL =
+  'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task';
 
 const createRandomChallenges = (): Challenge[] => {
   const all: Challenge[] = [
@@ -85,27 +88,35 @@ const FaceLiveness: React.FC<FaceLivenessProps> = ({
   const completedRef = useRef(false);
   const processingRef = useRef(false);
   const mountedRef = useRef(true);
+  const lastDetectionRef = useRef(0);
   const statusRef = useRef('');
 
   const [cameraStarted, setCameraStarted] = useState(false);
   const [cameraLoading, setCameraLoading] = useState(false);
+  const [modelLoading, setModelLoading] = useState(false);
   const [faceVerified, setFaceVerified] = useState(false);
 
   const [challengeList, setChallengeList] = useState<Challenge[]>([]);
   const [challengeIndex, setChallengeIndex] = useState(0);
 
   const [status, setStatus] = useState(
-    'Start your camera to begin verification.'
+    'Allow camera access to begin verification.'
   );
 
   const [error, setError] = useState('');
 
   const updateStatus = useCallback((message: string) => {
+    if (!mountedRef.current) return;
+
     if (statusRef.current !== message) {
       statusRef.current = message;
       setStatus(message);
     }
   }, []);
+
+  // =====================================================
+  // STOP CAMERA
+  // =====================================================
 
   const stopCamera = useCallback(() => {
     if (animationRef.current !== null) {
@@ -121,9 +132,11 @@ const FaceLiveness: React.FC<FaceLivenessProps> = ({
       streamRef.current = null;
     }
 
-    if (videoRef.current) {
-      videoRef.current.pause();
-      videoRef.current.srcObject = null;
+    const video = videoRef.current;
+
+    if (video) {
+      video.pause();
+      video.srcObject = null;
     }
 
     if (mountedRef.current) {
@@ -131,72 +144,122 @@ const FaceLiveness: React.FC<FaceLivenessProps> = ({
     }
   }, []);
 
+  // =====================================================
+  // LOAD MEDIAPIPE MODEL
+  // =====================================================
+
   const loadLandmarker = async (): Promise<FaceLandmarker> => {
     if (landmarkerRef.current) {
       return landmarkerRef.current;
     }
 
-    updateStatus('Loading face liveness model...');
-
-    const vision = await FilesetResolver.forVisionTasks(WASM_URL);
-
-    const commonOptions = {
-      runningMode: 'VIDEO' as const,
-      numFaces: 2,
-      outputFaceBlendshapes: true,
-      minFaceDetectionConfidence: 0.6,
-      minFacePresenceConfidence: 0.6,
-      minTrackingConfidence: 0.6,
-    };
-
-    let landmarker: FaceLandmarker;
-
-    // Try GPU first.
-    try {
-      landmarker = await FaceLandmarker.createFromOptions(
-        vision,
-        {
-          ...commonOptions,
-          baseOptions: {
-            modelAssetPath: MODEL_URL,
-            delegate: 'GPU',
-          },
-        }
-      );
-    } catch (gpuError) {
-      console.warn(
-        'GPU is unavailable. Switching to CPU.',
-        gpuError
-      );
-
-      // Use CPU if the device does not support GPU delegate.
-      landmarker = await FaceLandmarker.createFromOptions(
-        vision,
-        {
-          ...commonOptions,
-          baseOptions: {
-            modelAssetPath: MODEL_URL,
-            delegate: 'CPU',
-          },
-        }
-      );
+    if (mountedRef.current) {
+      setModelLoading(true);
     }
 
-    landmarkerRef.current = landmarker;
+    updateStatus('Loading face detection model...');
 
-    return landmarker;
+    try {
+      const vision = await FilesetResolver.forVisionTasks(
+        WASM_URL
+      );
+
+      const commonOptions = {
+        runningMode: 'VIDEO' as const,
+        numFaces: 2,
+        outputFaceBlendshapes: true,
+        minFaceDetectionConfidence: 0.5,
+        minFacePresenceConfidence: 0.5,
+        minTrackingConfidence: 0.5,
+      };
+
+      const isMobile =
+        /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+      let landmarker: FaceLandmarker;
+
+      // Mobile: CPU first for better compatibility.
+      // Desktop: GPU first, then CPU fallback.
+      if (isMobile) {
+        try {
+          landmarker = await FaceLandmarker.createFromOptions(
+            vision,
+            {
+              ...commonOptions,
+              baseOptions: {
+                modelAssetPath: MODEL_URL,
+                delegate: 'CPU',
+              },
+            }
+          );
+        } catch (cpuError) {
+          console.warn(
+            'Mobile CPU initialization failed. Trying GPU.',
+            cpuError
+          );
+
+          landmarker = await FaceLandmarker.createFromOptions(
+            vision,
+            {
+              ...commonOptions,
+              baseOptions: {
+                modelAssetPath: MODEL_URL,
+                delegate: 'GPU',
+              },
+            }
+          );
+        }
+      } else {
+        try {
+          landmarker = await FaceLandmarker.createFromOptions(
+            vision,
+            {
+              ...commonOptions,
+              baseOptions: {
+                modelAssetPath: MODEL_URL,
+                delegate: 'GPU',
+              },
+            }
+          );
+        } catch (gpuError) {
+          console.warn(
+            'GPU unavailable. Switching to CPU.',
+            gpuError
+          );
+
+          landmarker = await FaceLandmarker.createFromOptions(
+            vision,
+            {
+              ...commonOptions,
+              baseOptions: {
+                modelAssetPath: MODEL_URL,
+                delegate: 'CPU',
+              },
+            }
+          );
+        }
+      }
+
+      landmarkerRef.current = landmarker;
+
+      return landmarker;
+    } finally {
+      if (mountedRef.current) {
+        setModelLoading(false);
+      }
+    }
   };
+
+  // =====================================================
+  // GET BLENDSHAPE VALUE
+  // =====================================================
 
   const getBlendshape = (
     result: FaceLandmarkerResult,
     name: string
   ): number => {
-    const categories = (
-      result.faceBlendshapes?.[0]?.categories || []
-    ) as Array<{
-      categoryName: string;
-      score: number;
-    }>;
+    const categories =
+      result.faceBlendshapes?.[0]?.categories || [];
 
     const matched = categories.find(
       (item) => item.categoryName === name
@@ -205,13 +268,27 @@ const FaceLiveness: React.FC<FaceLivenessProps> = ({
     return matched?.score ?? 0;
   };
 
+  // =====================================================
+  // COMPLETE CHALLENGE
+  // =====================================================
+
   const completeCurrentChallenge = () => {
-    if (completedRef.current) return;
+    if (
+      completedRef.current ||
+      processingRef.current
+    ) {
+      return;
+    }
+
+    processingRef.current = true;
 
     const nextIndex = challengeIndexRef.current + 1;
 
     challengeIndexRef.current = nextIndex;
-    setChallengeIndex(nextIndex);
+
+    if (mountedRef.current) {
+      setChallengeIndex(nextIndex);
+    }
 
     blinkClosedRef.current = false;
 
@@ -220,23 +297,32 @@ const FaceLiveness: React.FC<FaceLivenessProps> = ({
 
       stopCamera();
 
-      setFaceVerified(true);
-
-      updateStatus(
-        'All liveness challenges completed successfully!'
-      );
+      if (mountedRef.current) {
+        setFaceVerified(true);
+        updateStatus(
+          'All liveness challenges completed successfully!'
+        );
+      }
 
       onVerified();
 
+      processingRef.current = false;
       return;
     }
 
-    const nextChallenge = challengesRef.current[nextIndex];
+    const nextChallenge =
+      challengesRef.current[nextIndex];
 
     updateStatus(
       `Great! Next: ${challengeLabels[nextChallenge]}`
     );
+
+    processingRef.current = false;
   };
+
+  // =====================================================
+  // ANALYZE CAMERA FRAME
+  // =====================================================
 
   const analyzeFrame = (
     result: FaceLandmarkerResult
@@ -254,7 +340,6 @@ const FaceLiveness: React.FC<FaceLivenessProps> = ({
       updateStatus(
         'No face detected. Position your face inside the camera.'
       );
-
       return;
     }
 
@@ -262,7 +347,6 @@ const FaceLiveness: React.FC<FaceLivenessProps> = ({
       updateStatus(
         'Multiple faces detected. Only one person should be visible.'
       );
-
       return;
     }
 
@@ -273,7 +357,7 @@ const FaceLiveness: React.FC<FaceLivenessProps> = ({
 
     const landmarks = faces[0];
 
-    // BLINK CHALLENGE
+    // BLINK
     if (challenge === 'blink') {
       const leftEye = getBlendshape(
         result,
@@ -285,7 +369,10 @@ const FaceLiveness: React.FC<FaceLivenessProps> = ({
         'eyeBlinkRight'
       );
 
-      if (leftEye > 0.55 && rightEye > 0.55) {
+      if (
+        leftEye > 0.55 &&
+        rightEye > 0.55
+      ) {
         blinkClosedRef.current = true;
 
         updateStatus(
@@ -298,19 +385,14 @@ const FaceLiveness: React.FC<FaceLivenessProps> = ({
         leftEye < 0.25 &&
         rightEye < 0.25
       ) {
-        processingRef.current = true;
-
         updateStatus('Blink detected!');
-
         completeCurrentChallenge();
-
-        processingRef.current = false;
       }
 
       return;
     }
 
-    // SMILE CHALLENGE
+    // SMILE
     if (challenge === 'smile') {
       const leftSmile = getBlendshape(
         result,
@@ -326,13 +408,8 @@ const FaceLiveness: React.FC<FaceLivenessProps> = ({
         leftSmile > 0.35 &&
         rightSmile > 0.35
       ) {
-        processingRef.current = true;
-
         updateStatus('Smile detected!');
-
         completeCurrentChallenge();
-
-        processingRef.current = false;
       } else {
         updateStatus(
           'Please smile naturally at the camera.'
@@ -342,8 +419,7 @@ const FaceLiveness: React.FC<FaceLivenessProps> = ({
       return;
     }
 
-    // HEAD TURN CHALLENGE
-    // This is a basic movement estimate, not identity recognition.
+    // HEAD TURN
     const nose = landmarks[1];
     const leftEye = landmarks[33];
     const rightEye = landmarks[263];
@@ -363,22 +439,12 @@ const FaceLiveness: React.FC<FaceLivenessProps> = ({
     const yawOffset =
       (nose.x - eyeCenter) / faceWidth;
 
-    /*
-      NOTE:
-      The video frame is not mirrored during analysis.
-      If left/right appears reversed on your phone,
-      swap the two comparison signs below.
-    */
-
+    // Depending on camera orientation, left/right
+    // may need to be swapped for a particular device.
     if (challenge === 'left') {
       if (yawOffset > 0.12) {
-        processingRef.current = true;
-
         updateStatus('Head turn detected!');
-
         completeCurrentChallenge();
-
-        processingRef.current = false;
       } else {
         updateStatus(
           'Slowly turn your head to your left.'
@@ -388,13 +454,8 @@ const FaceLiveness: React.FC<FaceLivenessProps> = ({
 
     if (challenge === 'right') {
       if (yawOffset < -0.12) {
-        processingRef.current = true;
-
         updateStatus('Head turn detected!');
-
         completeCurrentChallenge();
-
-        processingRef.current = false;
       } else {
         updateStatus(
           'Slowly turn your head to your right.'
@@ -402,6 +463,10 @@ const FaceLiveness: React.FC<FaceLivenessProps> = ({
       }
     }
   };
+
+  // =====================================================
+  // START FRAME ANALYSIS
+  // =====================================================
 
   const startAnalysis = () => {
     const video = videoRef.current;
@@ -412,26 +477,34 @@ const FaceLiveness: React.FC<FaceLivenessProps> = ({
     const loop = () => {
       if (
         !streamRef.current ||
-        completedRef.current
+        completedRef.current ||
+        !mountedRef.current
       ) {
         return;
       }
 
+      const now = performance.now();
+
+      // Limit processing to approximately 20 FPS
+      // to reduce load on mobile devices.
       if (
+        now - lastDetectionRef.current >= 50 &&
         video.readyState >=
           HTMLMediaElement.HAVE_CURRENT_DATA &&
         video.videoWidth > 0
       ) {
+        lastDetectionRef.current = now;
+
         try {
           const result = landmarker.detectForVideo(
             video,
-            performance.now()
+            now
           );
 
           analyzeFrame(result);
         } catch (analysisError) {
           console.error(
-            'MediaPipe frame error:',
+            'MediaPipe frame analysis error:',
             analysisError
           );
         }
@@ -439,15 +512,21 @@ const FaceLiveness: React.FC<FaceLivenessProps> = ({
 
       if (
         streamRef.current &&
-        !completedRef.current
+        !completedRef.current &&
+        mountedRef.current
       ) {
         animationRef.current =
           requestAnimationFrame(loop);
       }
     };
 
-    animationRef.current = requestAnimationFrame(loop);
+    animationRef.current =
+      requestAnimationFrame(loop);
   };
+
+  // =====================================================
+  // WAIT FOR VIDEO
+  // =====================================================
 
   const waitForVideoReady = (
     video: HTMLVideoElement
@@ -456,22 +535,27 @@ const FaceLiveness: React.FC<FaceLivenessProps> = ({
       const started = Date.now();
 
       const check = () => {
+        if (!mountedRef.current) {
+          reject(new Error('Verification was closed.'));
+          return;
+        }
+
         if (
           video.readyState >=
             HTMLMediaElement.HAVE_CURRENT_DATA &&
-          video.videoWidth > 0
+          video.videoWidth > 0 &&
+          video.videoHeight > 0
         ) {
           resolve();
           return;
         }
 
-        if (Date.now() - started > 12000) {
+        if (Date.now() - started > 15000) {
           reject(
             new Error(
-              'Camera did not provide a video frame. Please try again.'
+              'Camera did not provide a video frame. Please check your camera permission and try again.'
             )
           );
-
           return;
         }
 
@@ -482,32 +566,87 @@ const FaceLiveness: React.FC<FaceLivenessProps> = ({
     });
   };
 
+  // =====================================================
+  // CAMERA ERROR MESSAGE
+  // =====================================================
+
+  const getCameraErrorMessage = (
+    cameraError: unknown
+  ): string => {
+    const errorName =
+      cameraError instanceof DOMException
+        ? cameraError.name
+        : '';
+
+    if (errorName === 'NotAllowedError' ||
+        errorName === 'PermissionDeniedError') {
+      return 'Camera permission was denied. Allow camera access in your browser settings, then try again.';
+    }
+
+    if (errorName === 'NotFoundError' ||
+        errorName === 'DevicesNotFoundError') {
+      return 'No camera was found on this device.';
+    }
+
+    if (errorName === 'NotReadableError' ||
+        errorName === 'TrackStartError') {
+      return 'Your camera may already be in use by another application. Close other camera apps and try again.';
+    }
+
+    if (errorName === 'OverconstrainedError') {
+      return 'The requested camera settings are not supported. Please try another camera.';
+    }
+
+    if (
+      cameraError instanceof Error &&
+      cameraError.message.toLowerCase().includes('fetch')
+    ) {
+      return 'Unable to download the face verification model. Check your internet connection and try again.';
+    }
+
+    return cameraError instanceof Error
+      ? cameraError.message
+      : 'Unable to start face verification. Please try again.';
+  };
+
+  // =====================================================
+  // START CAMERA
+  // =====================================================
+
   const startCamera = async () => {
+    if (cameraLoading || cameraStarted) return;
+
     setError('');
     setFaceVerified(false);
+    setCameraLoading(true);
 
     completedRef.current = false;
     processingRef.current = false;
     blinkClosedRef.current = false;
+    lastDetectionRef.current = 0;
 
-    setCameraLoading(true);
+    challengesRef.current = [];
+    challengeIndexRef.current = 0;
+
+    setChallengeList([]);
+    setChallengeIndex(0);
 
     try {
       if (
         !window.isSecureContext ||
-        !navigator.mediaDevices?.getUserMedia
+        !navigator.mediaDevices ||
+        !navigator.mediaDevices.getUserMedia
       ) {
         throw new Error(
-          'Camera access requires HTTPS. Open GrantAccess using its secure website.'
+          'Camera access requires HTTPS. Please open GrantAccess using its secure HTTPS website.'
         );
       }
 
       stopCamera();
 
-      updateStatus('Preparing camera and face detection...');
+      updateStatus('Requesting camera permission...');
 
-      const landmarker = await loadLandmarker();
-
+      // Request the camera directly from the button action.
       let stream: MediaStream;
 
       try {
@@ -515,15 +654,15 @@ const FaceLiveness: React.FC<FaceLivenessProps> = ({
           await navigator.mediaDevices.getUserMedia({
             audio: false,
             video: {
-              facingMode: { ideal: 'user' },
+              facingMode: 'user',
               width: { ideal: 640 },
               height: { ideal: 480 },
             },
           });
-      } catch (firstCameraError) {
+      } catch (frontCameraError) {
         console.warn(
           'Front camera request failed. Trying default camera.',
-          firstCameraError
+          frontCameraError
         );
 
         stream =
@@ -533,24 +672,51 @@ const FaceLiveness: React.FC<FaceLivenessProps> = ({
           });
       }
 
+      if (!mountedRef.current) {
+        stream.getTracks().forEach((track) => track.stop());
+        return;
+      }
+
       streamRef.current = stream;
 
       const video = videoRef.current;
 
       if (!video) {
         throw new Error(
-          'Camera preview was not found.'
+          'Camera preview element was not found. Please refresh the page.'
         );
       }
 
-      video.srcObject = stream;
+      video.setAttribute('autoplay', 'true');
+      video.setAttribute('muted', 'true');
+      video.setAttribute('playsinline', 'true');
+      video.setAttribute('webkit-playsinline', 'true');
+
       video.muted = true;
       video.autoplay = true;
       video.playsInline = true;
+      video.srcObject = stream;
+
+      updateStatus('Starting camera preview...');
 
       await video.play();
-
       await waitForVideoReady(video);
+
+      if (!mountedRef.current) return;
+
+      setCameraStarted(true);
+
+      updateStatus('Camera ready. Loading face detection...');
+
+      const landmarker = await loadLandmarker();
+
+      if (!mountedRef.current) return;
+
+      if (!landmarker) {
+        throw new Error(
+          'Face detection model could not be initialized.'
+        );
+      }
 
       const randomChallenges =
         createRandomChallenges();
@@ -563,8 +729,6 @@ const FaceLiveness: React.FC<FaceLivenessProps> = ({
 
       blinkClosedRef.current = false;
       completedRef.current = false;
-
-      setCameraStarted(true);
 
       updateStatus(
         `Challenge 1: ${challengeLabels[randomChallenges[0]]}`
@@ -579,19 +743,21 @@ const FaceLiveness: React.FC<FaceLivenessProps> = ({
 
       stopCamera();
 
-      setError(
-        cameraError instanceof Error
-          ? cameraError.message
-          : 'Unable to start face verification.'
-      );
+      setError(getCameraErrorMessage(cameraError));
 
       updateStatus(
         'Unable to start face verification.'
       );
     } finally {
-      setCameraLoading(false);
+      if (mountedRef.current) {
+        setCameraLoading(false);
+      }
     }
   };
+
+  // =====================================================
+  // RETAKE
+  // =====================================================
 
   const retake = () => {
     stopCamera();
@@ -613,6 +779,10 @@ const FaceLiveness: React.FC<FaceLivenessProps> = ({
     );
   };
 
+  // =====================================================
+  // STOP CAMERA BUTTON
+  // =====================================================
+
   const handleStopCamera = () => {
     stopCamera();
 
@@ -624,6 +794,10 @@ const FaceLiveness: React.FC<FaceLivenessProps> = ({
       'Camera stopped. Start again when ready.'
     );
   };
+
+  // =====================================================
+  // CLEANUP
+  // =====================================================
 
   useEffect(() => {
     mountedRef.current = true;
@@ -637,9 +811,9 @@ const FaceLiveness: React.FC<FaceLivenessProps> = ({
       }
 
       if (streamRef.current) {
-        streamRef.current
-          .getTracks()
-          .forEach((track) => track.stop());
+        streamRef.current.getTracks().forEach((track) => {
+          track.stop();
+        });
 
         streamRef.current = null;
       }
@@ -689,27 +863,46 @@ const FaceLiveness: React.FC<FaceLivenessProps> = ({
           </span>
 
           <small>
-            {cameraStarted ? 'Camera On' : 'Camera Off'}
+            {cameraLoading
+              ? 'Preparing...'
+              : cameraStarted
+                ? 'Camera On'
+                : 'Camera Off'}
           </small>
         </div>
 
-        <div className="ga-liveness-preview">
+        <div
+          className={`ga-liveness-preview ${
+            cameraStarted ? 'is-active' : ''
+          }`}
+        >
           <video
             ref={videoRef}
             className="ga-liveness-video"
             autoPlay
             muted
             playsInline
+            disablePictureInPicture
           />
 
-          {!cameraStarted && !faceVerified && (
+          {!cameraStarted && (
             <div className="ga-liveness-placeholder">
-              <IonIcon icon={videocamOutline} />
+              {cameraLoading ? (
+                <IonSpinner name="crescent" />
+              ) : (
+                <IonIcon icon={videocamOutline} />
+              )}
 
-              <strong>Camera preview</strong>
+              <strong>
+                {cameraLoading
+                  ? 'Preparing your camera'
+                  : 'Camera preview'}
+              </strong>
 
               <span>
-                Start your camera to begin
+                {cameraLoading
+                  ? 'Please wait...'
+                  : 'Press Start Face Verification'}
               </span>
             </div>
           )}
@@ -778,6 +971,13 @@ const FaceLiveness: React.FC<FaceLivenessProps> = ({
         </div>
       )}
 
+      {modelLoading && (
+        <div className="ga-liveness-loading">
+          <IonSpinner name="crescent" />
+          <span>Loading face detection model...</span>
+        </div>
+      )}
+
       {error && (
         <div
           className="ga-liveness-error"
@@ -840,7 +1040,6 @@ const FaceLiveness: React.FC<FaceLivenessProps> = ({
             slot="start"
             icon={refreshOutline}
           />
-
           Retake Verification
         </IonButton>
       )}
@@ -861,12 +1060,10 @@ const FaceLiveness: React.FC<FaceLivenessProps> = ({
         <IonIcon icon={shieldCheckmarkOutline} />
 
         <p>
-          This browser-based check analyzes facial
-          movements from the live camera preview. It
-          does not identify your identity or guarantee
-          protection against spoofing. Camera frames
-          are processed locally by this component and
-          are not uploaded by this component.
+          This check analyzes facial movements from your
+          live camera preview. It does not identify your
+          identity or guarantee protection against spoofing.
+          This component does not upload camera frames.
         </p>
       </div>
     </div>
