@@ -53,15 +53,10 @@ import LGUSchoolProfile from './lgu & school/LGUSchoolProfile/LGUSchoolProfile';
 import ManageScholarships from './lgu & school/ManageScholarships/ManageScholarships';
 
 // ==========================================
-// LGU / SCHOOL APPLICATIONS
+// LGU / SCHOOL APPLICATIONS AND MESSAGES
 // ==========================================
 
 import Applications from './lgu & school/Applications/Applications';
-
-// ==========================================
-// LGU / SCHOOL MESSAGING
-// ==========================================
-
 import LGUSchoolMessages from './lgu & school/Messages/Messages';
 
 // ==========================================
@@ -87,7 +82,7 @@ import AdminScholarships from './Admin/AdminScholarships/AdminScholarships';
 import AdminApplications from './Admin/AdminApplications/AdminApplications';
 
 // ==========================================
-// ADMIN REPORTS, NOTIFICATIONS, ACTIVITY LOGS
+// ADMIN REPORTS AND ACTIVITIES
 // ==========================================
 
 import AdminReports from './Admin/AdminReports/AdminReports';
@@ -167,7 +162,6 @@ const App: React.FC = () => {
   return (
     <IonApp>
       <IonReactRouter>
-
         <RouteFocusHandler />
 
         <GlobalBackButton />
@@ -175,14 +169,18 @@ const App: React.FC = () => {
         <IonRouterOutlet animated={false}>
 
           {/* ==========================================
-              STUDENT REGISTRATION AND AUTHENTICATION
-              NO EMAIL VERIFICATION / NO OTP ROUTE
+              REGISTRATION CHOICE
           ========================================== */}
 
           <Route
             path="/register-choice"
             element={<RegisterChoice />}
           />
+
+          {/* ==========================================
+              STUDENT REGISTRATION AND LOGIN
+              NO EMAIL VERIFICATION / NO OTP ROUTE
+          ========================================== */}
 
           <Route
             path="/student-register"
@@ -276,12 +274,17 @@ const App: React.FC = () => {
           />
 
           {/* ==========================================
-              LGU / SCHOOL APPLICATIONS
+              LGU / SCHOOL APPLICATIONS AND MESSAGES
           ========================================== */}
 
           <Route
             path="/lgu-applications"
             element={<Applications />}
+          />
+
+          <Route
+            path="/lgu-messages"
+            element={<LGUSchoolMessages />}
           />
 
           {/* ==========================================
@@ -296,11 +299,6 @@ const App: React.FC = () => {
                 replace
               />
             }
-          />
-
-          <Route
-            path="/lgu-messages"
-            element={<LGUSchoolMessages />}
           />
 
           <Route
@@ -391,7 +389,7 @@ const App: React.FC = () => {
           />
 
           {/* ==========================================
-              ADMIN REPORTS
+              ADMIN REPORTS AND NOTIFICATIONS
           ========================================== */}
 
           <Route
@@ -399,18 +397,10 @@ const App: React.FC = () => {
             element={<AdminReports />}
           />
 
-          {/* ==========================================
-              ADMIN NOTIFICATIONS
-          ========================================== */}
-
           <Route
             path="/admin-notifications"
             element={<AdminNotifications />}
           />
-
-          {/* ==========================================
-              ADMIN ACTIVITY LOGS
-          ========================================== */}
 
           <Route
             path="/admin-activity-logs"
@@ -418,15 +408,13 @@ const App: React.FC = () => {
           />
 
           {/* ==========================================
-              STUDENT HOME / DASHBOARD
+              STUDENT DASHBOARD
           ========================================== */}
 
           <Route
             path="/student-dashboard"
             element={<StudentHome />}
           />
-
-          {/* OLD STUDENT HOME URL REDIRECT */}
 
           <Route
             path="/student-home"
@@ -493,7 +481,7 @@ const App: React.FC = () => {
           />
 
           {/* ==========================================
-              STUDENT MESSAGING
+              STUDENT MESSAGES
           ========================================== */}
 
           <Route
@@ -544,7 +532,7 @@ const App: React.FC = () => {
           />
 
           {/* ==========================================
-              DEFAULT ROUTE
+              ROOT ROUTE
           ========================================== */}
 
           <Route
