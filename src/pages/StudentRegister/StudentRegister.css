@@ -2,6 +2,7 @@
 /* =========================================================
    GRANTACCESS - STUDENT REGISTRATION
    Modern Green & White Responsive Design
+   4 Steps: Email > Password > Student Info > Face Liveness
 ========================================================= */
 
 :root {
@@ -14,13 +15,13 @@
   --ga-background: #f5faf6;
 
   --ga-text: #202b23;
-  --ga-muted: #758078;
-  --ga-border: #e2eae3;
+  --ga-text-secondary: #66736a;
+  --ga-muted: #89948c;
 
-  --ga-danger: #d94141;
-  --ga-danger-bg: #fff1f1;
-
-  --ga-success: #087638;
+  --ga-border: #e1eae3;
+  --ga-danger: #dc3545;
+  --ga-danger-bg: #fff1f2;
+  --ga-success: #16834a;
   --ga-success-bg: #eaf8ef;
 
   --ga-radius-sm: 10px;
@@ -28,7 +29,7 @@
   --ga-radius-lg: 22px;
 
   --ga-shadow:
-    0 12px 40px rgba(27, 90, 48, 0.08);
+    0 12px 35px rgba(23, 75, 39, 0.08);
 }
 
 /* =========================================================
@@ -37,33 +38,25 @@
 
 .student-register-content {
   --background: var(--ga-background);
-  color: var(--ga-text);
-  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont,
-    "Segoe UI", sans-serif;
-}
-
-.student-register-content::part(background) {
-  background: var(--ga-background);
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 .student-register-content::part(scroll) {
   min-height: 100%;
 }
 
+.student-register-content * {
+  box-sizing: border-box;
+}
+
 .student-register-wrapper {
   width: 100%;
   min-height: 100%;
-  padding: 0 28px 35px;
   background:
     radial-gradient(
-      circle at 10% 5%,
-      rgba(21, 148, 71, 0.08),
-      transparent 28%
-    ),
-    radial-gradient(
-      circle at 90% 70%,
-      rgba(21, 148, 71, 0.05),
-      transparent 30%
+      circle at top left,
+      rgba(21, 148, 71, 0.07),
+      transparent 32%
     ),
     var(--ga-background);
 }
@@ -73,53 +66,48 @@
 ========================================================= */
 
 .student-register-header {
+  width: 100%;
+  height: 82px;
+  padding: 0 7%;
   display: flex;
   align-items: center;
-  width: 100%;
-  max-width: 1180px;
-  height: 82px;
-  margin: 0 auto;
+  background: var(--ga-white);
+  border-bottom: 1px solid var(--ga-border);
 }
 
 .student-register-brand {
   display: inline-flex;
   align-items: center;
-  gap: 11px;
+  gap: 12px;
   padding: 0;
-  color: var(--ga-text);
+  border: none;
   background: transparent;
-  border: 0;
   cursor: pointer;
   text-align: left;
 }
 
 .student-register-logo {
+  width: 46px;
+  height: 46px;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 43px;
-  height: 43px;
   color: var(--ga-white);
-  background: linear-gradient(
-    145deg,
-    #1ca553,
-    #087638
-  );
-  border-radius: 13px;
-  box-shadow: 0 5px 13px rgba(21, 148, 71, 0.2);
-  font-size: 23px;
+  background: var(--ga-primary);
+  border-radius: 14px;
+  font-size: 25px;
 }
 
 .student-register-brand-text {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 3px;
 }
 
 .student-register-brand-text strong {
   color: var(--ga-text);
-  font-size: 21px;
-  font-weight: 850;
+  font-size: 23px;
+  font-weight: 800;
   letter-spacing: -0.8px;
 }
 
@@ -129,47 +117,50 @@
 
 .student-register-brand-text small {
   color: var(--ga-muted);
-  font-size: 8px;
-  font-weight: 800;
-  letter-spacing: 1.7px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
 }
 
 /* =========================================================
-   MAIN LAYOUT
+   MAIN CONTENT
 ========================================================= */
 
 .student-register-main {
   width: 100%;
-  max-width: 510px;
-  margin: 18px auto 0;
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 48px 22px 30px;
 }
 
+/* =========================================================
+   INTRO
+========================================================= */
+
 .student-register-intro {
-  margin-bottom: 24px;
+  margin-bottom: 28px;
   text-align: center;
 }
 
 .student-register-eyebrow {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  display: inline-block;
+  margin-bottom: 12px;
   padding: 7px 13px;
   color: var(--ga-primary-dark);
   background: var(--ga-primary-light);
-  border: 1px solid #d5eddd;
   border-radius: 30px;
   font-size: 10px;
   font-weight: 800;
-  letter-spacing: 1.4px;
+  letter-spacing: 1.2px;
 }
 
 .student-register-intro h1 {
-  margin: 13px 0 9px;
+  margin: 0;
   color: var(--ga-text);
-  font-size: clamp(26px, 4vw, 34px);
-  font-weight: 850;
+  font-size: clamp(27px, 4vw, 37px);
+  font-weight: 800;
   line-height: 1.2;
-  letter-spacing: -1.2px;
+  letter-spacing: -1.1px;
 }
 
 .student-register-intro h1 span {
@@ -177,45 +168,49 @@
 }
 
 .student-register-intro p {
-  max-width: 430px;
-  margin: 0 auto;
-  color: var(--ga-muted);
-  font-size: 13px;
+  max-width: 520px;
+  margin: 13px auto 0;
+  color: var(--ga-text-secondary);
+  font-size: 14px;
   line-height: 1.7;
 }
 
 /* =========================================================
-   REGISTRATION FORM CARD
+   REGISTRATION FORM
 ========================================================= */
 
 .student-register-form {
   width: 100%;
-  padding: 30px;
+  padding: 35px;
   background: var(--ga-white);
-  border: 1px solid rgba(226, 234, 227, 0.9);
+  border: 1px solid var(--ga-border);
   border-radius: var(--ga-radius-lg);
   box-shadow: var(--ga-shadow);
 }
 
+/* =========================================================
+   STEP HEADING
+========================================================= */
+
 .student-register-form-heading {
-  margin-bottom: 24px;
+  margin-bottom: 28px;
 }
 
 .student-register-step-label {
-  margin-bottom: 10px;
-  color: var(--ga-primary);
-  font-size: 10px;
-  font-weight: 850;
-  letter-spacing: 1.5px;
+  margin-bottom: 11px;
+  color: var(--ga-primary-dark);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1px;
 }
 
 .student-register-progress {
   width: 100%;
-  height: 6px;
-  margin-bottom: 22px;
+  height: 7px;
+  margin-bottom: 25px;
   overflow: hidden;
-  background: #edf3ee;
-  border-radius: 30px;
+  background: #e9f0ea;
+  border-radius: 20px;
 }
 
 .student-register-progress span {
@@ -223,26 +218,26 @@
   height: 100%;
   background: linear-gradient(
     90deg,
-    #159447,
-    #45c777
+    var(--ga-primary),
+    #49bb72
   );
-  border-radius: 30px;
+  border-radius: 20px;
   transition: width 0.35s ease;
 }
 
 .student-register-form-heading h2 {
-  margin: 0 0 7px;
+  margin: 0;
   color: var(--ga-text);
-  font-size: 22px;
+  font-size: 23px;
   font-weight: 800;
   letter-spacing: -0.5px;
 }
 
 .student-register-form-heading p {
-  margin: 0;
-  color: var(--ga-muted);
-  font-size: 12px;
-  line-height: 1.7;
+  margin: 9px 0 0;
+  color: var(--ga-text-secondary);
+  font-size: 13px;
+  line-height: 1.6;
 }
 
 /* =========================================================
@@ -250,133 +245,154 @@
 ========================================================= */
 
 .student-register-field {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-bottom: 18px;
+  width: 100%;
+  margin-bottom: 20px;
 }
 
 .student-register-field label {
-  color: #344139;
-  font-size: 12px;
-  font-weight: 750;
+  display: block;
+  margin-bottom: 9px;
+  color: var(--ga-text);
+  font-size: 13px;
+  font-weight: 700;
 }
 
 .student-register-field label span {
   color: var(--ga-muted);
   font-size: 11px;
-  font-weight: 500;
+  font-weight: 400;
 }
 
 .student-register-input-wrap,
 .student-register-select-wrap {
   position: relative;
+  width: 100%;
   display: flex;
   align-items: center;
-  width: 100%;
-  min-height: 49px;
-  background: #fbfdfb;
-  border: 1px solid var(--ga-border);
-  border-radius: var(--ga-radius-sm);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.student-register-input-wrap:focus-within,
-.student-register-select-wrap:focus-within {
-  background: var(--ga-white);
-  border-color: var(--ga-primary);
-  box-shadow: 0 0 0 3px rgba(21, 148, 71, 0.09);
 }
 
 .student-register-input-wrap > ion-icon,
 .student-register-select-wrap > ion-icon {
-  flex-shrink: 0;
-  margin-left: 14px;
-  color: #829087;
-  font-size: 18px;
+  position: absolute;
+  left: 15px;
+  z-index: 2;
+  color: var(--ga-muted);
+  font-size: 19px;
+  pointer-events: none;
 }
 
 .student-register-input-wrap input,
 .student-register-select-wrap select,
 .student-register-field > select {
   width: 100%;
-  min-width: 0;
-  height: 47px;
-  padding: 0 13px;
+  min-height: 52px;
+  padding: 0 15px 0 46px;
   color: var(--ga-text);
-  background: transparent;
-  border: 0;
+  background: #fbfdfb;
+  border: 1px solid var(--ga-border);
+  border-radius: var(--ga-radius-sm);
   outline: none;
   font-family: inherit;
-  font-size: 13px;
+  font-size: 14px;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
 }
 
 .student-register-input-wrap input::placeholder {
-  color: #a1aaa3;
+  color: #a3ada6;
 }
 
 .student-register-input-wrap input:focus,
-.student-register-select-wrap select:focus {
-  outline: none;
+.student-register-select-wrap select:focus,
+.student-register-field > select:focus {
+  background: var(--ga-white);
+  border-color: var(--ga-primary);
+  box-shadow: 0 0 0 3px rgba(21, 148, 71, 0.10);
 }
+
+.student-register-input-wrap input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* =========================================================
+   SELECT
+========================================================= */
 
 .student-register-select-wrap select {
   appearance: none;
   cursor: pointer;
+  padding-right: 40px;
+}
+
+.student-register-select-wrap::after {
+  position: absolute;
+  right: 17px;
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid var(--ga-text-secondary);
+  border-bottom: 2px solid var(--ga-text-secondary);
+  transform: rotate(45deg) translateY(-2px);
+  pointer-events: none;
 }
 
 .student-register-field > select {
-  min-height: 49px;
-  padding: 0 13px;
-  background: #fbfdfb;
-  border: 1px solid var(--ga-border);
-  border-radius: var(--ga-radius-sm);
+  padding-left: 15px;
+  appearance: auto;
   cursor: pointer;
-}
-
-.student-register-field > select:focus {
-  border-color: var(--ga-primary);
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(21, 148, 71, 0.09);
-}
-
-.student-register-field select option {
-  color: var(--ga-text);
-  background: var(--ga-white);
-}
-
-.student-register-eye {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  width: 43px;
-  height: 43px;
-  color: #829087;
-  background: transparent;
-  border: 0;
-  cursor: pointer;
-  font-size: 19px;
 }
 
 /* =========================================================
-   TERMS
+   PASSWORD EYE BUTTON
+========================================================= */
+
+.student-register-eye {
+  position: absolute;
+  right: 12px;
+  z-index: 3;
+  width: 35px;
+  height: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ga-muted);
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  font-size: 19px;
+  cursor: pointer;
+}
+
+.student-register-eye:hover {
+  color: var(--ga-primary);
+  background: var(--ga-primary-light);
+}
+
+.student-register-input-wrap:has(.student-register-eye) input {
+  padding-right: 52px;
+}
+
+/* =========================================================
+   TERMS AND CONDITIONS
 ========================================================= */
 
 .student-register-terms {
   display: flex;
   align-items: flex-start;
   gap: 10px;
-  margin: 5px 0 20px;
-  color: #59665c;
-  font-size: 11px;
+  margin: 23px 0;
+  color: var(--ga-text-secondary);
+  font-size: 12px;
   line-height: 1.6;
   cursor: pointer;
 }
 
 .student-register-terms input {
-  width: 16px;
-  height: 16px;
+  width: 17px;
+  height: 17px;
   flex-shrink: 0;
   margin: 1px 0 0;
   accent-color: var(--ga-primary);
@@ -387,391 +403,120 @@
    BUTTONS
 ========================================================= */
 
+.student-register-submit,
+.student-register-back {
+  width: 100%;
+  height: 50px;
+  margin: 8px 0 0;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1px;
+  --border-radius: 11px;
+}
+
 .student-register-submit {
   --background: var(--ga-primary);
   --background-hover: var(--ga-primary-dark);
-  --background-activated: #075b2e;
+  --background-activated: var(--ga-primary-dark);
   --color: #ffffff;
-  --border-radius: 11px;
-  --box-shadow: 0 5px 12px rgba(21, 148, 71, 0.15);
+  --box-shadow: 0 5px 14px rgba(21, 148, 71, 0.18);
+}
 
-  min-height: 49px;
-  margin: 9px 0 0;
-  font-size: 13px;
-  font-weight: 750;
-  text-transform: none;
-  letter-spacing: 0.1px;
+.student-register-submit:hover {
+  --background: var(--ga-primary-dark);
 }
 
 .student-register-back {
+  margin-bottom: 5px;
+  --border-color: var(--ga-border);
+  --color: var(--ga-text-secondary);
   --background: #ffffff;
-  --background-hover: #f2faf4;
-  --color: var(--ga-primary-dark);
-  --border-color: #cfe5d5;
-  --border-radius: 11px;
+  --background-hover: var(--ga-primary-light);
+  --background-activated: var(--ga-primary-light);
+}
 
-  min-height: 46px;
-  margin: 10px 0 0;
-  font-size: 13px;
-  font-weight: 700;
-  text-transform: none;
+.student-register-submit ion-spinner {
+  width: 19px;
+  height: 19px;
+  color: #ffffff;
 }
 
 /* =========================================================
-   ALERTS
+   ERROR MESSAGE
 ========================================================= */
 
-.student-register-error,
-.student-register-success {
+.student-register-error {
+  margin-bottom: 20px;
   padding: 13px 15px;
-  margin-bottom: 18px;
-  border-radius: 11px;
+  color: #b42332;
+  background: var(--ga-danger-bg);
+  border: 1px solid #f6d4d8;
+  border-left: 4px solid var(--ga-danger);
+  border-radius: 9px;
   font-size: 12px;
   line-height: 1.6;
 }
 
-.student-register-error {
-  color: #a72c2c;
-  background: var(--ga-danger-bg);
-  border: 1px solid #f4d3d3;
-}
+/* =========================================================
+   SUCCESS MESSAGE
+========================================================= */
 
 .student-register-success {
+  margin-bottom: 20px;
+  padding: 13px 15px;
   color: var(--ga-success);
   background: var(--ga-success-bg);
-  border: 1px solid #cdebd6;
+  border: 1px solid #ccebd6;
+  border-left: 4px solid var(--ga-success);
+  border-radius: 9px;
+  font-size: 12px;
+  line-height: 1.6;
 }
 
 /* =========================================================
-   FACE VERIFICATION INTRO
+   FACE LIVENESS SECTION
 ========================================================= */
 
 .face-verification {
-  display: flex;
-  flex-direction: column;
-  gap: 19px;
   width: 100%;
+  margin-bottom: 20px;
+  padding: 22px;
+  background: #fbfefb;
+  border: 1px solid var(--ga-border);
+  border-radius: var(--ga-radius-md);
 }
 
 .face-verification-intro {
+  margin-bottom: 20px;
   text-align: center;
 }
 
 .face-verification-main-icon {
+  width: 60px;
+  height: 60px;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 64px;
-  height: 64px;
-  margin: 0 auto 13px;
+  margin: 0 auto 14px;
   color: var(--ga-primary);
-  background: linear-gradient(
-    145deg,
-    #f0fbf3,
-    #e2f6e8
-  );
-  border: 1px solid #d5eddd;
-  border-radius: 20px;
-  box-shadow: 0 5px 14px rgba(21, 148, 71, 0.07);
-  font-size: 31px;
+  background: var(--ga-primary-light);
+  border-radius: 18px;
+  font-size: 29px;
 }
 
 .face-verification-intro h3 {
-  margin: 0 0 8px;
+  margin: 0;
   color: var(--ga-text);
-  font-size: 20px;
-  font-weight: 850;
-  letter-spacing: -0.4px;
+  font-size: 19px;
+  font-weight: 800;
 }
 
 .face-verification-intro p {
-  max-width: 400px;
-  margin: 0 auto;
-  color: var(--ga-muted);
+  max-width: 420px;
+  margin: 9px auto 0;
+  color: var(--ga-text-secondary);
   font-size: 12px;
   line-height: 1.7;
-}
-
-/* =========================================================
-   CAMERA PREVIEW CARD
-========================================================= */
-
-.face-verification-camera-card {
-  padding: 14px;
-  background: #f8fcf9;
-  border: 1px solid #e0ece3;
-  border-radius: 17px;
-}
-
-.face-verification-camera-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  margin-bottom: 12px;
-  color: #344139;
-  font-size: 10px;
-  font-weight: 850;
-  letter-spacing: 1px;
-}
-
-.face-verification-camera-top > span:first-child {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.face-live-dot {
-  width: 8px;
-  height: 8px;
-  background: #a3ada5;
-  border-radius: 50%;
-}
-
-.face-camera-label {
-  padding: 6px 10px;
-  color: #758078;
-  background: #edf3ee;
-  border-radius: 30px;
-  font-size: 9px;
-  font-weight: 750;
-  letter-spacing: 0;
-}
-
-.face-verification-camera {
-  position: relative;
-  width: 100%;
-  height: 320px;
-  overflow: hidden;
-  background: linear-gradient(
-    145deg,
-    #eaf5ec,
-    #dcece0
-  );
-  border: 1px solid #dcebe0;
-  border-radius: 13px;
-}
-
-.face-verification-video {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transform: scaleX(-1);
-}
-
-/* Camera placeholder */
-
-.face-camera-placeholder {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 9px;
-  color: var(--ga-text);
-  text-align: center;
-}
-
-.face-placeholder-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 68px;
-  height: 68px;
-  margin-bottom: 5px;
-  color: var(--ga-primary);
-  background: #ffffff;
-  border: 1px solid #dcebe0;
-  border-radius: 50%;
-  box-shadow: 0 5px 15px rgba(27, 90, 48, 0.07);
-  font-size: 30px;
-}
-
-.face-camera-placeholder strong {
-  font-size: 14px;
-  font-weight: 800;
-}
-
-.face-camera-placeholder span {
-  color: var(--ga-muted);
-  font-size: 11px;
-}
-
-/* Face guide */
-
-.face-guide {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  pointer-events: none;
-}
-
-.face-guide-oval {
-  width: 175px;
-  height: 225px;
-  border: 3px solid #4be080;
-  border-radius: 50%;
-  box-shadow:
-    0 0 0 999px rgba(20, 40, 25, 0.16),
-    0 0 18px rgba(72, 224, 128, 0.18);
-}
-
-.face-guide span {
-  padding: 7px 13px;
-  color: #ffffff;
-  background: rgba(18, 52, 29, 0.82);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 30px;
-  font-size: 10px;
-  font-weight: 650;
-}
-
-/* Success overlay */
-
-.face-camera-success-overlay {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  color: #ffffff;
-  background: rgba(8, 118, 56, 0.91);
-  font-size: 17px;
-}
-
-.face-camera-success-overlay ion-icon {
-  font-size: 58px;
-}
-
-/* Camera status */
-
-.face-camera-status {
-  display: flex;
-  align-items: flex-start;
-  gap: 9px;
-  margin-top: 13px;
-}
-
-.face-camera-status p {
-  margin: 0;
-  color: #59665c;
-  font-size: 11px;
-  line-height: 1.6;
-}
-
-.face-status-indicator {
-  width: 9px;
-  height: 9px;
-  flex-shrink: 0;
-  margin-top: 4px;
-  background: #e2a52d;
-  border-radius: 50%;
-}
-
-.face-status-indicator.verified {
-  background: var(--ga-primary);
-  box-shadow: 0 0 0 4px rgba(21, 148, 71, 0.1);
-}
-
-/* =========================================================
-   FACE INSTRUCTIONS
-========================================================= */
-
-.face-verification-instructions {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 9px;
-}
-
-.face-instruction {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  min-width: 0;
-  padding: 13px 11px;
-  background: #ffffff;
-  border: 1px solid var(--ga-border);
-  border-radius: 12px;
-  transition: border-color 0.2s ease;
-}
-
-.face-instruction:hover {
-  border-color: #a8dcb7;
-}
-
-.face-instruction > span {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  color: var(--ga-primary-dark);
-  background: var(--ga-primary-light);
-  border-radius: 9px;
-  font-size: 10px;
-  font-weight: 850;
-}
-
-.face-instruction strong {
-  display: block;
-  margin-bottom: 5px;
-  color: var(--ga-text);
-  font-size: 10px;
-  font-weight: 800;
-}
-
-.face-instruction small {
-  display: block;
-  color: var(--ga-muted);
-  font-size: 9px;
-  line-height: 1.5;
-}
-
-/* =========================================================
-   FACE ACTION BUTTONS
-========================================================= */
-
-.face-verification-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 9px;
-}
-
-.face-primary-button {
-  --background: var(--ga-primary);
-  --background-hover: var(--ga-primary-dark);
-  --background-activated: #075b2e;
-  --color: #ffffff;
-  --border-radius: 11px;
-  --box-shadow: 0 5px 12px rgba(21, 148, 71, 0.14);
-
-  min-height: 49px;
-  margin: 0;
-  font-size: 13px;
-  font-weight: 750;
-  text-transform: none;
-}
-
-.face-secondary-button {
-  --background: #ffffff;
-  --background-hover: #f3faf5;
-  --color: var(--ga-primary-dark);
-  --border-color: #cde5d4;
-  --border-radius: 11px;
-
-  min-height: 45px;
-  margin: 0;
-  font-size: 12px;
-  font-weight: 700;
-  text-transform: none;
 }
 
 /* =========================================================
@@ -780,135 +525,73 @@
 
 .face-verification-complete {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 12px;
+  margin-top: 20px;
   padding: 15px;
   color: var(--ga-success);
-  background: linear-gradient(
-    120deg,
-    #eaf8ef,
-    #f4fcf6
-  );
-  border: 1px solid #bce5c9;
-  border-radius: 13px;
+  background: var(--ga-success-bg);
+  border: 1px solid #ccebd6;
+  border-radius: 11px;
 }
 
 .face-verification-complete > ion-icon {
   flex-shrink: 0;
-  font-size: 31px;
+  margin-top: 1px;
+  font-size: 23px;
 }
 
-.face-verification-complete strong,
-.face-verification-complete span {
-  display: block;
+.face-verification-complete div {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
 }
 
 .face-verification-complete strong {
-  margin-bottom: 4px;
   font-size: 12px;
-  font-weight: 850;
+  font-weight: 800;
 }
 
 .face-verification-complete span {
-  color: #52745d;
-  font-size: 10px;
+  color: #4e725a;
+  font-size: 11px;
   line-height: 1.5;
 }
 
 /* =========================================================
-   PRIVACY NOTICE
+   FACE LIVENESS MEDIA ELEMENTS
+   General styling for common camera/video elements
 ========================================================= */
 
-.face-privacy-note {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  padding: 13px;
-  background: #f4faf5;
-  border: 1px solid #e0eee3;
-  border-radius: 12px;
-}
-
-.face-privacy-note > ion-icon {
-  flex-shrink: 0;
-  margin-top: 2px;
-  color: var(--ga-primary);
-  font-size: 19px;
-}
-
-.face-privacy-note p {
-  margin: 0;
-  color: var(--ga-muted);
-  font-size: 10px;
-  line-height: 1.7;
-}
-
-.face-privacy-note strong {
+.face-verification video {
   display: block;
-  margin-bottom: 3px;
-  color: var(--ga-text);
-  font-size: 11px;
-}
-
-/* =========================================================
-   EMAIL VERIFICATION
-========================================================= */
-
-.student-register-verification {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 15px 0 5px;
-  text-align: center;
-}
-
-.student-register-verification-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 75px;
-  height: 75px;
-  margin-bottom: 17px;
-  color: var(--ga-primary);
-  background: var(--ga-primary-light);
-  border: 1px solid #d5eddd;
-  border-radius: 50%;
-  font-size: 33px;
-}
-
-.student-register-verification h3 {
-  margin: 0 0 10px;
-  color: var(--ga-text);
-  font-size: 21px;
-  font-weight: 850;
-}
-
-.student-register-verification p {
-  margin: 7px 0;
-  color: var(--ga-muted);
-  font-size: 12px;
-  line-height: 1.7;
-}
-
-.student-register-verification > strong {
-  display: block;
+  width: 100%;
   max-width: 100%;
-  margin: 5px 0 10px;
-  overflow-wrap: anywhere;
-  color: var(--ga-primary-dark);
-  font-size: 14px;
-  font-weight: 800;
+  height: auto;
+  min-height: 180px;
+  margin: 0 auto;
+  object-fit: cover;
+  background: #17251b;
+  border-radius: 13px;
+}
+
+.face-verification canvas {
+  max-width: 100%;
+}
+
+.face-verification button {
+  cursor: pointer;
 }
 
 /* =========================================================
-   LOGIN LINK & FOOTER
+   LOGIN LINK
 ========================================================= */
 
 .student-register-login-link {
-  margin: 21px 0 0;
-  color: var(--ga-muted);
-  font-size: 12px;
+  margin: 23px 0 0;
+  color: var(--ga-text-secondary);
   text-align: center;
+  font-size: 12px;
 }
 
 .student-register-login-link a {
@@ -922,82 +605,72 @@
   text-decoration: underline;
 }
 
+/* =========================================================
+   FOOTER
+========================================================= */
+
 .student-register-footer {
-  padding: 22px 10px 5px;
-  color: #929d94;
-  font-size: 10px;
+  margin-top: 27px;
+  color: var(--ga-muted);
   text-align: center;
+  font-size: 11px;
 }
 
 /* =========================================================
-   RESPONSIVE - TABLET
+   TABLET
 ========================================================= */
 
 @media (max-width: 768px) {
-  .student-register-wrapper {
-    padding-right: 20px;
-    padding-left: 20px;
-  }
-
   .student-register-header {
     height: 72px;
+    padding: 0 5%;
   }
 
   .student-register-main {
-    max-width: 480px;
-    margin-top: 12px;
+    max-width: 620px;
+    padding: 38px 20px 25px;
   }
 
   .student-register-form {
-    padding: 25px;
+    padding: 28px;
   }
 
-  .face-verification-camera {
-    height: 290px;
+  .student-register-intro h1 {
+    font-size: 30px;
   }
 }
 
 /* =========================================================
-   RESPONSIVE - MOBILE
+   MOBILE
 ========================================================= */
 
-@media (max-width: 600px) {
-  .student-register-content {
-    --background: #f5faf6;
-  }
-
-  .student-register-wrapper {
-    min-height: 100%;
-    padding: 0 14px 24px;
-    background: #f5faf6;
-  }
-
+@media (max-width: 480px) {
   .student-register-header {
-    height: 65px;
+    height: 66px;
+    padding: 0 18px;
   }
 
   .student-register-logo {
-    width: 38px;
-    height: 38px;
-    border-radius: 11px;
-    font-size: 21px;
+    width: 40px;
+    height: 40px;
+    font-size: 22px;
+    border-radius: 12px;
   }
 
   .student-register-brand-text strong {
-    font-size: 19px;
+    font-size: 20px;
   }
 
   .student-register-brand-text small {
-    font-size: 7px;
+    font-size: 8px;
   }
 
   .student-register-main {
-    max-width: 100%;
-    margin-top: 10px;
+    padding: 30px 14px 22px;
   }
 
   .student-register-intro {
-    margin-bottom: 20px;
+    margin-bottom: 23px;
   }
 
   .student-register-intro h1 {
@@ -1005,110 +678,59 @@
   }
 
   .student-register-intro p {
-    max-width: 340px;
     font-size: 12px;
   }
 
   .student-register-form {
-    padding: 21px 17px;
-    border-radius: 19px;
-    box-shadow: 0 7px 25px rgba(27, 90, 48, 0.07);
+    padding: 22px 17px;
+    border-radius: 17px;
+  }
+
+  .student-register-form-heading {
+    margin-bottom: 23px;
   }
 
   .student-register-form-heading h2 {
     font-size: 20px;
   }
 
-  .student-register-field {
-    margin-bottom: 15px;
+  .student-register-form-heading p {
+    font-size: 12px;
   }
 
-  .student-register-input-wrap,
-  .student-register-select-wrap {
-    min-height: 47px;
+  .student-register-field {
+    margin-bottom: 17px;
   }
 
   .student-register-input-wrap input,
   .student-register-select-wrap select,
   .student-register-field > select {
-    font-size: 12px;
+    min-height: 49px;
+    font-size: 13px;
+  }
+
+  .face-verification {
+    padding: 15px;
+  }
+
+  .face-verification-main-icon {
+    width: 53px;
+    height: 53px;
+    font-size: 25px;
+  }
+
+  .face-verification-intro h3 {
+    font-size: 17px;
   }
 
   .student-register-submit,
   .student-register-back {
-    min-height: 47px;
+    height: 48px;
+    font-size: 13px;
   }
 
-  /* Mobile face verification */
-
-  .face-verification {
-    gap: 15px;
-  }
-
-  .face-verification-main-icon {
-    width: 57px;
-    height: 57px;
-    font-size: 27px;
-  }
-
-  .face-verification-intro h3 {
-    font-size: 18px;
-  }
-
-  .face-verification-intro p {
-    font-size: 11px;
-  }
-
-  .face-verification-camera-card {
-    padding: 10px;
-    border-radius: 14px;
-  }
-
-  .face-verification-camera {
-    height: 260px;
-    border-radius: 11px;
-  }
-
-  .face-guide-oval {
-    width: 145px;
-    height: 190px;
-  }
-
-  .face-verification-instructions {
-    grid-template-columns: 1fr;
-    gap: 8px;
-  }
-
-  .face-instruction {
-    flex-direction: row;
-    align-items: center;
-    gap: 11px;
-    padding: 10px 12px;
-  }
-
-  .face-instruction > span {
-    flex-shrink: 0;
-  }
-
-  .face-instruction strong {
-    margin-bottom: 3px;
-    font-size: 11px;
-  }
-
-  .face-instruction small {
+  .student-register-footer {
     font-size: 10px;
-  }
-
-  .face-privacy-note {
-    padding: 11px;
-  }
-
-  .face-privacy-note p {
-    font-size: 10px;
-  }
-
-  .face-verification-complete {
-    padding: 12px;
   }
 }
 
@@ -1117,30 +739,21 @@
 ========================================================= */
 
 @media (max-width: 360px) {
-  .student-register-wrapper {
+  .student-register-main {
     padding-right: 10px;
     padding-left: 10px;
   }
 
   .student-register-form {
-    padding: 18px 13px;
+    padding: 19px 14px;
   }
 
   .student-register-intro h1 {
     font-size: 24px;
   }
 
-  .face-verification-camera {
-    height: 225px;
-  }
-
-  .face-guide-oval {
-    width: 130px;
-    height: 170px;
-  }
-
-  .face-verification-camera-top {
-    font-size: 9px;
+  .student-register-brand-text strong {
+    font-size: 18px;
   }
 }
 
@@ -1150,9 +763,9 @@
 
 @media (prefers-reduced-motion: reduce) {
   .student-register-progress span,
-  .student-register-input-wrap,
-  .student-register-select-wrap,
-  .face-instruction {
+  .student-register-input-wrap input,
+  .student-register-select-wrap select,
+  .student-register-field > select {
     transition: none;
   }
 }

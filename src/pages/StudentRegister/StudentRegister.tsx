@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
 import {
   IonButton,
@@ -26,11 +26,7 @@ import { Link, useNavigate } from 'react-router-dom';
 
 import {
   createUserWithEmailAndPassword,
-  sendEmailVerification,
   updateProfile,
-  reload,
-  signOut,
-  onAuthStateChanged,
   type User,
 } from 'firebase/auth';
 
@@ -124,23 +120,18 @@ const courses = [
 // TYPES
 // =====================================================
 
-interface PendingStudentProfile {
+interface StudentProfile {
+  uid: string;
   fullName: string;
   email: string;
   studentId: string;
   school: string;
   course: string;
   yearLevel: string;
+  role: 'student';
+  emailVerified: boolean;
+  createdAt: ReturnType<typeof serverTimestamp>;
 }
-
-// =====================================================
-// SESSION STORAGE
-// =====================================================
-
-const PENDING_PROFILE_KEY = 'grantAccessPendingStudentProfile';
-const FACE_VERIFIED_KEY = 'grantAccessFaceVerified';
-const TERMS_ACCEPTED_KEY = 'grantAccessTermsAccepted';
-const EMAIL_SENT_KEY = 'grantAccessVerificationEmailSent';
 
 // =====================================================
 // COMPONENT
@@ -149,92 +140,32 @@ const EMAIL_SENT_KEY = 'grantAccessVerificationEmailSent';
 const StudentRegister: React.FC = () => {
   const navigate = useNavigate();
 
+  // STUDENT ACCOUNT INFORMATION
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
+  // STUDENT DETAILS
   const [studentId, setStudentId] = useState('');
   const [school, setSchool] = useState('');
   const [course, setCourse] = useState('');
   const [yearLevel, setYearLevel] = useState('');
 
+  // PASSWORD VISIBILITY
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] =
+    useState(false);
 
+  // REGISTRATION STATE
   const [registrationStep, setRegistrationStep] = useState(1);
-
   const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [faceVerified, setFaceVerified] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  // MESSAGES
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
-
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
-
-  const [faceVerified, setFaceVerified] = useState(false);
-
-  // =====================================================
-  // RESTORE PENDING REGISTRATION
-  // IMPORTANT:
-  // Never automatically skip Face Verification.
-  // =====================================================
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setCurrentUser(user);
-
-      const savedProfile = sessionStorage.getItem(
-        PENDING_PROFILE_KEY
-      );
-
-      if (!user || !savedProfile) {
-        return;
-      }
-
-      try {
-        const profile: PendingStudentProfile =
-          JSON.parse(savedProfile);
-
-        setFullName(profile.fullName || '');
-        setEmail(profile.email || '');
-        setStudentId(profile.studentId || '');
-        setSchool(profile.school || '');
-        setCourse(profile.course || '');
-        setYearLevel(profile.yearLevel || '');
-
-        const faceWasVerified =
-          sessionStorage.getItem(FACE_VERIFIED_KEY) === 'true';
-
-        const termsWereAccepted =
-          sessionStorage.getItem(TERMS_ACCEPTED_KEY) === 'true';
-
-        setFaceVerified(faceWasVerified);
-        setAcceptedTerms(termsWereAccepted);
-
-        // ALWAYS RESTORE TO FACE VERIFICATION.
-        // Step 5 must be reached through the Continue button.
-        setRegistrationStep(4);
-
-      } catch (restoreError) {
-        console.error(
-          'Unable to restore pending registration:',
-          restoreError
-        );
-
-        sessionStorage.removeItem(PENDING_PROFILE_KEY);
-        sessionStorage.removeItem(FACE_VERIFIED_KEY);
-        sessionStorage.removeItem(TERMS_ACCEPTED_KEY);
-        sessionStorage.removeItem(EMAIL_SENT_KEY);
-
-        setFaceVerified(false);
-        setAcceptedTerms(false);
-        setRegistrationStep(1);
-      }
-    });
-
-    return () => unsubscribe();
-  }, []);
 
   // =====================================================
   // STEP 1: EMAIL
@@ -277,223 +208,44 @@ const StudentRegister: React.FC = () => {
   };
 
   // =====================================================
-  // SAVE VERIFIED STUDENT PROFILE
+  // STEP 3: STUDENT INFORMATION
   // =====================================================
 
-  const saveVerifiedStudentProfile = async (user: User) => {
-    const savedProfile = sessionStorage.getItem(
-      PENDING_PROFILE_KEY
-    );
-
-    const faceWasVerified =
-      sessionStorage.getItem(FACE_VERIFIED_KEY) === 'true';
-
-    const emailWasSent =
-      sessionStorage.getItem(EMAIL_SENT_KEY) === 'true';
-
-    if (!faceWasVerified) {
-      throw new Error(
-        'Face liveness verification is required before completing registration.'
-      );
-    }
-
-    if (!emailWasSent) {
-      throw new Error(
-        'Please complete the email verification step first.'
-      );
-    }
-
-    if (!savedProfile) {
-      throw new Error(
-        'Your pending student information was not found. Please register again.'
-      );
-    }
-
-    const profile: PendingStudentProfile =
-      JSON.parse(savedProfile);
-
-    await setDoc(doc(db, 'students', user.uid), {
-      uid: user.uid,
-      fullName: profile.fullName,
-      email: profile.email,
-      studentId: profile.studentId,
-      school: profile.school,
-      course: profile.course,
-      yearLevel: profile.yearLevel,
-      role: 'student',
-      emailVerified: true,
-      createdAt: serverTimestamp(),
-    });
-
-    sessionStorage.removeItem(PENDING_PROFILE_KEY);
-    sessionStorage.removeItem(FACE_VERIFIED_KEY);
-    sessionStorage.removeItem(TERMS_ACCEPTED_KEY);
-    sessionStorage.removeItem(EMAIL_SENT_KEY);
-
-    await signOut(auth);
-
-    navigate('/login', {
-      replace: true,
-      state: {
-        email: profile.email,
-        message:
-          'Your email has been verified and your student account has been completed. You may now sign in.',
-      },
-    });
-  };
-
-  // =====================================================
-  // CHECK EMAIL VERIFICATION
-  // =====================================================
-
-  const checkEmailVerification = async () => {
+  const continueWithStudentInformation = () => {
     setError('');
     setSuccessMessage('');
 
-    const user = auth.currentUser;
-
-    if (!user) {
-      setError(
-        'Your registration session has expired. Please sign in again.'
-      );
+    if (
+      !fullName.trim() ||
+      !school.trim() ||
+      !course ||
+      !yearLevel
+    ) {
+      setError('Please complete all required fields.');
       return;
     }
 
-    const faceWasVerified =
-      sessionStorage.getItem(FACE_VERIFIED_KEY) === 'true';
-
-    const emailWasSent =
-      sessionStorage.getItem(EMAIL_SENT_KEY) === 'true';
-
-    if (!faceWasVerified || !emailWasSent) {
-      setError(
-        'Please complete face verification and email setup first.'
-      );
-
-      setRegistrationStep(4);
+    if (!acceptedTerms) {
+      setError('Please accept the Terms and Conditions.');
       return;
     }
 
-    setLoading(true);
-
-    try {
-      await reload(user);
-
-      const refreshedUser = auth.currentUser;
-
-      if (!refreshedUser?.emailVerified) {
-        setError(
-          'Your email is not verified yet. Open the verification link sent to your email, then try again.'
-        );
-        return;
-      }
-
-      await saveVerifiedStudentProfile(refreshedUser);
-
-    } catch (verificationError: unknown) {
-      console.error(
-        'Email verification check failed:',
-        verificationError
-      );
-
-      setError(
-        verificationError instanceof Error
-          ? verificationError.message
-          : 'Unable to complete your registration. Please try again.'
-      );
-
-    } finally {
-      setLoading(false);
-    }
+    setFaceVerified(false);
+    setRegistrationStep(4);
   };
 
   // =====================================================
-  // RESEND VERIFICATION EMAIL
-  // =====================================================
-
-  const resendVerificationEmail = async () => {
-    setError('');
-    setSuccessMessage('');
-
-    const user = auth.currentUser;
-
-    if (!user) {
-      setError(
-        'Your registration session has expired. Please sign in again.'
-      );
-      return;
-    }
-
-    setLoading(true);
-
-    try {
-      await reload(user);
-
-      const refreshedUser = auth.currentUser;
-
-      if (refreshedUser?.emailVerified) {
-        sessionStorage.setItem(EMAIL_SENT_KEY, 'true');
-
-        setSuccessMessage(
-          'Your email is already verified. You can complete your registration.'
-        );
-        return;
-      }
-
-      await sendEmailVerification(user, {
-        url: `${window.location.origin}/student-register`,
-        handleCodeInApp: false,
-      });
-
-      sessionStorage.setItem(EMAIL_SENT_KEY, 'true');
-
-      setSuccessMessage(
-        'A new verification email has been sent. Please check your inbox and spam folder.'
-      );
-
-    } catch (resendError: unknown) {
-      console.error(
-        'Resend verification email error:',
-        resendError
-      );
-
-      const errorCode =
-        typeof resendError === 'object' &&
-        resendError !== null &&
-        'code' in resendError
-          ? String(resendError.code)
-          : '';
-
-      setError(
-        errorCode === 'auth/too-many-requests'
-          ? 'Too many requests. Please wait before requesting another verification email.'
-          : resendError instanceof Error
-          ? resendError.message
-          : 'Unable to resend verification email.'
-      );
-
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // =====================================================
-  // CREATE STUDENT ACCOUNT AFTER FACE VERIFICATION
+  // CREATE FIREBASE ACCOUNT AND SAVE STUDENT PROFILE
   // =====================================================
 
   const createStudentAccount = async () => {
     setError('');
     setSuccessMessage('');
 
-    const faceWasVerified =
-      sessionStorage.getItem(FACE_VERIFIED_KEY) === 'true';
-
-    if (!faceVerified || !faceWasVerified) {
+    if (!faceVerified) {
       setError(
         'Please complete face liveness verification first.'
       );
-
-      setRegistrationStep(4);
       return;
     }
 
@@ -503,7 +255,7 @@ const StudentRegister: React.FC = () => {
       !course ||
       !yearLevel
     ) {
-      setError('Please complete all required fields.');
+      setError('Please complete all required student information.');
       setRegistrationStep(3);
       return;
     }
@@ -516,21 +268,26 @@ const StudentRegister: React.FC = () => {
 
     const normalizedEmail = email.trim().toLowerCase();
 
-    const pendingProfile: PendingStudentProfile = {
-      fullName: fullName.trim(),
-      email: normalizedEmail,
-      studentId: studentId.trim(),
-      school: school.trim(),
-      course,
-      yearLevel,
-    };
-
     setLoading(true);
 
     try {
-      let user = auth.currentUser;
+      let user: User;
 
-      if (!user) {
+      // If a previous attempt already created the Firebase account,
+      // reuse the current account instead of creating another one.
+      const existingUser = auth.currentUser;
+
+      if (existingUser) {
+        if (
+          existingUser.email?.toLowerCase() !== normalizedEmail
+        ) {
+          throw new Error(
+            'Another account is currently signed in. Please sign out first.'
+          );
+        }
+
+        user = existingUser;
+      } else {
         const userCredential =
           await createUserWithEmailAndPassword(
             auth,
@@ -541,61 +298,47 @@ const StudentRegister: React.FC = () => {
         user = userCredential.user;
       }
 
-      if (user.email?.toLowerCase() !== normalizedEmail) {
-        throw new Error(
-          'The signed-in account does not match the registered email.'
-        );
-      }
-
+      // UPDATE FIREBASE AUTH DISPLAY NAME
       await updateProfile(user, {
         displayName: fullName.trim(),
       });
 
-      sessionStorage.setItem(
-        PENDING_PROFILE_KEY,
-        JSON.stringify(pendingProfile)
+      // STUDENT FIRESTORE PROFILE
+      const studentProfile: StudentProfile = {
+        uid: user.uid,
+        fullName: fullName.trim(),
+        email: normalizedEmail,
+        studentId: studentId.trim(),
+        school: school.trim(),
+        course,
+        yearLevel,
+        role: 'student',
+
+        // No email verification is required in this registration flow.
+        // This field reflects Firebase Auth's actual verification state.
+        emailVerified: user.emailVerified,
+
+        createdAt: serverTimestamp(),
+      };
+
+      // SAVE STUDENT INFORMATION
+      await setDoc(
+        doc(db, 'students', user.uid),
+        studentProfile
       );
-
-      sessionStorage.setItem(FACE_VERIFIED_KEY, 'true');
-      sessionStorage.setItem(TERMS_ACCEPTED_KEY, 'true');
-
-      await reload(user);
-
-      const refreshedUser = auth.currentUser;
-
-      if (!refreshedUser) {
-        throw new Error(
-          'Unable to retrieve your Firebase registration session.'
-        );
-      }
-
-      // Do not send another email if one was already sent.
-      const emailWasAlreadySent =
-        sessionStorage.getItem(EMAIL_SENT_KEY) === 'true';
-
-      if (
-        !refreshedUser.emailVerified &&
-        !emailWasAlreadySent
-      ) {
-        await sendEmailVerification(refreshedUser, {
-          url: `${window.location.origin}/student-register`,
-          handleCodeInApp: false,
-        });
-      }
-
-      sessionStorage.setItem(EMAIL_SENT_KEY, 'true');
-
-      setCurrentUser(refreshedUser);
-      setFaceVerified(true);
-
-      // STEP 5 ONLY AFTER FACE VERIFICATION AND EMAIL SETUP.
-      setRegistrationStep(5);
 
       setSuccessMessage(
-        refreshedUser.emailVerified
-          ? 'Your email is already verified. You can complete your registration.'
-          : `A verification link has been sent to ${normalizedEmail}. Please check your email.`
+        'Your student account has been created successfully!'
       );
+
+      // DIRECT TO STUDENT DASHBOARD
+      navigate('/student-home', {
+        replace: true,
+        state: {
+          registrationSuccess: true,
+          message: 'Welcome to GrantAccess!',
+        },
+      });
 
     } catch (registrationError: unknown) {
       console.error(
@@ -609,8 +352,6 @@ const StudentRegister: React.FC = () => {
         'code' in registrationError
           ? String(registrationError.code)
           : '';
-
-      sessionStorage.removeItem(EMAIL_SENT_KEY);
 
       if (errorCode === 'auth/email-already-in-use') {
         setError(
@@ -635,6 +376,11 @@ const StudentRegister: React.FC = () => {
           'Too many requests. Please wait before trying again.'
         );
 
+      } else if (errorCode === 'permission-denied') {
+        setError(
+          'Unable to save your student profile. Please check your Firestore security rules.'
+        );
+
       } else {
         setError(
           registrationError instanceof Error
@@ -657,8 +403,7 @@ const StudentRegister: React.FC = () => {
   ) => {
     event.preventDefault();
 
-    setError('');
-    setSuccessMessage('');
+    if (loading) return;
 
     if (registrationStep === 1) {
       continueWithEmail();
@@ -671,41 +416,16 @@ const StudentRegister: React.FC = () => {
     }
 
     if (registrationStep === 3) {
-      if (
-        !fullName.trim() ||
-        !school.trim() ||
-        !course ||
-        !yearLevel
-      ) {
-        setError('Please complete all required fields.');
-        return;
-      }
-
-      if (!acceptedTerms) {
-        setError('Please accept the Terms and Conditions.');
-        return;
-      }
-
-      sessionStorage.setItem(TERMS_ACCEPTED_KEY, 'true');
-
-      setFaceVerified(false);
-      sessionStorage.removeItem(FACE_VERIFIED_KEY);
-      sessionStorage.removeItem(EMAIL_SENT_KEY);
-
-      // ALWAYS GO TO FACE VERIFICATION.
-      setRegistrationStep(4);
+      continueWithStudentInformation();
     }
   };
 
   // =====================================================
-  // FACE VERIFICATION CALLBACK
+  // FACE LIVENESS CALLBACK
   // =====================================================
 
   const handleFaceVerified = () => {
     setFaceVerified(true);
-
-    sessionStorage.setItem(FACE_VERIFIED_KEY, 'true');
-
     setError('');
 
     setSuccessMessage(
@@ -718,6 +438,8 @@ const StudentRegister: React.FC = () => {
   // =====================================================
 
   const goBack = () => {
+    if (loading) return;
+
     setError('');
     setSuccessMessage('');
 
@@ -729,11 +451,6 @@ const StudentRegister: React.FC = () => {
 
     } else if (registrationStep === 4) {
       setFaceVerified(false);
-
-      sessionStorage.removeItem(FACE_VERIFIED_KEY);
-      sessionStorage.removeItem(EMAIL_SENT_KEY);
-      sessionStorage.removeItem(PENDING_PROFILE_KEY);
-
       setRegistrationStep(3);
     }
   };
@@ -746,6 +463,8 @@ const StudentRegister: React.FC = () => {
     <IonPage>
       <IonContent className="student-register-content">
         <div className="student-register-wrapper">
+
+          {/* HEADER */}
 
           <header className="student-register-header">
             <button
@@ -770,6 +489,8 @@ const StudentRegister: React.FC = () => {
 
           <main className="student-register-main">
 
+            {/* INTRO */}
+
             <section className="student-register-intro">
               <span className="student-register-eyebrow">
                 STUDENT REGISTRATION
@@ -786,6 +507,8 @@ const StudentRegister: React.FC = () => {
               </p>
             </section>
 
+            {/* REGISTRATION FORM */}
+
             <form
               className="student-register-form"
               onSubmit={handleRegister}
@@ -796,13 +519,13 @@ const StudentRegister: React.FC = () => {
 
               <div className="student-register-form-heading">
                 <div className="student-register-step-label">
-                  STEP {registrationStep} OF 5
+                  STEP {registrationStep} OF 4
                 </div>
 
                 <div className="student-register-progress">
                   <span
                     style={{
-                      width: `${registrationStep * 20}%`,
+                      width: `${registrationStep * 25}%`,
                     }}
                   />
                 </div>
@@ -814,9 +537,7 @@ const StudentRegister: React.FC = () => {
                     ? 'Create Your Password'
                     : registrationStep === 3
                     ? 'Student Information'
-                    : registrationStep === 4
-                    ? 'Face Verification'
-                    : 'Verify Your Email'}
+                    : 'Face Liveness Verification'}
                 </h2>
 
                 <p>
@@ -826,9 +547,7 @@ const StudentRegister: React.FC = () => {
                     ? 'Create a secure password for your account.'
                     : registrationStep === 3
                     ? 'Complete your student information. Fields marked with * are required.'
-                    : registrationStep === 4
-                    ? 'Complete the face liveness challenges using your front camera.'
-                    : 'Please check your email and click the verification link we sent you.'}
+                    : 'Complete the face liveness challenges using your front camera.'}
                 </p>
               </div>
 
@@ -854,7 +573,7 @@ const StudentRegister: React.FC = () => {
                 </div>
               )}
 
-              {/* STEP 1 */}
+              {/* STEP 1: EMAIL */}
 
               {registrationStep === 1 && (
                 <div className="student-register-field">
@@ -880,7 +599,7 @@ const StudentRegister: React.FC = () => {
                 </div>
               )}
 
-              {/* STEP 2 */}
+              {/* STEP 2: PASSWORD */}
 
               {registrationStep === 2 && (
                 <>
@@ -909,6 +628,7 @@ const StudentRegister: React.FC = () => {
                         onClick={() =>
                           setShowPassword(!showPassword)
                         }
+                        aria-label="Toggle password visibility"
                       >
                         <IonIcon
                           icon={
@@ -950,6 +670,7 @@ const StudentRegister: React.FC = () => {
                             !showConfirmPassword
                           )
                         }
+                        aria-label="Toggle confirm password visibility"
                       >
                         <IonIcon
                           icon={
@@ -964,7 +685,7 @@ const StudentRegister: React.FC = () => {
                 </>
               )}
 
-              {/* STEP 3 */}
+              {/* STEP 3: STUDENT INFORMATION */}
 
               {registrationStep === 3 && (
                 <>
@@ -1089,20 +810,9 @@ const StudentRegister: React.FC = () => {
                     <input
                       type="checkbox"
                       checked={acceptedTerms}
-                      onChange={(event) => {
-                        setAcceptedTerms(event.target.checked);
-
-                        if (event.target.checked) {
-                          sessionStorage.setItem(
-                            TERMS_ACCEPTED_KEY,
-                            'true'
-                          );
-                        } else {
-                          sessionStorage.removeItem(
-                            TERMS_ACCEPTED_KEY
-                          );
-                        }
-                      }}
+                      onChange={(event) =>
+                        setAcceptedTerms(event.target.checked)
+                      }
                     />
 
                     <span>
@@ -1143,12 +853,11 @@ const StudentRegister: React.FC = () => {
 
                       <div>
                         <strong>
-                          Face verification completed!
+                          Face liveness verification completed!
                         </strong>
 
                         <span>
-                          You can now continue to create your
-                          student account.
+                          Your student account is ready to be created.
                         </span>
                       </div>
                     </div>
@@ -1157,77 +866,20 @@ const StudentRegister: React.FC = () => {
                 </div>
               )}
 
-              {/* STEP 5: EMAIL VERIFICATION */}
-
-              {registrationStep === 5 && (
-                <div className="student-register-verification">
-
-                  <div className="student-register-verification-icon">
-                    <IonIcon icon={mailOutline} />
-                  </div>
-
-                  <h3>Check Your Email</h3>
-
-                  <p>
-                    We sent a verification link to:
-                  </p>
-
-                  <strong>
-                    {currentUser?.email || email}
-                  </strong>
-
-                  <p>
-                    Open the email from Firebase Authentication
-                    and click the verification link. After that,
-                    return here and press the button below.
-                  </p>
-
-                  <IonButton
-                    type="button"
-                    expand="block"
-                    className="student-register-submit"
-                    disabled={loading}
-                    onClick={checkEmailVerification}
-                  >
-                    {loading ? (
-                      <>
-                        <IonSpinner name="crescent" />
-                        &nbsp; Checking...
-                      </>
-                    ) : (
-                      'I Have Verified My Email'
-                    )}
-                  </IonButton>
-
-                  <IonButton
-                    type="button"
-                    expand="block"
-                    fill="outline"
-                    className="student-register-back"
-                    disabled={loading}
-                    onClick={resendVerificationEmail}
-                  >
-                    Resend Verification Email
-                  </IonButton>
-
-                </div>
-              )}
-
               {/* BACK BUTTON */}
 
-              {registrationStep > 1 &&
-                registrationStep < 5 && (
-                  <IonButton
-                    type="button"
-                    expand="block"
-                    fill="outline"
-                    className="student-register-back"
-                    disabled={loading}
-                    onClick={goBack}
-                  >
-                    Back
-                  </IonButton>
-                )}
+              {registrationStep > 1 && (
+                <IonButton
+                  type="button"
+                  expand="block"
+                  fill="outline"
+                  className="student-register-back"
+                  disabled={loading}
+                  onClick={goBack}
+                >
+                  Back
+                </IonButton>
+              )}
 
               {/* CONTINUE BUTTON */}
 
@@ -1238,18 +890,11 @@ const StudentRegister: React.FC = () => {
                   className="student-register-submit"
                   disabled={loading}
                 >
-                  {loading ? (
-                    <>
-                      <IonSpinner name="crescent" />
-                      &nbsp; Processing...
-                    </>
-                  ) : (
-                    'Continue'
-                  )}
+                  Continue
                 </IonButton>
               )}
 
-              {/* CONTINUE AFTER FACE VERIFICATION */}
+              {/* CREATE ACCOUNT AFTER FACE LIVENESS */}
 
               {registrationStep === 4 && faceVerified && (
                 <IonButton
@@ -1265,10 +910,12 @@ const StudentRegister: React.FC = () => {
                       &nbsp; Creating Account...
                     </>
                   ) : (
-                    'Continue to Email Verification'
+                    'Create Account and Go to Dashboard'
                   )}
                 </IonButton>
               )}
+
+              {/* LOGIN LINK */}
 
               <p className="student-register-login-link">
                 Already have an account?{' '}
@@ -1276,6 +923,8 @@ const StudentRegister: React.FC = () => {
               </p>
 
             </form>
+
+            {/* FOOTER */}
 
             <footer className="student-register-footer">
               © {new Date().getFullYear()} GrantAccess.
