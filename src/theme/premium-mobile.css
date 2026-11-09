@@ -1,33 +1,62 @@
 
 /* ==========================================
-   GRANTACCESS - PREMIUM MOBILE THEME
+   GRANTACCESS - PREMIUM THEME
    GREEN & WHITE DESIGN
-   RESPONSIVE TABLET AND MOBILE
+   RESPONSIVE DESKTOP, TABLET AND MOBILE
 ========================================== */
 
 :root {
   color-scheme: light;
 
+  /* MAIN COLORS */
+  --ga-primary: #159447;
+  --ga-primary-dark: #087638;
+  --ga-primary-deep: #075b2e;
+
+  --ga-green-light: #eaf8ef;
+  --ga-green-soft: #e9f5ec;
+
+  --ga-white: #ffffff;
+  --ga-blush-white: #f7faf7;
+
+  --ga-charcoal: #202b23;
+  --ga-muted: #758078;
+  --ga-border-color: #e2eae3;
+
+  /* FONT */
   --ion-font-family: Inter, ui-sans-serif, system-ui, -apple-system,
     BlinkMacSystemFont, "Segoe UI", sans-serif;
 
   --ga-font-family: var(--ion-font-family);
 
+  /* RADIUS */
   --ga-radius-sm: 10px;
   --ga-radius-md: 16px;
   --ga-radius-lg: 22px;
 
+  /* SHADOWS */
   --ga-shadow-sm: 0 4px 14px rgba(21, 148, 71, 0.06);
   --ga-shadow-md: 0 12px 30px rgba(21, 148, 71, 0.09);
 
-  --ga-border: 1px solid var(--ga-green-soft);
+  --ga-border: 1px solid var(--ga-border-color);
 
-  --ion-toolbar-background: var(--ga-white);
-  --ion-toolbar-color: var(--ga-charcoal);
-  --ion-item-background: var(--ga-white);
-  --ion-card-background: var(--ga-white);
-  --ion-color-step-50: var(--ga-blush-white);
-  --ion-color-step-100: var(--ga-green-soft);
+  /* IONIC PRIMARY COLOR */
+  --ion-color-primary: #159447;
+  --ion-color-primary-rgb: 21, 148, 71;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: #13833e;
+  --ion-color-primary-tint: #2da05a;
+
+  /* IONIC COMPONENT COLORS */
+  --ion-toolbar-background: #ffffff;
+  --ion-toolbar-color: #202b23;
+  --ion-item-background: #ffffff;
+  --ion-card-background: #ffffff;
+  --ion-background-color: #f7faf7;
+  --ion-text-color: #202b23;
+  --ion-color-step-50: #f7faf7;
+  --ion-color-step-100: #e9f5ec;
 }
 
 /* ==========================================
@@ -51,6 +80,7 @@ select {
 body,
 ion-app {
   color: var(--ga-charcoal);
+  background: var(--ga-blush-white);
 }
 
 button,
@@ -103,7 +133,11 @@ ion-button:not([fill="clear"]):not([fill="outline"]) {
 }
 
 ion-button[fill="outline"] {
-  --border-color: var(--ga-green-soft);
+  --border-color: var(--ga-primary);
+  --color: var(--ga-primary-dark);
+}
+
+ion-button[fill="clear"] {
   --color: var(--ga-primary-dark);
 }
 
@@ -128,11 +162,14 @@ ion-modal::part(content) {
   border: var(--ga-border);
   border-radius: var(--ga-radius-lg);
   box-shadow: var(--ga-shadow-md);
+  background: var(--ga-white);
 }
 
 ion-toast {
   --border-radius: var(--ga-radius-sm);
   --box-shadow: var(--ga-shadow-md);
+  --background: var(--ga-charcoal);
+  --color: var(--ga-white);
 }
 
 /* ==========================================
@@ -153,8 +190,8 @@ ion-toast {
 ========================================== */
 
 .student-global-header {
-  border-color: var(--ga-green-soft);
-  background: rgba(255, 255, 255, 0.96);
+  border-color: var(--ga-border-color);
+  background: rgba(255, 255, 255, 0.97);
   box-shadow: 0 4px 18px rgba(21, 148, 71, 0.045);
   backdrop-filter: blur(14px);
 }
@@ -188,10 +225,14 @@ ion-toast {
 ========================================== */
 
 .student-bottom-navigation {
-  border-color: var(--ga-green-soft);
-  background: rgba(255, 255, 255, 0.97);
+  border-color: var(--ga-border-color);
+  background: rgba(255, 255, 255, 0.98);
   box-shadow: 0 -8px 26px rgba(21, 148, 71, 0.1);
   backdrop-filter: blur(16px);
+}
+
+.student-bottom-navigation-item.active {
+  color: var(--ga-primary);
 }
 
 /* ==========================================
@@ -211,7 +252,7 @@ ion-toast {
 .lgu-home-menu-item,
 .lgu-home-application-card,
 .lgu-home-stat-card {
-  border-color: var(--ga-green-soft);
+  border-color: var(--ga-border-color);
   border-radius: var(--ga-radius-md);
   box-shadow: var(--ga-shadow-sm);
 }
@@ -219,6 +260,10 @@ ion-toast {
 .home-welcome,
 .lgu-home-welcome {
   box-shadow: var(--ga-shadow-md);
+}
+
+.home-welcome::before {
+  background-color: var(--ga-primary);
 }
 
 /* ==========================================
@@ -233,18 +278,13 @@ ion-toast {
   transform: translateY(-2px);
 }
 
-.home-welcome::before,
-.lgu-home-welcome {
-  background-color: var(--ga-white);
-}
-
 /* ==========================================
    ADMIN SIDEBAR
 ========================================== */
 
 .admin-sidebar {
   background: var(--ga-white);
-  border-color: var(--ga-green-soft);
+  border-color: var(--ga-border-color);
 }
 
 .admin-nav-item:hover,
@@ -291,7 +331,7 @@ ion-list {
 }
 
 ion-item {
-  --border-color: var(--ga-green-soft);
+  --border-color: var(--ga-border-color);
   --background: var(--ga-white);
   --color: var(--ga-charcoal);
 }
@@ -314,6 +354,8 @@ ion-item {
   .student-bottom-navigation {
     min-height: 66px;
     padding: 6px 6px max(6px, env(safe-area-inset-bottom));
+    background: var(--ga-white);
+    border-color: var(--ga-border-color);
   }
 
   .student-bottom-navigation-item {
@@ -322,10 +364,12 @@ ion-item {
   }
 
   .student-bottom-navigation-item.active {
-    background: var(--ga-blush-white);
+    background: var(--ga-green-light);
+    color: var(--ga-primary-dark);
   }
 
   .student-bottom-navigation-item.active ion-icon {
+    color: var(--ga-primary);
     transform: translateY(-1px);
   }
 }
@@ -357,8 +401,8 @@ ion-item {
     gap: 4px;
     padding: 6px 7px max(6px, env(safe-area-inset-bottom));
     border: 0;
-    border-top: 1px solid var(--ga-green-soft);
-    background: rgba(255, 255, 255, 0.97);
+    border-top: 1px solid var(--ga-border-color);
+    background: rgba(255, 255, 255, 0.98);
     box-shadow: 0 -8px 26px rgba(21, 148, 71, 0.1);
     backdrop-filter: blur(16px);
   }
@@ -403,6 +447,8 @@ ion-item {
 
   .admin-page .admin-nav-item.active,
   .aal-page .aal-nav-item.active {
+    color: var(--ga-primary-dark);
+    background: var(--ga-green-light);
     box-shadow: inset 0 -2px 0 var(--ga-primary);
   }
 
