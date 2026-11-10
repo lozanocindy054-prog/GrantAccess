@@ -10,7 +10,6 @@ import {
 } from "@ionic/react";
 
 import {
-  arrowBackOutline,
   calendarOutline,
   cashOutline,
   checkmarkDoneOutline,
@@ -312,15 +311,6 @@ const StudentNotifications: React.FC = () => {
           {/* HEADER */}
 
           <header className="student-notifications-header">
-            <button
-              type="button"
-              className="student-notifications-back"
-              onClick={() => navigate(-1)}
-              aria-label="Go back"
-            >
-              <IonIcon icon={arrowBackOutline} />
-            </button>
-
             <div className="student-notifications-title">
               <h1>Notifications</h1>
               <p>
