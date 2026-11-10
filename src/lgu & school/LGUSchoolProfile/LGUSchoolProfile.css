@@ -291,15 +291,11 @@ ion-content.org-profile-content {
   position: relative;
   display: flex;
   align-items: flex-end;
-
-  /* MAS MALAKING COVER PHOTO */
   width: 100%;
   min-height: 380px;
   height: 380px;
-
   padding: 32px 35px;
   overflow: hidden;
-
   background:
     linear-gradient(
       90deg,
@@ -307,11 +303,9 @@ ion-content.org-profile-content {
       rgba(21, 148, 71, 0.25)
     ),
     linear-gradient(135deg, #075b2e, #159447);
-
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
-
   border-radius: 17px 17px 0 0;
 }
 
@@ -394,8 +388,6 @@ ion-content.org-profile-content {
   padding: 20px 30px 25px;
 }
 
-/* Organization logo */
-
 .org-logo {
   position: relative;
   z-index: 5;
@@ -406,10 +398,7 @@ ion-content.org-profile-content {
   width: 132px;
   height: 132px;
   min-width: 132px;
-
-  /* LOWERED LOGO POSITION */
   margin-top: -45px;
-
   padding: 8px;
   overflow: hidden;
   background: #ffffff;
@@ -434,8 +423,6 @@ ion-content.org-profile-content {
   object-position: center;
   border-radius: 10px;
 }
-
-/* Organization information */
 
 .org-profile-identity {
   flex: 1;
@@ -2000,8 +1987,16 @@ ion-toast {
 }
 
 /* =========================================================
-   LOCATION PICKER
+   LOCATION PICKER - BASE
 ========================================================= */
+
+.org-location-picker {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  gap: 12px;
+}
 
 .org-location-picker-help,
 .org-location-picker-status {
@@ -2012,13 +2007,24 @@ ion-toast {
 }
 
 .org-location-picker-map {
+  position: relative;
+  z-index: 1;
   width: 100%;
-  height: 280px;
-  margin-top: 9px;
+  height: 320px;
+  min-height: 250px;
+  margin-top: 5px;
   overflow: hidden;
   border: 1px solid var(--org-border);
-  border-radius: 10px;
+  border-radius: 12px;
   background: var(--org-primary-light);
+  box-shadow: 0 3px 12px rgba(18, 75, 42, 0.07);
+}
+
+.org-location-picker-map .leaflet-container {
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 .org-location-picker-map .leaflet-control-attribution {
@@ -2030,7 +2036,7 @@ ion-toast {
   flex-wrap: wrap;
   align-items: center;
   gap: 10px;
-  margin-top: 10px;
+  margin-top: 5px;
 }
 
 .org-location-picker-actions .org-outline-button {
@@ -2051,7 +2057,169 @@ ion-toast {
 }
 
 .org-location-picker-status {
-  margin-top: 6px;
+  margin-top: 3px;
+}
+
+/* =========================================================
+   LOCATION PICKER - ADDRESS SEARCH IMPROVEMENTS
+========================================================= */
+
+.org-location-picker .org-form-group {
+  width: 100%;
+  gap: 8px;
+}
+
+.org-location-picker .org-form-group input,
+.org-location-picker input[type="text"] {
+  width: 100%;
+  min-height: 46px;
+  padding: 12px 14px;
+  background: #ffffff;
+  border: 1px solid #d5e6da;
+  border-radius: 10px;
+  color: var(--org-text);
+  font-family: inherit;
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.org-location-picker .org-form-group input:focus,
+.org-location-picker input[type="text"]:focus {
+  border-color: var(--org-primary);
+  box-shadow: 0 0 0 3px rgba(21, 148, 71, 0.11);
+}
+
+.org-location-picker input::placeholder {
+  color: #89958d;
+}
+
+.org-location-picker-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 5px;
+}
+
+.org-location-picker-actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 10px 16px;
+  border: 1px solid var(--org-primary);
+  border-radius: 9px;
+  background: var(--org-primary);
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--org-transition);
+}
+
+.org-location-picker-actions button ion-icon {
+  font-size: 17px;
+}
+
+.org-location-picker-actions button ion-spinner {
+  width: 17px;
+  height: 17px;
+  color: #ffffff;
+}
+
+.org-location-picker-actions button:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.org-location-picker-actions .org-outline-button {
+  background: #ffffff;
+  border-color: #cfe5d5;
+  color: var(--org-primary-dark);
+}
+
+.org-location-picker-actions .org-outline-button ion-spinner {
+  color: var(--org-primary);
+}
+
+.org-location-picker-help {
+  display: block;
+  margin: 2px 0 5px;
+  padding: 11px 13px;
+  background: var(--org-primary-light);
+  border: 1px solid #d8ecdf;
+  border-radius: 9px;
+  color: #315b3e;
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+.org-location-picker-map .leaflet-control-zoom {
+  overflow: hidden;
+  border: 1px solid #dce9df;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.org-location-picker-map .leaflet-control-zoom a {
+  color: var(--org-primary-dark);
+}
+
+.org-location-picker-map .leaflet-popup-content-wrapper {
+  border-radius: 10px;
+}
+
+.org-location-picker-map .leaflet-popup-content {
+  color: var(--org-text);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.org-location-picker-coordinates {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 3px;
+  padding: 11px 13px;
+  background: #f0f9f3;
+  border: 1px solid #d9ecdf;
+  border-radius: 9px;
+  color: var(--org-primary-dark);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.org-location-picker-status {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  margin-top: 3px;
+  padding: 10px 12px;
+  background: #f5f8f6;
+  border: 1px solid var(--org-border);
+  border-radius: 9px;
+  color: var(--org-muted);
+  font-size: 11px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.org-location-picker-status ion-icon {
+  flex-shrink: 0;
+  margin-top: 1px;
+  font-size: 15px;
+}
+
+.org-location-picker-status:has(ion-spinner) {
+  background: #eff8f1;
+  border-color: #cfe5d5;
+  color: var(--org-primary-dark);
 }
 
 /* =========================================================
@@ -2148,6 +2316,17 @@ ion-toast {
   .org-file-upload:hover {
     background: #e2f5e8;
     border-color: var(--org-primary);
+  }
+
+  .org-location-picker-actions button:not(:disabled):hover {
+    background: var(--org-primary-dark);
+    border-color: var(--org-primary-dark);
+    transform: translateY(-1px);
+  }
+
+  .org-location-picker-actions .org-outline-button:not(:disabled):hover {
+    background: var(--org-primary-light);
+    color: var(--org-primary-dark);
   }
 }
 
@@ -2293,8 +2472,6 @@ ion-toast {
     padding: 8px 10px;
     font-size: 10px;
   }
-
-  /* Logo lowered on mobile too */
 
   .org-profile-main {
     flex-direction: column;
@@ -2467,8 +2644,30 @@ ion-toast {
     grid-column: auto;
   }
 
+  .org-location-picker {
+    gap: 10px;
+  }
+
   .org-location-picker-map {
-    height: 230px;
+    height: 260px;
+    min-height: 220px;
+    border-radius: 10px;
+  }
+
+  .org-location-picker-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    width: 100%;
+  }
+
+  .org-location-picker-actions button {
+    width: 100%;
+    min-height: 43px;
+  }
+
+  .org-location-picker-coordinates,
+  .org-location-picker-status {
+    font-size: 10px;
   }
 }
 
@@ -2520,6 +2719,16 @@ ion-toast {
   .org-drive-connection {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  .org-location-picker-map {
+    height: 220px;
+    min-height: 200px;
+  }
+
+  .org-location-picker-actions button {
+    padding: 10px;
+    font-size: 11px;
   }
 }
 

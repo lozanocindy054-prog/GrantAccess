@@ -155,8 +155,9 @@ const LGUSchoolDashboard: React.FC = () => {
 
   const [currentUser, setCurrentUser] = useState<User | null>(null);
 
+  // ==========================================
   // ORGANIZATION PROFILE
-  // Same Firestore document used by LGUSchoolProfile.
+  // ==========================================
 
   const [organizationProfile, setOrganizationProfile] =
     useState<OrganizationProfileData>({
@@ -167,7 +168,9 @@ const LGUSchoolDashboard: React.FC = () => {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
 
+  // ==========================================
   // MODAL STATES
+  // ==========================================
 
   const [showManageScholarships, setShowManageScholarships] =
     useState(false);
@@ -180,7 +183,9 @@ const LGUSchoolDashboard: React.FC = () => {
 
   const [showApplications, setShowApplications] = useState(false);
 
+  // ==========================================
   // FIRESTORE DATA
+  // ==========================================
 
   const [scholarships, setScholarships] = useState<Scholarship[]>([]);
   const [applications, setApplications] = useState<Application[]>([]);
@@ -188,15 +193,15 @@ const LGUSchoolDashboard: React.FC = () => {
   const [loadingScholarships, setLoadingScholarships] = useState(true);
   const [loadingApplications, setLoadingApplications] = useState(true);
 
+  // ==========================================
+  // TOAST
+  // ==========================================
+
   const [toast, setToast] = useState({
     isOpen: false,
     message: '',
     color: 'success' as 'success' | 'danger' | 'warning',
   });
-
-  // ==========================================
-  // TOAST
-  // ==========================================
 
   const showMessage = useCallback(
     (
@@ -246,6 +251,7 @@ const LGUSchoolDashboard: React.FC = () => {
 
   const closeOrganizationProfile = useCallback(() => {
     setShowOrganizationProfile(false);
+    setOpenOrganizationMapPin(false);
   }, []);
 
   const openApplications = useCallback(() => {
@@ -306,7 +312,7 @@ const LGUSchoolDashboard: React.FC = () => {
   );
 
   // ==========================================
-  // FIREBASE AUTH + LIVE DATA
+  // FIREBASE AUTH + SCHOLARSHIP + APPLICATIONS
   // ==========================================
 
   useEffect(() => {
@@ -351,7 +357,9 @@ const LGUSchoolDashboard: React.FC = () => {
           return;
         }
 
+        // ======================================
         // SCHOLARSHIPS LISTENER
+        // ======================================
 
         const scholarshipQuery = query(
           collection(db, 'scholarships'),
@@ -371,7 +379,9 @@ const LGUSchoolDashboard: React.FC = () => {
                 title: String(
                   item.title ?? item.name ?? 'Untitled Scholarship'
                 ),
-                category: String(item.category ?? item.type ?? 'Other'),
+                category: String(
+                  item.category ?? item.type ?? 'Other'
+                ),
                 description: String(item.description ?? ''),
                 status: String(item.status ?? 'Pending'),
               };
@@ -394,7 +404,9 @@ const LGUSchoolDashboard: React.FC = () => {
           }
         );
 
+        // ======================================
         // APPLICATIONS LISTENER
+        // ======================================
 
         const applicationQuery = query(
           collection(db, 'applications'),
@@ -461,20 +473,15 @@ const LGUSchoolDashboard: React.FC = () => {
 
   // ==========================================
   // ORGANIZATION PROFILE LIVE LISTENER
+  // Supports:
+  // 1. organizations/{uid}
+  // 2. Auto-generated document ID with uid field
   // ==========================================
-  // IMPORTANT:
-  // LGUSchoolProfile and this Dashboard both use:
-  // organizations/{currentUser.uid}
-  //
-  // Expected fields:
-  // organizationName
-  // logoUrl
-  //
-  // When the logo is changed in LGUSchoolProfile,
-  // onSnapshot automatically updates this dashboard.
 
   useEffect(() => {
-    if (!currentUser?.uid) {
+    const uid = currentUser?.uid;
+
+    if (!uid) {
       setOrganizationProfile({
         organizationName: 'Organization',
         logoUrl: '',
@@ -483,50 +490,119 @@ const LGUSchoolDashboard: React.FC = () => {
       return;
     }
 
-    const organizationRef = doc(
-      db,
-      'organizations',
-      currentUser.uid
-    );
+    let active = true;
+    let unsubscribeFallback: (() => void) | undefined;
+
+    const updateOrganizationProfile = (data: Record<string, any>) => {
+      if (!active) return;
+
+      setOrganizationProfile({
+        organizationName: String(
+          data.organizationName ??
+            data.name ??
+            data.orgName ??
+            'Organization'
+        ),
+
+        logoUrl: String(
+          data.logoUrl ??
+            data.logoURL ??
+            data.organizationLogo ??
+            data.logo ??
+            ''
+        ),
+      });
+    };
+
+    const resetOrganizationProfile = () => {
+      if (!active) return;
+
+      setOrganizationProfile({
+        organizationName: 'Organization',
+        logoUrl: '',
+      });
+    };
+
+    // FIRST: Direct document ID lookup.
+
+    const organizationRef = doc(db, 'organizations', uid);
 
     const unsubscribeOrganization = onSnapshot(
       organizationRef,
       (snapshot) => {
-        if (!snapshot.exists()) {
-          console.warn(
-            'Organization document not found:',
-            currentUser.uid
-          );
+        if (!active) return;
 
-          setOrganizationProfile({
-            organizationName: 'Organization',
-            logoUrl: '',
-          });
+        if (snapshot.exists()) {
+          // Direct UID document found.
 
+          unsubscribeFallback?.();
+          unsubscribeFallback = undefined;
+
+          updateOrganizationProfile(snapshot.data());
           return;
         }
 
-        const data = snapshot.data();
+        // SECOND: Search by uid field.
 
-        setOrganizationProfile({
-          organizationName: String(
-            data.organizationName ??
-              data.name ??
-              data.orgName ??
-              'Organization'
-          ),
+        console.warn(
+          'Organization document not found using document ID. Checking uid field:',
+          uid
+        );
 
-          logoUrl: String(
-            data.logoUrl ??
-              data.logoURL ??
-              data.organizationLogo ??
-              data.logo ??
-              ''
-          ),
-        });
+        if (unsubscribeFallback) return;
+
+        const fallbackQuery = query(
+          collection(db, 'organizations'),
+          where('uid', '==', uid)
+        );
+
+        unsubscribeFallback = onSnapshot(
+          fallbackQuery,
+          (querySnapshot) => {
+            if (!active) return;
+
+            if (!querySnapshot.empty) {
+              const organizationDocument = querySnapshot.docs[0];
+
+              console.log(
+                'Organization found using uid field:',
+                organizationDocument.id
+              );
+
+              updateOrganizationProfile(
+                organizationDocument.data()
+              );
+
+              return;
+            }
+
+            console.warn(
+              'No organization document found using document ID or uid field:',
+              uid
+            );
+
+            resetOrganizationProfile();
+          },
+          (error) => {
+            console.error(
+              'Organization fallback query error:',
+              error
+            );
+
+            resetOrganizationProfile();
+
+            showMessage(
+              'Unable to find your organization profile. Please check your Firestore data and permissions.',
+              'warning'
+            );
+          }
+        );
       },
       (error) => {
-        console.error('Organization profile loading error:', error);
+        console.error(
+          'Organization profile loading error:',
+          error
+        );
 
         showMessage(
           'Unable to load organization profile. Please check Firestore Rules.',
@@ -536,9 +612,11 @@ const LGUSchoolDashboard: React.FC = () => {
     );
 
     return () => {
+      active = false;
       unsubscribeOrganization();
+      unsubscribeFallback?.();
     };
-  }, [currentUser, showMessage]);
+  }, [currentUser?.uid, showMessage]);
 
   // ==========================================
   // DASHBOARD STATISTICS
@@ -580,7 +658,11 @@ const LGUSchoolDashboard: React.FC = () => {
       navigate(LOGIN_PATH, { replace: true });
     } catch (error) {
       console.error('Logout error:', error);
-      showMessage('Unable to log out. Please try again.', 'danger');
+
+      showMessage(
+        'Unable to log out. Please try again.',
+        'danger'
+      );
     }
   };
 
@@ -634,17 +716,23 @@ const LGUSchoolDashboard: React.FC = () => {
 
                   <div>
                     <IonIcon icon={schoolOutline} />
-                    <span>{scholarships.length} scholarship listings</span>
+                    <span>
+                      {scholarships.length} scholarship listings
+                    </span>
                   </div>
 
                   <div>
                     <IonIcon icon={documentTextOutline} />
-                    <span>{applications.length} applications received</span>
+                    <span>
+                      {applications.length} applications received
+                    </span>
                   </div>
 
                   <button
                     type="button"
-                    onClick={() => handleNavigation('/lgu-notifications')}
+                    onClick={() =>
+                      handleNavigation('/lgu-notifications')
+                    }
                   >
                     Open Notifications
                   </button>
@@ -681,7 +769,9 @@ const LGUSchoolDashboard: React.FC = () => {
                     <strong>
                       {organizationProfile.organizationName}
                     </strong>
+
                     <small>Organization Account</small>
+
                     <small>
                       {currentUser?.email ?? 'LGU / School'}
                     </small>
@@ -704,13 +794,18 @@ const LGUSchoolDashboard: React.FC = () => {
 
                     <button
                       type="button"
-                      onClick={() => handleNavigation('/lgu-settings')}
+                      onClick={() =>
+                        handleNavigation('/lgu-settings')
+                      }
                     >
                       <IonIcon icon={settingsOutline} />
                       Settings
                     </button>
 
-                    <button type="button" onClick={handleLogout}>
+                    <button
+                      type="button"
+                      onClick={handleLogout}
+                    >
                       <IonIcon icon={logOutOutline} />
                       Log Out
                     </button>
@@ -748,7 +843,9 @@ const LGUSchoolDashboard: React.FC = () => {
                 <div className="lgu-home-art-card">
                   <IonIcon icon={schoolOutline} />
                   <strong>Scholarship Opportunities</strong>
-                  <span>Empowering students through education.</span>
+                  <span>
+                    Empowering students through education.
+                  </span>
                 </div>
               </div>
             </section>
@@ -759,7 +856,9 @@ const LGUSchoolDashboard: React.FC = () => {
               <div className="lgu-home-section-heading">
                 <div>
                   <h2>Main Menu</h2>
-                  <p>Explore and manage your organization portal.</p>
+                  <p>
+                    Explore and manage your organization portal.
+                  </p>
                 </div>
               </div>
 
@@ -771,7 +870,8 @@ const LGUSchoolDashboard: React.FC = () => {
                       (item.path === SCHOLARSHIPS_PATH &&
                         showManageScholarships) ||
                       (item.path === ORGANIZATION_PROFILE_PATH &&
-                        showOrganizationProfile) ||
+                        showOrganizationProfile &&
+                        !openOrganizationMapPin) ||
                       (item.path === ORGANIZATION_MAP_PIN_PATH &&
                         showOrganizationProfile &&
                         openOrganizationMapPin) ||
@@ -788,7 +888,9 @@ const LGUSchoolDashboard: React.FC = () => {
                         <button
                           type="button"
                           className={`lgu-home-menu-icon-button ${item.color}`}
-                          onClick={() => handleNavigation(item.path)}
+                          onClick={() =>
+                            handleNavigation(item.path)
+                          }
                           aria-label={`Open ${item.label}`}
                           title={item.label}
                         >
@@ -828,7 +930,9 @@ const LGUSchoolDashboard: React.FC = () => {
               <div className="lgu-home-section-heading">
                 <div>
                   <h2>Dashboard Overview</h2>
-                  <p>Monitor your organization's performance.</p>
+                  <p>
+                    Monitor your organization's performance.
+                  </p>
                 </div>
 
                 <span className="lgu-home-live">
@@ -838,12 +942,18 @@ const LGUSchoolDashboard: React.FC = () => {
               </div>
 
               <div className="lgu-home-stats-grid">
+
+                {/* TOTAL SCHOLARSHIPS */}
+
                 <article className="lgu-home-stat-card">
                   <div className="lgu-home-stat-top">
                     <span className="lgu-home-stat-icon green">
                       <IonIcon icon={schoolOutline} />
                     </span>
-                    <span className="lgu-home-stat-label">LISTINGS</span>
+
+                    <span className="lgu-home-stat-label">
+                      LISTINGS
+                    </span>
                   </div>
 
                   <p>Total Scholarships</p>
@@ -851,18 +961,25 @@ const LGUSchoolDashboard: React.FC = () => {
                   <strong className="lgu-home-stat-value">
                     {loadingScholarships ? (
                       <IonSpinner name="crescent" />
-                    ) : scholarships.length}
+                    ) : (
+                      scholarships.length
+                    )}
                   </strong>
 
                   <small>Total scholarships managed</small>
                 </article>
+
+                {/* PUBLISHED SCHOLARSHIPS */}
 
                 <article className="lgu-home-stat-card">
                   <div className="lgu-home-stat-top">
                     <span className="lgu-home-stat-icon blue">
                       <IonIcon icon={checkmarkCircleOutline} />
                     </span>
-                    <span className="lgu-home-stat-label">ACTIVE</span>
+
+                    <span className="lgu-home-stat-label">
+                      ACTIVE
+                    </span>
                   </div>
 
                   <p>Published Scholarships</p>
@@ -870,18 +987,27 @@ const LGUSchoolDashboard: React.FC = () => {
                   <strong className="lgu-home-stat-value">
                     {loadingScholarships ? (
                       <IonSpinner name="crescent" />
-                    ) : publishedCount}
+                    ) : (
+                      publishedCount
+                    )}
                   </strong>
 
-                  <small>Currently published opportunities</small>
+                  <small>
+                    Currently published opportunities
+                  </small>
                 </article>
+
+                {/* TOTAL APPLICATIONS */}
 
                 <article className="lgu-home-stat-card">
                   <div className="lgu-home-stat-top">
                     <span className="lgu-home-stat-icon purple">
                       <IonIcon icon={peopleOutline} />
                     </span>
-                    <span className="lgu-home-stat-label">APPLICANTS</span>
+
+                    <span className="lgu-home-stat-label">
+                      APPLICANTS
+                    </span>
                   </div>
 
                   <p>Total Applications</p>
@@ -889,18 +1015,25 @@ const LGUSchoolDashboard: React.FC = () => {
                   <strong className="lgu-home-stat-value">
                     {loadingApplications ? (
                       <IonSpinner name="crescent" />
-                    ) : applications.length}
+                    ) : (
+                      applications.length
+                    )}
                   </strong>
 
                   <small>Applications received</small>
                 </article>
+
+                {/* PENDING APPLICATIONS */}
 
                 <article className="lgu-home-stat-card">
                   <div className="lgu-home-stat-top">
                     <span className="lgu-home-stat-icon orange">
                       <IonIcon icon={timeOutline} />
                     </span>
-                    <span className="lgu-home-stat-label">FOR REVIEW</span>
+
+                    <span className="lgu-home-stat-label">
+                      FOR REVIEW
+                    </span>
                   </div>
 
                   <p>Pending Applications</p>
@@ -908,10 +1041,14 @@ const LGUSchoolDashboard: React.FC = () => {
                   <strong className="lgu-home-stat-value">
                     {loadingApplications ? (
                       <IonSpinner name="crescent" />
-                    ) : pendingCount}
+                    ) : (
+                      pendingCount
+                    )}
                   </strong>
 
-                  <small>Applications waiting for review</small>
+                  <small>
+                    Applications waiting for review
+                  </small>
                 </article>
               </div>
             </section>
@@ -922,7 +1059,9 @@ const LGUSchoolDashboard: React.FC = () => {
               <div className="lgu-home-section-heading">
                 <div>
                   <h2>Application Summary</h2>
-                  <p>Check the current status of student applications.</p>
+                  <p>
+                    Check the current status of student applications.
+                  </p>
                 </div>
 
                 <button
@@ -935,14 +1074,17 @@ const LGUSchoolDashboard: React.FC = () => {
               </div>
 
               <div className="lgu-home-application-grid">
+
                 <div className="lgu-home-application-card">
                   <span className="pending">
                     <IonIcon icon={timeOutline} />
                   </span>
+
                   <div>
                     <strong>
                       {loadingApplications ? '...' : pendingCount}
                     </strong>
+
                     <small>Pending Review</small>
                   </div>
                 </div>
@@ -951,10 +1093,12 @@ const LGUSchoolDashboard: React.FC = () => {
                   <span className="approved">
                     <IonIcon icon={checkmarkCircleOutline} />
                   </span>
+
                   <div>
                     <strong>
                       {loadingApplications ? '...' : approvedCount}
                     </strong>
+
                     <small>Approved Applications</small>
                   </div>
                 </div>
@@ -963,10 +1107,14 @@ const LGUSchoolDashboard: React.FC = () => {
                   <span className="total">
                     <IonIcon icon={documentTextOutline} />
                   </span>
+
                   <div>
                     <strong>
-                      {loadingApplications ? '...' : applications.length}
+                      {loadingApplications
+                        ? '...'
+                        : applications.length}
                     </strong>
+
                     <small>Total Applications</small>
                   </div>
                 </div>
@@ -995,7 +1143,9 @@ const LGUSchoolDashboard: React.FC = () => {
                 {loadingScholarships ? (
                   <div className="lgu-home-loading">
                     <IonSpinner name="crescent" />
-                    <span>Loading scholarship listings...</span>
+                    <span>
+                      Loading scholarship listings...
+                    </span>
                   </div>
                 ) : scholarships.length === 0 ? (
                   <div className="lgu-home-empty">
@@ -1019,38 +1169,41 @@ const LGUSchoolDashboard: React.FC = () => {
                   </div>
                 ) : (
                   <div className="lgu-home-scholarship-list">
-                    {scholarships.slice(0, 5).map((item) => (
-                      <div
-                        className="lgu-home-scholarship-row"
-                        key={item.id}
-                      >
-                        <div className="lgu-home-scholarship-icon">
-                          <IonIcon icon={documentTextOutline} />
-                        </div>
+                    {scholarships
+                      .slice(0, 5)
+                      .map((item) => (
+                        <div
+                          className="lgu-home-scholarship-row"
+                          key={item.id}
+                        >
+                          <div className="lgu-home-scholarship-icon">
+                            <IonIcon icon={documentTextOutline} />
+                          </div>
 
-                        <div className="lgu-home-scholarship-info">
-                          <strong>{item.title}</strong>
-                          <span>
-                            {item.category}
-                            {item.description
-                              ? ` • ${item.description}`
-                              : ''}
+                          <div className="lgu-home-scholarship-info">
+                            <strong>{item.title}</strong>
+
+                            <span>
+                              {item.category}
+                              {item.description
+                                ? ` • ${item.description}`
+                                : ''}
+                            </span>
+                          </div>
+
+                          <span
+                            className={`lgu-home-status ${
+                              item.status.toLowerCase() === 'published'
+                                ? 'published'
+                                : item.status.toLowerCase() === 'rejected'
+                                  ? 'rejected'
+                                  : 'pending'
+                            }`}
+                          >
+                            {item.status}
                           </span>
                         </div>
-
-                        <span
-                          className={`lgu-home-status ${
-                            item.status.toLowerCase() === 'published'
-                              ? 'published'
-                              : item.status.toLowerCase() === 'rejected'
-                                ? 'rejected'
-                                : 'pending'
-                          }`}
-                        >
-                          {item.status}
-                        </span>
-                      </div>
-                    ))}
+                      ))}
                   </div>
                 )}
               </div>

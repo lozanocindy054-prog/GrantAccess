@@ -1117,7 +1117,9 @@ const LGUSchoolProfile: React.FC<LGUSchoolProfileProps> = ({
   };
 
   const findOrganizationAddressOnMap = async () => {
-    if (!form.address.trim()) {
+    const address = form.address.trim();
+
+    if (!address) {
       setLocationMapStatus('Enter the organization address first.');
       return;
     }
@@ -1126,18 +1128,24 @@ const LGUSchoolProfile: React.FC<LGUSchoolProfileProps> = ({
     setLocationMapStatus('Finding the address on the map...');
 
     try {
-      const query = [
-        form.organizationName.trim(),
-        form.address.trim(),
-        'Philippines',
-      ]
-        .filter(Boolean)
-        .join(', ');
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&countrycodes=ph&q=${encodeURIComponent(
-          query
-        )}`
+      // Search the address only. Adding the organization name can make
+      // Nominatim return no result when the organization is not indexed.
+      const searchQuery = `${address}, Philippines`;
+      const searchUrl = new URL(
+        'https://nominatim.openstreetmap.org/search'
       );
+      searchUrl.searchParams.set('format', 'jsonv2');
+      searchUrl.searchParams.set('q', searchQuery);
+      searchUrl.searchParams.set('limit', '1');
+      searchUrl.searchParams.set('countrycodes', 'ph');
+      searchUrl.searchParams.set('addressdetails', '1');
+
+      const response = await fetch(searchUrl.toString(), {
+        method: 'GET',
+        headers: {
+          Accept: 'application/json',
+        },
+      });
 
       if (!response.ok) {
         throw new Error(
@@ -1145,15 +1153,18 @@ const LGUSchoolProfile: React.FC<LGUSchoolProfileProps> = ({
         );
       }
 
-      const results = (await response.json()) as {
-        lat: string;
-        lon: string;
-      }[];
-      const latitude = Number(results[0]?.lat);
-      const longitude = Number(results[0]?.lon);
+      const results = (await response.json()) as Array<{
+        lat?: string;
+        lon?: string;
+        display_name?: string;
+      }>;
+
+      const firstResult = results[0];
+      const latitude = Number(firstResult?.lat);
+      const longitude = Number(firstResult?.lon);
 
       if (
-        !results[0] ||
+        !firstResult ||
         !Number.isFinite(latitude) ||
         !Number.isFinite(longitude) ||
         latitude < -90 ||
@@ -1162,7 +1173,7 @@ const LGUSchoolProfile: React.FC<LGUSchoolProfileProps> = ({
         longitude > 180
       ) {
         setLocationMapStatus(
-          'Address not found. Please check the address or tap the map to set the pin.'
+          'Address not found. You can still tap the map to manually set your organization pin.'
         );
         return;
       }
@@ -1172,13 +1183,14 @@ const LGUSchoolProfile: React.FC<LGUSchoolProfileProps> = ({
         latitude,
         longitude,
       }));
+
       setLocationMapStatus(
-        'Address found. Review the pin and save changes to publish it.'
+        'Address found! Review the map pin and save your changes.'
       );
     } catch (error) {
       console.error('Unable to find organization address on map:', error);
       setLocationMapStatus(
-        'Unable to search the address right now. You can tap the map to set the pin.'
+        'Address search is temporarily unavailable. You can still tap the map to set your pin.'
       );
     } finally {
       setFindingAddress(false);

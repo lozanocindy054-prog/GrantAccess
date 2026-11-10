@@ -25,23 +25,21 @@ import {
 
 import {
   signInWithEmailAndPassword,
+  signOut,
 } from 'firebase/auth';
 
-import { auth } from '../../Firebase/config';
+import {
+  doc,
+  getDoc,
+} from 'firebase/firestore';
+
+import { auth, db } from '../../Firebase/config';
 
 import './LoginStudent.css';
-
-// ==========================================
-// LOGIN LOCATION STATE
-// ==========================================
 
 interface LoginLocationState {
   email?: string;
 }
-
-// ==========================================
-// STUDENT LOGIN COMPONENT
-// ==========================================
 
 const LoginStudent: React.FC = () => {
   const navigate = useNavigate();
@@ -50,25 +48,14 @@ const LoginStudent: React.FC = () => {
   const locationState =
     location.state as LoginLocationState | null;
 
-  // ==========================================
-  // STATES
-  // ==========================================
-
   const [email, setEmail] = useState(
     locationState?.email ?? ''
   );
 
   const [password, setPassword] = useState('');
-
   const [showPassword, setShowPassword] = useState(false);
-
   const [loading, setLoading] = useState(false);
-
   const [error, setError] = useState('');
-
-  // ==========================================
-  // STUDENT LOGIN
-  // ==========================================
 
   const handleLogin = async (
     event: React.FormEvent<HTMLFormElement>
@@ -79,9 +66,8 @@ const LoginStudent: React.FC = () => {
 
     setError('');
 
-    const trimmedEmail = email.trim();
+    const trimmedEmail = email.trim().toLowerCase();
 
-    // Validate inputs
     if (!trimmedEmail || !password) {
       setError('Please enter your email and password.');
       return;
@@ -90,10 +76,7 @@ const LoginStudent: React.FC = () => {
     setLoading(true);
 
     try {
-      // ==========================================
-      // FIREBASE AUTHENTICATION
-      // ==========================================
-
+      // 1. Firebase Authentication
       const userCredential =
         await signInWithEmailAndPassword(
           auth,
@@ -101,14 +84,67 @@ const LoginStudent: React.FC = () => {
           password
         );
 
-      // Get authenticated student
       const user = userCredential.user;
 
       if (!user) {
-        throw new Error('Authentication failed. Please try again.');
+        throw new Error('Authentication failed.');
       }
 
-      // Refresh Firebase authentication token
+      // 2. Check email verification
+      await user.reload();
+
+      if (!user.emailVerified) {
+        await signOut(auth);
+
+        setError(
+          'Please verify your email address before logging in.'
+        );
+
+        return;
+      }
+
+      // 3. Get student profile from Firestore
+      const studentRef = doc(db, 'students', user.uid);
+      const studentSnapshot = await getDoc(studentRef);
+
+      if (!studentSnapshot.exists()) {
+        await signOut(auth);
+
+        setError(
+          'Student profile not found. Please register a student account.'
+        );
+
+        return;
+      }
+
+      const studentData = studentSnapshot.data();
+
+      // 4. Verify account role
+      if (studentData.role !== 'student') {
+        await signOut(auth);
+
+        setError(
+          'This login is for student accounts only. Please use the correct login page.'
+        );
+
+        return;
+      }
+
+      // 5. Verify profile ownership
+      if (
+        studentData.uid &&
+        studentData.uid !== user.uid
+      ) {
+        await signOut(auth);
+
+        setError(
+          'Your student profile could not be verified. Please contact support.'
+        );
+
+        return;
+      }
+
+      // 6. Refresh authentication token
       await user.getIdToken(true);
 
       console.log(
@@ -116,10 +152,7 @@ const LoginStudent: React.FC = () => {
         user.uid
       );
 
-      // ==========================================
-      // NAVIGATE TO STUDENT HOME
-      // ==========================================
-
+      // 7. Navigate to Student Dashboard
       navigate('/student-dashboard', {
         replace: true,
         state: {
@@ -138,10 +171,6 @@ const LoginStudent: React.FC = () => {
           ? String(err.code)
           : '';
 
-      // ==========================================
-      // FIREBASE ERROR HANDLING
-      // ==========================================
-
       if (
         errorCode === 'auth/invalid-credential' ||
         errorCode === 'auth/user-not-found' ||
@@ -149,14 +178,10 @@ const LoginStudent: React.FC = () => {
       ) {
         setError('Incorrect email or password.');
 
-      } else if (
-        errorCode === 'auth/invalid-email'
-      ) {
+      } else if (errorCode === 'auth/invalid-email') {
         setError('Please enter a valid email address.');
 
-      } else if (
-        errorCode === 'auth/too-many-requests'
-      ) {
+      } else if (errorCode === 'auth/too-many-requests') {
         setError(
           'Too many login attempts. Please try again later.'
         );
@@ -168,11 +193,17 @@ const LoginStudent: React.FC = () => {
           'Network error. Please check your internet connection.'
         );
 
-      } else if (
-        errorCode === 'auth/user-disabled'
-      ) {
+      } else if (errorCode === 'auth/user-disabled') {
         setError(
           'This account has been disabled. Please contact the administrator.'
+        );
+
+      } else if (
+        errorCode === 'permission-denied' ||
+        errorCode === 'firestore/permission-denied'
+      ) {
+        setError(
+          'Unable to verify your student profile. Please check your account permissions.'
         );
 
       } else {
@@ -183,14 +214,22 @@ const LoginStudent: React.FC = () => {
         );
       }
 
+      // Ensure invalid sessions are not left active
+      if (
+        errorCode === 'permission-denied' ||
+        errorCode === 'firestore/permission-denied'
+      ) {
+        try {
+          await signOut(auth);
+        } catch (signOutError) {
+          console.error('Sign out error:', signOutError);
+        }
+      }
+
     } finally {
       setLoading(false);
     }
   };
-
-  // ==========================================
-  // PAGE UI
-  // ==========================================
 
   return (
     <IonPage>
@@ -198,28 +237,20 @@ const LoginStudent: React.FC = () => {
 
         <div className="grant-login-wrapper">
 
-          {/* ==========================================
-              HEADER
-          ========================================== */}
-
           <header className="grant-login-header">
 
             <button
               type="button"
               className="grant-login-brand"
-              onClick={() =>
-                navigate('/register-choice')
-              }
+              onClick={() => navigate('/register-choice')}
               aria-label="Go to GrantAccess home"
               disabled={loading}
             >
-
               <span className="grant-login-logo">
                 <IonIcon icon={schoolOutline} />
               </span>
 
               <span className="grant-login-brand-text">
-
                 <strong>
                   Grant<span>Access</span>
                 </strong>
@@ -227,41 +258,27 @@ const LoginStudent: React.FC = () => {
                 <small>
                   YOUR FUTURE STARTS HERE
                 </small>
-
               </span>
-
             </button>
 
           </header>
-
-          {/* ==========================================
-              LOGIN FORM
-          ========================================== */}
 
           <main className="grant-login-main">
 
             <section className="grant-login-card">
 
-              {/* HEADING */}
-
               <div className="grant-login-heading">
-
                 <span className="grant-login-eyebrow">
                   WELCOME BACK
                 </span>
 
-                <h1>
-                  Sign in to GrantAccess
-                </h1>
+                <h1>Sign in to GrantAccess</h1>
 
                 <p>
                   Sign in to explore scholarship opportunities
                   and manage your applications.
                 </p>
-
               </div>
-
-              {/* ERROR MESSAGE */}
 
               {error && (
                 <div
@@ -272,13 +289,7 @@ const LoginStudent: React.FC = () => {
                 </div>
               )}
 
-              {/* FORM */}
-
               <form onSubmit={handleLogin}>
-
-                {/* ==========================================
-                    EMAIL ADDRESS
-                ========================================== */}
 
                 <div className="grant-login-field">
 
@@ -311,10 +322,6 @@ const LoginStudent: React.FC = () => {
 
                 </div>
 
-                {/* ==========================================
-                    PASSWORD
-                ========================================== */}
-
                 <div className="grant-login-field">
 
                   <label htmlFor="login-password">
@@ -330,11 +337,7 @@ const LoginStudent: React.FC = () => {
 
                     <input
                       id="login-password"
-                      type={
-                        showPassword
-                          ? 'text'
-                          : 'password'
-                      }
+                      type={showPassword ? 'text' : 'password'}
                       placeholder="Enter your password"
                       autoComplete="current-password"
                       value={password}
@@ -345,8 +348,6 @@ const LoginStudent: React.FC = () => {
                       required
                       disabled={loading}
                     />
-
-                    {/* SHOW / HIDE PASSWORD */}
 
                     <button
                       type="button"
@@ -361,7 +362,6 @@ const LoginStudent: React.FC = () => {
                       }
                       disabled={loading}
                     >
-
                       <IonIcon
                         icon={
                           showPassword
@@ -369,19 +369,13 @@ const LoginStudent: React.FC = () => {
                             : eyeOutline
                         }
                       />
-
                     </button>
 
                   </div>
 
                 </div>
 
-                {/* ==========================================
-                    FORGOT PASSWORD
-                ========================================== */}
-
                 <div className="grant-login-forgot">
-
                   <Link
                     to="/forgot-password"
                     state={{
@@ -390,12 +384,7 @@ const LoginStudent: React.FC = () => {
                   >
                     Forgot Password?
                   </Link>
-
                 </div>
-
-                {/* ==========================================
-                    SIGN IN BUTTON
-                ========================================== */}
 
                 <IonButton
                   type="submit"
@@ -403,7 +392,6 @@ const LoginStudent: React.FC = () => {
                   className="grant-login-submit"
                   disabled={loading}
                 >
-
                   {loading ? (
                     <>
                       <IonSpinner name="crescent" />
@@ -412,36 +400,22 @@ const LoginStudent: React.FC = () => {
                   ) : (
                     'Sign In'
                   )}
-
                 </IonButton>
 
               </form>
 
-              {/* ==========================================
-                  REGISTER LINK
-              ========================================== */}
-
               <p className="grant-login-register">
-
                 Don't have an account?{' '}
-
                 <Link to="/student-register">
                   Create an account
                 </Link>
-
               </p>
 
             </section>
 
-            {/* ==========================================
-                FOOTER
-            ========================================== */}
-
             <footer className="grant-login-footer">
-
               © {new Date().getFullYear()} GrantAccess.
               All rights reserved.
-
             </footer>
 
           </main>
