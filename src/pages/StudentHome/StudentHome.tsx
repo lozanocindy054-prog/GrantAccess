@@ -1,4 +1,3 @@
-
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -260,6 +259,7 @@ const StudentHome: React.FC = () => {
   const [scholarships, setScholarships] = useState<Scholarship[]>([]);
   const [applications, setApplications] = useState<Application[]>([]);
   const [savedScholarships, setSavedScholarships] = useState<SavedScholarship[]>([]);
+  const [unreadNotifications, setUnreadNotifications] = useState(0);
 
   const [organizations, setOrganizations] = useState<Organization[]>([]);
   const [mapLoading, setMapLoading] = useState(true);
@@ -281,6 +281,7 @@ const StudentHome: React.FC = () => {
     let unsubscribeApplications: (() => void) | undefined;
     let unsubscribeSaved: (() => void) | undefined;
     let unsubscribeOrganizations: (() => void) | undefined;
+    let unsubscribeNotifications: (() => void) | undefined;
 
     const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
       const currentGeneration = ++authGeneration;
@@ -292,12 +293,14 @@ const StudentHome: React.FC = () => {
       unsubscribeApplications?.();
       unsubscribeSaved?.();
       unsubscribeOrganizations?.();
+      unsubscribeNotifications?.();
 
       unsubscribeStudentProfile = undefined;
       unsubscribeScholarships = undefined;
       unsubscribeApplications = undefined;
       unsubscribeSaved = undefined;
       unsubscribeOrganizations = undefined;
+      unsubscribeNotifications = undefined;
 
       if (!active) return;
 
@@ -311,6 +314,7 @@ const StudentHome: React.FC = () => {
         setApplications([]);
         setSavedScholarships([]);
         setOrganizations([]);
+        setUnreadNotifications(0);
 
         setLoading(false);
         setMapLoading(false);
@@ -505,6 +509,28 @@ const StudentHome: React.FC = () => {
       );
 
       // ========================================
+      // UNREAD NOTIFICATIONS (BELL INDICATOR)
+      // ========================================
+
+      unsubscribeNotifications = onSnapshot(
+        query(
+          collection(db, "studentNotifications"),
+          where("studentId", "==", user.uid)
+        ),
+        (snapshot) => {
+          if (!active || currentGeneration !== authGeneration) return;
+
+          setUnreadNotifications(
+            snapshot.docs.filter((item) => item.data().isRead !== true)
+              .length
+          );
+        },
+        (error) => {
+          console.error("Notifications listener error:", error);
+        }
+      );
+
+      // ========================================
       // REGISTERED ORGANIZATIONS MAP
       // ========================================
 
@@ -614,6 +640,7 @@ const StudentHome: React.FC = () => {
       unsubscribeApplications?.();
       unsubscribeSaved?.();
       unsubscribeOrganizations?.();
+      unsubscribeNotifications?.();
     };
   }, []);
 
@@ -702,11 +729,17 @@ const StudentHome: React.FC = () => {
             <button
               type="button"
               className="student-notification-button"
-              aria-label="Notifications"
+              aria-label={
+                unreadNotifications > 0
+                  ? `Notifications, ${unreadNotifications} unread`
+                  : "Notifications"
+              }
               onClick={openNotifications}
             >
               <IonIcon icon={notificationsOutline} />
-              <span className="notification-indicator" />
+              {unreadNotifications > 0 && (
+                <span className="notification-indicator" />
+              )}
             </button>
           </header>
 

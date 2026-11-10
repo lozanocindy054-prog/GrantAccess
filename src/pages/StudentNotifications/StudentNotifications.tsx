@@ -1,94 +1,158 @@
+import React, { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-import React, { useEffect, useState } from "react";
 import {
   IonContent,
   IonIcon,
   IonPage,
   IonSpinner,
+  IonToast,
 } from "@ionic/react";
+
 import {
+  arrowBackOutline,
+  calendarOutline,
+  cashOutline,
   checkmarkDoneOutline,
+  chevronForwardOutline,
+  megaphoneOutline,
   notificationsOutline,
   schoolOutline,
-  timeOutline,
-  alertCircleOutline,
 } from "ionicons/icons";
-import { onAuthStateChanged } from "firebase/auth";
+
 import {
   collection,
   doc,
   onSnapshot,
   query,
+  serverTimestamp,
   updateDoc,
   where,
-  type Timestamp,
+  writeBatch,
 } from "firebase/firestore";
-import { useNavigate } from "react-router-dom";
 
+import { onAuthStateChanged } from "firebase/auth";
 import { auth, db } from "../../Firebase/config";
-import StudentHeader from "../../components/StudentHeader";
+
 import StudentBottomNav from "../../components/StudentBottomNav";
+
 import "./StudentNotifications.css";
+
+// ==========================================
+// TYPES
+// ==========================================
 
 interface StudentNotification {
   id: string;
   title: string;
   message: string;
-  type: string;
+  type: "scholarship" | "announcement";
+  organizationName: string;
+  organizationLogo: string;
+  scholarshipId: string;
+  scholarshipTitle: string;
+  amount: string;
+  deadline: string;
+  imageUrl: string;
   isRead: boolean;
-  createdAt?: Timestamp | Date | string;
-  scholarshipId?: string;
-  postId?: string;
-  organizationId?: string;
-  organizationName?: string;
+  createdAtMs: number;
 }
 
-const getNotificationDate = (
-  value?: Timestamp | Date | string
-): Date => {
-  if (!value) return new Date();
+type FilterTab = "all" | "unread";
 
-  if (value instanceof Date) return value;
+// ==========================================
+// HELPERS
+// ==========================================
 
-  if (typeof value === "string") {
-    return new Date(value);
+const getMillis = (value: unknown): number => {
+  if (!value) return 0;
+
+  if (
+    typeof value === "object" &&
+    value !== null &&
+    "toMillis" in value &&
+    typeof (value as { toMillis: () => number }).toMillis === "function"
+  ) {
+    return (value as { toMillis: () => number }).toMillis();
   }
 
-  if ("toDate" in value && typeof value.toDate === "function") {
-    return value.toDate();
-  }
+  if (value instanceof Date) return value.getTime();
 
-  return new Date();
+  const parsed = new Date(value as string);
+
+  return Number.isNaN(parsed.getTime()) ? 0 : parsed.getTime();
 };
 
-const formatNotificationDate = (
-  value?: Timestamp | Date | string
-): string => {
-  if (!value) return "Just now";
+const timeAgo = (milliseconds: number): string => {
+  // serverTimestamp() is empty for a moment right after the write
+  if (!milliseconds) return "Just now";
 
-  const date = getNotificationDate(value);
+  const seconds = Math.max(
+    0,
+    Math.floor((Date.now() - milliseconds) / 1000)
+  );
 
-  if (Number.isNaN(date.getTime())) return "Just now";
+  if (seconds < 60) return "Just now";
 
-  return date.toLocaleString("en-PH", {
-    dateStyle: "medium",
-    timeStyle: "short",
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes}m ago`;
+
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h ago`;
+
+  const days = Math.floor(hours / 24);
+  if (days < 7) return `${days}d ago`;
+
+  return new Date(milliseconds).toLocaleDateString("en-PH", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
   });
 };
+
+const formatAmount = (amount: string): string => {
+  if (!amount) return "";
+
+  const value = Number(amount);
+
+  return Number.isFinite(value)
+    ? `₱${value.toLocaleString("en-PH")}`
+    : amount;
+};
+
+const formatDeadline = (deadline: string): string => {
+  if (!deadline) return "";
+
+  const parsed = new Date(deadline);
+
+  if (Number.isNaN(parsed.getTime())) return deadline;
+
+  return parsed.toLocaleDateString("en-PH", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+};
+
+// ==========================================
+// STUDENT NOTIFICATIONS PAGE
+// ==========================================
 
 const StudentNotifications: React.FC = () => {
   const navigate = useNavigate();
 
-  const [notifications, setNotifications] = useState<
-    StudentNotification[]
-  >([]);
+  const [notifications, setNotifications] = useState<StudentNotification[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [updating, setUpdating] = useState(false);
+  const [activeTab, setActiveTab] = useState<FilterTab>("all");
+  const [markingAll, setMarkingAll] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  // ========================================
+  // REAL-TIME NOTIFICATION LISTENER
+  // ========================================
 
   useEffect(() => {
     let unsubscribeNotifications: (() => void) | undefined;
-    let active = true;
 
     const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
       unsubscribeNotifications?.();
@@ -97,297 +161,330 @@ const StudentNotifications: React.FC = () => {
       if (!user) {
         setNotifications([]);
         setLoading(false);
-        navigate("/login", { replace: true });
+        setErrorMessage("Please sign in to view your notifications.");
         return;
       }
 
       setLoading(true);
-      setError("");
+      setErrorMessage("");
 
-      const notificationsQuery = query(
-        collection(db, "studentNotifications"),
-        where("studentId", "==", user.uid)
-      );
-
+      // No orderBy here on purpose: where + orderBy on a different field
+      // needs a composite index. Sorting is done on the device instead.
       unsubscribeNotifications = onSnapshot(
-        notificationsQuery,
+        query(
+          collection(db, "studentNotifications"),
+          where("studentId", "==", user.uid)
+        ),
         (snapshot) => {
-          if (!active) return;
+          const rows: StudentNotification[] = snapshot.docs.map((item) => {
+            const data = item.data();
 
-          const items: StudentNotification[] = snapshot.docs.map(
-            (notificationDoc) => {
-              const data = notificationDoc.data();
-
-              return {
-                id: notificationDoc.id,
-                title: String(
-                  data.title || "New GrantAccess Update"
-                ),
-                message: String(data.message || ""),
-                type: String(data.type || "announcement"),
-                isRead: data.isRead === true,
-                createdAt: data.createdAt,
-                scholarshipId:
-                  typeof data.scholarshipId === "string"
-                    ? data.scholarshipId
-                    : undefined,
-                postId:
-                  typeof data.postId === "string"
-                    ? data.postId
-                    : undefined,
-                organizationId:
-                  typeof data.organizationId === "string"
-                    ? data.organizationId
-                    : undefined,
-                organizationName:
-                  typeof data.organizationName === "string"
-                    ? data.organizationName
-                    : undefined,
-              };
-            }
-          );
-
-          items.sort((a, b) => {
-            return (
-              getNotificationDate(b.createdAt).getTime() -
-              getNotificationDate(a.createdAt).getTime()
-            );
+            return {
+              id: item.id,
+              title: String(data.title || "Notification"),
+              message: String(data.message || ""),
+              type: data.type === "scholarship" ? "scholarship" : "announcement",
+              organizationName: String(data.organizationName || ""),
+              organizationLogo: String(data.organizationLogo || ""),
+              scholarshipId: String(data.scholarshipId || ""),
+              scholarshipTitle: String(data.scholarshipTitle || ""),
+              amount: String(data.amount || ""),
+              deadline: String(data.deadline || ""),
+              imageUrl: String(data.imageUrl || ""),
+              isRead: data.isRead === true,
+              createdAtMs: getMillis(data.createdAt),
+            };
           });
 
-          setNotifications(items);
+          rows.sort((a, b) => {
+            // notifications with a pending timestamp are the newest
+            const first = a.createdAtMs || Date.now();
+            const second = b.createdAtMs || Date.now();
+
+            return second - first;
+          });
+
+          setNotifications(rows);
           setLoading(false);
-          setError("");
         },
-        (snapshotError) => {
-          console.error(
-            "Unable to load student notifications:",
-            snapshotError
-          );
-
-          if (!active) return;
-
-          setError(
-            "Notifications could not be loaded. Please check your account permissions and internet connection."
-          );
+        (error) => {
+          console.error("Student notifications listener error:", error);
           setLoading(false);
+          setErrorMessage(
+            "Unable to load notifications. Please check your Firestore Rules."
+          );
         }
       );
     });
 
     return () => {
-      active = false;
       unsubscribeAuth();
       unsubscribeNotifications?.();
     };
-  }, [navigate]);
+  }, []);
 
-  const markAsRead = async (item: StudentNotification) => {
-    if (item.isRead) return;
+  // ========================================
+  // DERIVED DATA
+  // ========================================
+
+  const unreadCount = useMemo(
+    () => notifications.filter((item) => !item.isRead).length,
+    [notifications]
+  );
+
+  const visibleNotifications = useMemo(
+    () =>
+      activeTab === "unread"
+        ? notifications.filter((item) => !item.isRead)
+        : notifications,
+    [activeTab, notifications]
+  );
+
+  // ========================================
+  // ACTIONS
+  // ========================================
+
+  const markAsRead = async (notification: StudentNotification) => {
+    if (notification.isRead) return;
 
     try {
-      await updateDoc(
-        doc(db, "studentNotifications", item.id),
-        {
-          isRead: true,
-        }
-      );
-
-      setNotifications((previous) =>
-        previous.map((notification) =>
-          notification.id === item.id
-            ? { ...notification, isRead: true }
-            : notification
-        )
-      );
-    } catch (notificationError) {
-      console.error(
-        "Unable to mark notification as read:",
-        notificationError
-      );
+      await updateDoc(doc(db, "studentNotifications", notification.id), {
+        isRead: true,
+        readAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+      });
+    } catch (error) {
+      console.error("Mark notification as read error:", error);
+      setErrorMessage("Unable to mark this notification as read.");
     }
-  };
-
-  const openNotification = async (
-    item: StudentNotification
-  ) => {
-    await markAsRead(item);
-
-    if (item.scholarshipId) {
-      navigate(
-        `/application?scholarshipId=${encodeURIComponent(
-          item.scholarshipId
-        )}`
-      );
-      return;
-    }
-
-    if (item.postId) {
-      navigate("/student-dashboard");
-      return;
-    }
-
-    navigate("/scholarships");
   };
 
   const markAllAsRead = async () => {
-    const unreadItems = notifications.filter(
-      (item) => !item.isRead
-    );
+    const unread = notifications.filter((item) => !item.isRead);
 
-    if (!unreadItems.length) return;
+    if (unread.length === 0 || markingAll) return;
 
-    setUpdating(true);
-    setError("");
+    setMarkingAll(true);
 
-    const results = await Promise.allSettled(
-      unreadItems.map((item) =>
-        updateDoc(
-          doc(db, "studentNotifications", item.id),
-          { isRead: true }
-        )
-      )
-    );
+    try {
+      for (let offset = 0; offset < unread.length; offset += 400) {
+        const batch = writeBatch(db);
 
-    const failed = results.some(
-      (result) => result.status === "rejected"
-    );
+        unread.slice(offset, offset + 400).forEach((item) => {
+          batch.update(doc(db, "studentNotifications", item.id), {
+            isRead: true,
+            readAt: serverTimestamp(),
+            updatedAt: serverTimestamp(),
+          });
+        });
 
-    if (failed) {
-      setError(
-        "Some notifications could not be marked as read. Please try again."
-      );
+        await batch.commit();
+      }
+    } catch (error) {
+      console.error("Mark all notifications as read error:", error);
+      setErrorMessage("Unable to mark all notifications as read.");
+    } finally {
+      setMarkingAll(false);
     }
-
-    setUpdating(false);
   };
 
-  const unreadCount = notifications.filter(
-    (item) => !item.isRead
-  ).length;
+  const openNotification = (notification: StudentNotification) => {
+    void markAsRead(notification);
+
+    if (notification.scholarshipId) {
+      navigate(
+        `/application?scholarshipId=${encodeURIComponent(
+          notification.scholarshipId
+        )}`
+      );
+    }
+  };
+
+  // ========================================
+  // UI
+  // ========================================
 
   return (
     <IonPage className="student-notifications-page">
-      <StudentHeader />
+      <IonContent fullscreen className="student-notifications-content">
+        <div className="student-notifications">
 
-      <IonContent className="student-notifications-content">
-        <main className="student-notifications-layout">
-          <header className="student-notifications-heading">
-            <div className="student-notifications-heading-icon">
-              <IonIcon icon={notificationsOutline} />
-            </div>
+          {/* HEADER */}
 
-            <div className="student-notifications-heading-copy">
-              <span>YOUR UPDATES</span>
+          <header className="student-notifications-header">
+            <button
+              type="button"
+              className="student-notifications-back"
+              onClick={() => navigate(-1)}
+              aria-label="Go back"
+            >
+              <IonIcon icon={arrowBackOutline} />
+            </button>
+
+            <div className="student-notifications-title">
               <h1>Notifications</h1>
               <p>
-                Stay updated with new scholarships, announcements,
-                and updates from LGU and School organizations.
+                {unreadCount > 0
+                  ? `${unreadCount} unread`
+                  : "You're all caught up"}
               </p>
             </div>
 
-            {unreadCount > 0 && (
-              <button
-                type="button"
-                onClick={() => void markAllAsRead()}
-                disabled={updating}
-              >
-                {updating ? (
-                  <IonSpinner name="crescent" />
-                ) : (
+            <button
+              type="button"
+              className="student-notifications-mark-all"
+              onClick={markAllAsRead}
+              disabled={unreadCount === 0 || markingAll}
+            >
+              {markingAll ? (
+                <IonSpinner name="crescent" />
+              ) : (
+                <>
                   <IonIcon icon={checkmarkDoneOutline} />
-                )}
-                Mark all read
-              </button>
-            )}
+                  Read all
+                </>
+              )}
+            </button>
           </header>
 
-          <div className="student-notifications-summary">
-            <div>
-              <strong>{notifications.length}</strong>
-              <span>Total notifications</span>
-            </div>
+          {/* FILTER TABS */}
 
-            <div>
-              <strong>{unreadCount}</strong>
-              <span>Unread updates</span>
-            </div>
+          <div className="student-notifications-tabs">
+            <button
+              type="button"
+              className={activeTab === "all" ? "selected" : ""}
+              onClick={() => setActiveTab("all")}
+            >
+              All
+              <span>{notifications.length}</span>
+            </button>
+
+            <button
+              type="button"
+              className={activeTab === "unread" ? "selected" : ""}
+              onClick={() => setActiveTab("unread")}
+            >
+              Unread
+              <span>{unreadCount}</span>
+            </button>
           </div>
 
-          {error && (
-            <div className="student-notifications-error">
-              <IonIcon icon={alertCircleOutline} />
-              <span>{error}</span>
-            </div>
-          )}
+          {/* LIST */}
 
           {loading ? (
             <div className="student-notifications-loading">
               <IonSpinner name="crescent" />
-              <span>Loading your notifications...</span>
+              <span>Loading notifications...</span>
             </div>
-          ) : notifications.length > 0 ? (
-            <section className="student-notification-list">
-              {notifications.map((item) => (
-                <button
-                  type="button"
-                  className={`student-notification-card ${
-                    item.isRead ? "" : "unread"
-                  }`}
-                  key={item.id}
-                  onClick={() => void openNotification(item)}
-                >
-                  <span className="student-notification-icon">
-                    <IonIcon icon={schoolOutline} />
-                  </span>
-
-                  <span className="student-notification-copy">
-                    <strong>{item.title}</strong>
-
-                    <span className="student-notification-message">
-                      {item.message}
-                    </span>
-
-                    {item.organizationName && (
-                      <span className="student-notification-organization">
-                        From: {item.organizationName}
-                      </span>
-                    )}
-
-                    <small>
-                      <IonIcon icon={timeOutline} />
-                      {formatNotificationDate(item.createdAt)}
-                    </small>
-                  </span>
-
-                  {!item.isRead && (
-                    <span className="student-notification-new">
-                      NEW
-                    </span>
-                  )}
-                </button>
-              ))}
-            </section>
-          ) : (
-            <section className="student-notifications-empty">
+          ) : visibleNotifications.length === 0 ? (
+            <div className="student-notifications-empty">
               <IonIcon icon={notificationsOutline} />
 
-              <h2>You’re all caught up!</h2>
+              <h3>
+                {activeTab === "unread"
+                  ? "No unread notifications"
+                  : "No notifications yet"}
+              </h3>
 
               <p>
-                There are no notifications yet. New scholarship
-                announcements and updates from organizations will
-                appear here.
+                New scholarships and announcements from organizations
+                will appear here.
               </p>
+            </div>
+          ) : (
+            <div className="student-notifications-list">
+              {visibleNotifications.map((notification) => (
+                <article
+                  key={notification.id}
+                  className={`student-notification-card ${
+                    notification.isRead ? "is-read" : "is-unread"
+                  }`}
+                  onClick={() => openNotification(notification)}
+                >
+                  <div className="student-notification-avatar">
+                    {notification.organizationLogo ? (
+                      <img
+                        src={notification.organizationLogo}
+                        alt={`${notification.organizationName} logo`}
+                        onError={(event) => {
+                          event.currentTarget.style.display = "none";
+                        }}
+                      />
+                    ) : (
+                      <IonIcon
+                        icon={
+                          notification.type === "scholarship"
+                            ? schoolOutline
+                            : megaphoneOutline
+                        }
+                      />
+                    )}
+                  </div>
 
-              <button
-                type="button"
-                onClick={() => navigate("/scholarships")}
-              >
-                Explore Scholarships
-              </button>
-            </section>
+                  <div className="student-notification-body">
+                    <div className="student-notification-top">
+                      <span
+                        className={`student-notification-tag ${notification.type}`}
+                      >
+                        {notification.type === "scholarship"
+                          ? "New Scholarship"
+                          : "Announcement"}
+                      </span>
+
+                      <small>{timeAgo(notification.createdAtMs)}</small>
+                    </div>
+
+                    <h3>
+                      {notification.scholarshipTitle || notification.title}
+                    </h3>
+
+                    <p>{notification.message}</p>
+
+                    {notification.type === "scholarship" &&
+                      (notification.amount || notification.deadline) && (
+                        <div className="student-notification-meta">
+                          {notification.amount && (
+                            <span>
+                              <IonIcon icon={cashOutline} />
+                              {formatAmount(notification.amount)}
+                            </span>
+                          )}
+
+                          {notification.deadline && (
+                            <span>
+                              <IonIcon icon={calendarOutline} />
+                              Deadline: {formatDeadline(notification.deadline)}
+                            </span>
+                          )}
+                        </div>
+                      )}
+                  </div>
+
+                  <div className="student-notification-side">
+                    {!notification.isRead && (
+                      <span
+                        className="student-notification-dot"
+                        aria-label="Unread"
+                      />
+                    )}
+
+                    {notification.scholarshipId && (
+                      <IonIcon icon={chevronForwardOutline} />
+                    )}
+                  </div>
+                </article>
+              ))}
+            </div>
           )}
-        </main>
+
+          <IonToast
+            isOpen={Boolean(errorMessage)}
+            message={errorMessage}
+            duration={4000}
+            color="danger"
+            onDidDismiss={() => setErrorMessage("")}
+          />
+        </div>
       </IonContent>
 
       <StudentBottomNav />
