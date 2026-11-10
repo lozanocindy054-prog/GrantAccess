@@ -95,6 +95,18 @@ const ALLOWED_IMAGES = [
 ];
 
 // ======================================================
+// STUDENT NOTIFICATION CONFIGURATION
+// ======================================================
+
+// Collection that the student home notification bell reads from.
+// The student side should query:
+//   where('studentId', '==', currentStudent.uid)
+const STUDENT_NOTIFICATIONS_COLLECTION = 'studentNotifications';
+
+// Firestore allows max 500 writes per batch.
+const NOTIFICATION_BATCH_SIZE = 400;
+
+// ======================================================
 // TYPES
 // ======================================================
 
@@ -271,6 +283,21 @@ interface CloudinaryResponse {
   format?: string;
 }
 
+interface StudentNotificationPayload {
+  organizationId: string;
+  organizationName: string;
+  organizationLogo: string;
+  title: string;
+  message: string;
+  type: 'scholarship' | 'announcement';
+  scholarshipId: string;
+  postId: string;
+  scholarshipTitle: string;
+  amount: string;
+  deadline: string;
+  imageUrl: string;
+}
+
 // ======================================================
 // DEFAULT VALUES
 // ======================================================
@@ -440,6 +467,81 @@ const getViewCount = (value?: number): number => {
 
 const isPublished = (status?: string): boolean =>
   String(status || '').toLowerCase() === 'published';
+
+// ======================================================
+// STUDENT NOTIFICATION HELPERS
+// ======================================================
+
+/**
+ * Collects the UID of every student account.
+ * 1) Reads the "students" collection (document id = student uid).
+ * 2) If that collection is empty, falls back to "users" with role == "student".
+ */
+const getAllStudentIds = async (): Promise<string[]> => {
+  const ids = new Set<string>();
+
+  const studentsSnapshot = await getDocs(collection(db, 'students'));
+  studentsSnapshot.docs.forEach((student) => ids.add(student.id));
+
+  if (ids.size === 0) {
+    try {
+      const usersSnapshot = await getDocs(
+        query(collection(db, 'users'), where('role', '==', 'student'))
+      );
+      usersSnapshot.docs.forEach((student) => ids.add(student.id));
+    } catch (fallbackError) {
+      console.warn('Fallback student lookup (users) failed:', fallbackError);
+    }
+  }
+
+  return Array.from(ids);
+};
+
+/**
+ * Creates one notification document per student so the notification
+ * bell on the student home page can show it (and mark it as read per student).
+ * Returns how many notifications were created.
+ */
+const sendNotificationsToAllStudents = async (
+  payload: StudentNotificationPayload
+): Promise<number> => {
+  const studentIds = await getAllStudentIds();
+
+  for (let offset = 0; offset < studentIds.length; offset += NOTIFICATION_BATCH_SIZE) {
+    const batch = writeBatch(db);
+
+    studentIds
+      .slice(offset, offset + NOTIFICATION_BATCH_SIZE)
+      .forEach((studentId) => {
+        const notificationRef = doc(
+          collection(db, STUDENT_NOTIFICATIONS_COLLECTION)
+        );
+
+        batch.set(notificationRef, {
+          studentId,
+          title: payload.title,
+          message: payload.message,
+          type: payload.type,
+          organizationId: payload.organizationId,
+          organizationName: payload.organizationName,
+          organizationLogo: payload.organizationLogo,
+          scholarshipId: payload.scholarshipId,
+          scholarshipTitle: payload.scholarshipTitle,
+          amount: payload.amount,
+          deadline: payload.deadline,
+          imageUrl: payload.imageUrl,
+          postId: payload.postId,
+          isRead: false,
+          read: false,
+          createdAt: serverTimestamp(),
+        });
+      });
+
+    await batch.commit();
+  }
+
+  return studentIds.length;
+};
 
 // ======================================================
 // MAIN COMPONENT
@@ -767,25 +869,6 @@ const LGUSchoolProfile: React.FC<LGUSchoolProfileProps> = ({
               getTimestamp(b.createdAt) - getTimestamp(a.createdAt)
           );
 
-          unsubscribeApplications = onSnapshot(
-            query(
-              collection(db, 'applications'),
-              where('organizationId', '==', currentUser.uid)
-            ),
-            (snapshot) => {
-              const counts: Record<string, number> = {};
-              snapshot.docs.forEach((application) => {
-                const scholarshipId = String(application.data().scholarshipId || '');
-                if (scholarshipId) counts[scholarshipId] = (counts[scholarshipId] || 0) + 1;
-              });
-              setApplicationCounts(counts);
-            },
-            (error) => {
-              console.error('Application analytics loading error:', error);
-              notify('Unable to load application analytics.', 'warning');
-            }
-          );
-
           setOrganizationPosts(rows);
         },
         (error) => {
@@ -794,6 +877,28 @@ const LGUSchoolProfile: React.FC<LGUSchoolProfileProps> = ({
             `Unable to load organization posts: ${error.message}`,
             'danger'
           );
+        }
+      );
+
+      // APPLICATION COUNTS (separate listener, not nested inside posts)
+      unsubscribeApplications = onSnapshot(
+        query(
+          collection(db, 'applications'),
+          where('organizationId', '==', currentUser.uid)
+        ),
+        (snapshot) => {
+          const counts: Record<string, number> = {};
+          snapshot.docs.forEach((application) => {
+            const scholarshipId = String(application.data().scholarshipId || '');
+            if (scholarshipId) {
+              counts[scholarshipId] = (counts[scholarshipId] || 0) + 1;
+            }
+          });
+          setApplicationCounts(counts);
+        },
+        (error) => {
+          console.error('Application analytics loading error:', error);
+          notify('Unable to load application analytics.', 'warning');
         }
       );
     });
@@ -1697,6 +1802,7 @@ const LGUSchoolProfile: React.FC<LGUSchoolProfileProps> = ({
 
     try {
       let studentNotificationsFailed = false;
+      let notificationErrorMessage = '';
       let uploadedPoster: UploadedFile | null = null;
 
       if (posterFile) {
@@ -1733,6 +1839,8 @@ const LGUSchoolProfile: React.FC<LGUSchoolProfileProps> = ({
         }
       }
 
+      const finalPosterUrl = uploadedPoster?.url || existingPosterUrl;
+
       const commonData = {
         title: postForm.title.trim(),
         description: postForm.description.trim(),
@@ -1746,7 +1854,7 @@ const LGUSchoolProfile: React.FC<LGUSchoolProfileProps> = ({
           status === 'scheduled'
             ? Timestamp.fromDate(new Date(postForm.scheduledAt))
             : null,
-        imageUrl: uploadedPoster?.url || existingPosterUrl,
+        imageUrl: finalPosterUrl,
         attachments: [...existingDocuments, ...uploadedDocuments],
         organizationId: user.uid,
         organizationName:
@@ -1780,7 +1888,7 @@ const LGUSchoolProfile: React.FC<LGUSchoolProfileProps> = ({
           ...commonData,
           organizationLogo: profile.logoUrl || '',
           applicationStatus: postForm.applicationStatus,
-          bannerUrl: uploadedPoster?.url || '',
+          bannerUrl: finalPosterUrl,
           amount: postForm.amount.trim(),
           benefits: postForm.benefits.trim(),
           eligibility: postForm.eligibility.trim(),
@@ -1849,39 +1957,52 @@ const LGUSchoolProfile: React.FC<LGUSchoolProfileProps> = ({
       }
       if (!publishedItemId) publishedItemId = postId;
 
+      // ----------------------------------------------------
+      // NOTIFY STUDENTS (notification bell on student home)
+      // Sent only when the post is newly published
+      // (new post, or a draft/scheduled post being published now).
+      // ----------------------------------------------------
       const previousPostStatus = organizationPosts.find(
         (item) => item.id === editingPostId
       )?.status;
-      if (status === 'published' && previousPostStatus !== 'published') {
+      const previousScholarshipStatus = scholarships.find(
+        (item) => item.id === editingScholarshipId
+      )?.status;
+      const wasAlreadyPublished =
+        isPublished(previousPostStatus) ||
+        isPublished(previousScholarshipStatus);
+
+      if (status === 'published' && !wasAlreadyPublished) {
         try {
-          const studentsSnapshot = await getDocs(collection(db, 'students'));
-          const students = studentsSnapshot.docs;
-          for (let offset = 0; offset < students.length; offset += 450) {
-            const batch = writeBatch(db);
-            students.slice(offset, offset + 450).forEach((student) => {
-              const notificationRef = doc(collection(db, 'studentNotifications'));
-              batch.set(notificationRef, {
-                studentId: student.id,
-                title: isScholarship
-                  ? 'New scholarship opportunity'
-                  : 'New organization announcement',
-                message: `${profile.organizationName || profile.name || 'An organization'}: ${postForm.title.trim()}`,
-                type: isScholarship ? 'scholarship' : 'announcement',
-                organizationId: user.uid,
-                scholarshipId: isScholarship ? publishedItemId : '',
-                postId,
-                isRead: false,
-                createdAt: serverTimestamp(),
-              });
-            });
-            await batch.commit();
-          }
+          const organizationDisplayName =
+            profile.organizationName || profile.name || 'An organization';
+
+          await sendNotificationsToAllStudents({
+            organizationId: user.uid,
+            organizationName: organizationDisplayName,
+            organizationLogo: profile.logoUrl || '',
+            title: isScholarship
+              ? 'New scholarship opportunity'
+              : 'New organization announcement',
+            message: `${organizationDisplayName}: ${postForm.title.trim()}`,
+            type: isScholarship ? 'scholarship' : 'announcement',
+            scholarshipId: isScholarship ? publishedItemId : '',
+            postId,
+            scholarshipTitle: isScholarship ? postForm.title.trim() : '',
+            amount: isScholarship ? postForm.amount.trim() : '',
+            deadline: isScholarship ? postForm.deadline : '',
+            imageUrl: finalPosterUrl,
+          });
         } catch (notificationError) {
           console.error(
             'Post was published but student notification delivery failed:',
             notificationError
           );
           studentNotificationsFailed = true;
+          notificationErrorMessage =
+            notificationError instanceof Error
+              ? notificationError.message
+              : 'Unknown error';
         }
       }
 
@@ -1890,10 +2011,12 @@ const LGUSchoolProfile: React.FC<LGUSchoolProfileProps> = ({
 
       notify(
         editingPostId || editingScholarshipId
-          ? 'Your post has been updated.'
+          ? status === 'published' && studentNotificationsFailed
+            ? `Post updated, but student notifications failed: ${notificationErrorMessage}`
+            : 'Your post has been updated.'
           : status === 'published'
           ? studentNotificationsFailed
-            ? 'Post published, but student notifications could not be delivered.'
+            ? `Post published, but student notifications failed: ${notificationErrorMessage}`
             : 'Your post has been published and students have been notified!'
           : status === 'scheduled'
             ? 'Post scheduled. It will publish automatically at the selected time.'
@@ -3560,7 +3683,7 @@ const LGUSchoolProfile: React.FC<LGUSchoolProfileProps> = ({
                       <span>
                         {postForm.category === 'Scholarship Announcement' ||
                         postForm.category === 'Scholarship Update'
-                          ? '03'
+                          ? '04'
                           : '02'}
                       </span>
                       <div>
@@ -3785,7 +3908,12 @@ const LGUSchoolProfile: React.FC<LGUSchoolProfileProps> = ({
                     </div>
 
                     <div className="org-form-section-heading org-form-full">
-                      <span>04</span>
+                      <span>
+                        {postForm.category === 'Scholarship Announcement' ||
+                        postForm.category === 'Scholarship Update'
+                          ? '05'
+                          : '03'}
+                      </span>
                       <div>
                         <strong>Post settings</strong>
                         <small>Control who can see and interact with this post.</small>
@@ -3915,9 +4043,11 @@ const LGUSchoolProfile: React.FC<LGUSchoolProfileProps> = ({
                     <IonIcon icon={informationCircleOutline} />
                     <p>
                       Scholarship announcements are linked to your scholarship
-                      listing and student feed. Scheduled posts publish at the
-                      selected time using the GrantAccess scheduled-publishing
-                      function. Drafts stay private to your organization.
+                      listing and student feed. Publishing sends a notification
+                      to every student's notification bell. Scheduled posts
+                      publish at the selected time using the GrantAccess
+                      scheduled-publishing function. Drafts stay private to
+                      your organization.
                     </p>
                   </div>
                 </div>
