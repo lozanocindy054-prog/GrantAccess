@@ -1,9 +1,9 @@
 
 /* =========================================
    GRANTACCESS - STUDENT HOME
-   Larger Profile Avatar
-   Green and white | Responsive layout
-   Includes Leaflet Organization Map
+   Green and White | Responsive Layout
+   Enlarged Student Profile Avatar
+   Leaflet Organization Map
 ========================================= */
 
 :root {
@@ -19,7 +19,9 @@
   --ga-shadow: 0 4px 16px rgba(18, 75, 42, 0.08);
 }
 
-/* PAGE */
+/* =========================================
+   PAGE
+========================================= */
 
 .student-home-page {
   --background: var(--ga-page);
@@ -48,7 +50,9 @@
   box-sizing: border-box;
 }
 
-/* TOP HEADER */
+/* =========================================
+   TOP HEADER
+========================================= */
 
 .student-home-topbar {
   width: 100%;
@@ -57,6 +61,10 @@
   align-items: center;
   justify-content: space-between;
   margin-bottom: 12px;
+}
+
+.student-home-topbar-spacer {
+  flex: 1;
 }
 
 .student-menu-button,
@@ -92,7 +100,9 @@
   border: 1.5px solid #fff;
 }
 
-/* WELCOME SECTION */
+/* =========================================
+   WELCOME SECTION
+========================================= */
 
 .student-welcome-section {
   display: flex;
@@ -121,6 +131,7 @@
   line-height: 1.2;
   font-weight: 800;
   margin: 0 0 7px;
+  overflow-wrap: anywhere;
 }
 
 .student-welcome-copy > p:last-child {
@@ -130,13 +141,17 @@
   margin: 0;
 }
 
-/* PROFILE AVATAR - ENLARGED */
+/* =========================================
+   STUDENT PROFILE AVATAR
+   Clickable Profile Picture
+========================================= */
 
 .student-profile-avatar {
+  position: relative;
   width: 100px;
   height: 100px;
   flex: 0 0 100px;
-  overflow: hidden;
+  overflow: visible;
   border: 4px solid #d7efdf;
   border-radius: 50%;
   background: #e7f5eb;
@@ -160,17 +175,43 @@
 }
 
 .student-profile-avatar img {
+  display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
   border-radius: 50%;
 }
 
-.student-profile-avatar ion-icon {
+.student-profile-avatar > ion-icon {
   font-size: 68px;
 }
 
-/* RECOMMENDATION BANNER */
+/* Small profile indicator */
+
+.student-avatar-edit {
+  position: absolute;
+  right: -3px;
+  bottom: -3px;
+  width: 27px;
+  height: 27px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid #fff;
+  border-radius: 50%;
+  background: var(--ga-green);
+  color: #fff;
+  font-size: 13px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16);
+}
+
+.student-avatar-edit ion-icon {
+  font-size: 14px;
+}
+
+/* =========================================
+   RECOMMENDATION BANNER
+========================================= */
 
 .student-recommendation-banner {
   min-height: 205px;
@@ -221,6 +262,10 @@
   margin-top: 3px;
 }
 
+.recommendation-icon ion-icon {
+  font-size: inherit;
+}
+
 .recommendation-text {
   min-width: 0;
 }
@@ -251,7 +296,9 @@
   max-width: 470px;
 }
 
-/* DECORATIVE CIRCLES */
+/* =========================================
+   DECORATIVE CIRCLES
+========================================= */
 
 .recommendation-decoration {
   position: absolute;
@@ -275,7 +322,9 @@
   bottom: -80px;
 }
 
-/* GRADUATION CAP */
+/* =========================================
+   GRADUATION CAP
+========================================= */
 
 .recommendation-cap {
   width: 76px;
@@ -285,6 +334,7 @@
   right: 23px;
   bottom: 16px;
   transform: rotate(-13deg);
+  pointer-events: none;
 }
 
 .recommendation-cap::before {
@@ -320,7 +370,9 @@
   transform: rotate(-8deg);
 }
 
-/* STATISTICS CARDS */
+/* =========================================
+   STATISTICS CARDS
+========================================= */
 
 .student-statistics-grid {
   display: grid;
@@ -346,6 +398,10 @@
   transition: transform 0.18s ease, box-shadow 0.18s ease;
 }
 
+.student-stat-card:hover {
+  box-shadow: 0 5px 14px rgba(27, 67, 42, 0.1);
+}
+
 .student-stat-card:active {
   transform: scale(0.97);
 }
@@ -359,6 +415,10 @@
   border-radius: 10px;
   font-size: 20px;
   margin-bottom: 7px;
+}
+
+.student-stat-icon ion-icon {
+  font-size: inherit;
 }
 
 .stat-green {
@@ -405,7 +465,9 @@
   text-align: center;
 }
 
-/* SECTION HEADING */
+/* =========================================
+   SECTION HEADING
+========================================= */
 
 .student-featured-section {
   margin-bottom: 22px;
@@ -453,7 +515,9 @@
   font-size: 15px;
 }
 
-/* FEATURED SCHOLARSHIP LIST */
+/* =========================================
+   FEATURED SCHOLARSHIP LIST
+========================================= */
 
 .student-featured-list {
   display: flex;
@@ -475,6 +539,10 @@
   box-shadow: 0 3px 12px rgba(27, 67, 42, 0.055);
   cursor: pointer;
   transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.student-featured-card:hover {
+  box-shadow: 0 5px 15px rgba(27, 67, 42, 0.1);
 }
 
 .student-featured-card:active {
@@ -548,6 +616,7 @@
 .featured-scholarship-deadline ion-icon {
   color: var(--ga-green-dark);
   font-size: 14px;
+  flex: 0 0 auto;
 }
 
 .featured-status {
@@ -577,7 +646,9 @@
   background: #fff5d9;
 }
 
-/* LOADING AND EMPTY STATES */
+/* =========================================
+   LOADING AND EMPTY STATES
+========================================= */
 
 .student-home-loading {
   min-height: 120px;
@@ -639,7 +710,9 @@
   cursor: pointer;
 }
 
-/* ORGANIZATION LOCATION MAP SECTION */
+/* =========================================
+   ORGANIZATION LOCATION MAP SECTION
+========================================= */
 
 .student-organization-map-section {
   width: 100%;
@@ -695,7 +768,9 @@
   white-space: nowrap;
 }
 
-/* LEAFLET MAP CONTAINER */
+/* =========================================
+   LEAFLET MAP CONTAINER
+========================================= */
 
 .student-organization-map {
   width: 100%;
@@ -717,7 +792,9 @@
   font-family: Arial, Helvetica, sans-serif;
 }
 
-/* LEAFLET CONTROLS */
+/* =========================================
+   LEAFLET CONTROLS
+========================================= */
 
 .grantaccess-leaflet-map .leaflet-control-zoom {
   border: 0 !important;
@@ -746,7 +823,9 @@
   border-radius: 5px 0 0 0;
 }
 
-/* CUSTOM ORGANIZATION MARKER */
+/* =========================================
+   CUSTOM ORGANIZATION MARKER
+========================================= */
 
 .grantaccess-map-marker-wrapper {
   background: transparent !important;
@@ -774,7 +853,9 @@
   transform: rotate(45deg);
 }
 
-/* ORGANIZATION MAP POPUP */
+/* =========================================
+   ORGANIZATION MAP POPUP
+========================================= */
 
 .organization-map-popup {
   min-width: 180px;
@@ -847,7 +928,9 @@
   background: var(--ga-green-dark);
 }
 
-/* MAP LOADING AND EMPTY STATES */
+/* =========================================
+   MAP LOADING AND EMPTY STATES
+========================================= */
 
 .student-map-loading,
 .student-map-empty {
@@ -897,7 +980,9 @@
   margin: 0;
 }
 
-/* REGISTERED ORGANIZATION LIST */
+/* =========================================
+   REGISTERED ORGANIZATION LIST
+========================================= */
 
 .student-organization-list {
   width: 100%;
@@ -1042,7 +1127,9 @@
   transform: scale(0.94);
 }
 
-/* QUICK LINKS */
+/* =========================================
+   QUICK LINKS
+========================================= */
 
 .student-home-quick-links {
   display: grid;
@@ -1095,7 +1182,9 @@
   margin-top: 4px;
 }
 
-/* FOOTER */
+/* =========================================
+   FOOTER
+========================================= */
 
 .student-home-footer {
   padding: 15px 0 6px;
@@ -1115,7 +1204,9 @@
   font-size: 12px;
 }
 
-/* RESPONSIVE - TABLET */
+/* =========================================
+   TABLET RESPONSIVE
+========================================= */
 
 @media (min-width: 600px) {
   .student-home {
@@ -1137,8 +1228,13 @@
     flex-basis: 115px;
   }
 
-  .student-profile-avatar ion-icon {
+  .student-profile-avatar > ion-icon {
     font-size: 78px;
+  }
+
+  .student-avatar-edit {
+    width: 30px;
+    height: 30px;
   }
 
   .student-recommendation-banner {
@@ -1257,7 +1353,9 @@
   }
 }
 
-/* RESPONSIVE - DESKTOP */
+/* =========================================
+   DESKTOP RESPONSIVE
+========================================= */
 
 @media (min-width: 900px) {
   .student-home {
@@ -1283,18 +1381,23 @@
     flex-basis: 125px;
   }
 
-  .student-profile-avatar ion-icon {
+  .student-profile-avatar > ion-icon {
     font-size: 86px;
+  }
+
+  .student-avatar-edit {
+    width: 32px;
+    height: 32px;
+  }
+
+  .recommendation-banner-content {
+    max-width: 75%;
   }
 
   .student-recommendation-banner {
     min-height: 245px;
     border-radius: 20px;
     padding: 34px 36px;
-  }
-
-  .recommendation-banner-content {
-    max-width: 75%;
   }
 
   .recommendation-icon {
@@ -1393,7 +1496,9 @@
   }
 }
 
-/* RESPONSIVE - SMALL MOBILE */
+/* =========================================
+   SMALL MOBILE
+========================================= */
 
 @media (max-width: 420px) {
   .student-organization-map-section > .student-section-heading {
@@ -1462,8 +1567,18 @@
     border-width: 3px;
   }
 
-  .student-profile-avatar ion-icon {
+  .student-profile-avatar > ion-icon {
     font-size: 56px;
+  }
+
+  .student-avatar-edit {
+    width: 24px;
+    height: 24px;
+    font-size: 11px;
+  }
+
+  .student-avatar-edit ion-icon {
+    font-size: 12px;
   }
 
   .student-recommendation-banner {
@@ -1582,7 +1697,9 @@
   }
 }
 
-/* RESPONSIVE - VERY SMALL MOBILE */
+/* =========================================
+   VERY SMALL MOBILE
+========================================= */
 
 @media (max-width: 360px) {
   .student-home {
@@ -1608,8 +1725,13 @@
     border-width: 3px;
   }
 
-  .student-profile-avatar ion-icon {
+  .student-profile-avatar > ion-icon {
     font-size: 49px;
+  }
+
+  .student-avatar-edit {
+    width: 22px;
+    height: 22px;
   }
 
   .student-recommendation-banner {
@@ -1719,7 +1841,9 @@
   }
 }
 
-/* IONIC BOTTOM NAV SPACING */
+/* =========================================
+   IONIC BOTTOM NAVIGATION SPACING
+========================================= */
 
 .student-home-content::part(scroll) {
   padding-bottom: 12px;

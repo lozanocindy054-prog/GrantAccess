@@ -28,7 +28,6 @@ import {
 import {
   collection,
   doc,
-  getDoc,
   onSnapshot,
   query,
   where,
@@ -277,19 +276,24 @@ const StudentHome: React.FC = () => {
     let active = true;
     let authGeneration = 0;
 
+    let unsubscribeStudentProfile: (() => void) | undefined;
     let unsubscribeScholarships: (() => void) | undefined;
     let unsubscribeApplications: (() => void) | undefined;
     let unsubscribeSaved: (() => void) | undefined;
     let unsubscribeOrganizations: (() => void) | undefined;
 
-    const unsubscribeAuth = onAuthStateChanged(auth, async (user) => {
+    const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
       const currentGeneration = ++authGeneration;
 
+      // CLEANUP PREVIOUS LISTENERS
+
+      unsubscribeStudentProfile?.();
       unsubscribeScholarships?.();
       unsubscribeApplications?.();
       unsubscribeSaved?.();
       unsubscribeOrganizations?.();
 
+      unsubscribeStudentProfile = undefined;
       unsubscribeScholarships = undefined;
       unsubscribeApplications = undefined;
       unsubscribeSaved = undefined;
@@ -297,9 +301,12 @@ const StudentHome: React.FC = () => {
 
       if (!active) return;
 
+      // NO SIGNED-IN USER
+
       if (!user) {
         setStudentName("Student");
         setStudentPhoto("");
+
         setScholarships([]);
         setApplications([]);
         setSavedScholarships([]);
@@ -307,6 +314,7 @@ const StudentHome: React.FC = () => {
 
         setLoading(false);
         setMapLoading(false);
+
         setErrorMessage("Please sign in to view your dashboard.");
         return;
       }
@@ -319,41 +327,51 @@ const StudentHome: React.FC = () => {
       setStudentName(user.displayName || "Student");
       setStudentPhoto(user.photoURL || "");
 
-      // STUDENT PROFILE
+      // ========================================
+      // STUDENT PROFILE - REAL-TIME LISTENER
+      // ========================================
 
-      try {
-        const studentSnapshot = await getDoc(
-          doc(db, "students", user.uid)
-        );
+      unsubscribeStudentProfile = onSnapshot(
+        doc(db, "students", user.uid),
+        (studentSnapshot) => {
+          if (!active || currentGeneration !== authGeneration) return;
 
-        if (!active || currentGeneration !== authGeneration) return;
+          if (studentSnapshot.exists()) {
+            const studentData = studentSnapshot.data();
 
-        if (studentSnapshot.exists()) {
-          const studentData = studentSnapshot.data();
+            setStudentName(
+              studentData.fullName ||
+                studentData.name ||
+                user.displayName ||
+                "Student"
+            );
 
-          setStudentName(
-            studentData.fullName ||
-              studentData.name ||
-              user.displayName ||
-              "Student"
-          );
+            setStudentPhoto(
+              studentData.photoURL ||
+                studentData.profilePhoto ||
+                studentData.profileImage ||
+                studentData.avatarUrl ||
+                user.photoURL ||
+                ""
+            );
+          } else {
+            setStudentName(user.displayName || "Student");
+            setStudentPhoto(user.photoURL || "");
+          }
+        },
+        (error) => {
+          console.error("Student profile listener error:", error);
 
-          setStudentPhoto(
-            studentData.photoURL ||
-              studentData.profilePhoto ||
-              studentData.profileImage ||
-              studentData.avatarUrl ||
-              user.photoURL ||
-              ""
-          );
+          if (active && currentGeneration === authGeneration) {
+            setStudentName(user.displayName || "Student");
+            setStudentPhoto(user.photoURL || "");
+          }
         }
-      } catch (error) {
-        console.error("Unable to load student profile:", error);
-      }
+      );
 
-      if (!active || currentGeneration !== authGeneration) return;
-
+      // ========================================
       // PUBLISHED SCHOLARSHIPS
+      // ========================================
 
       unsubscribeScholarships = onSnapshot(
         query(
@@ -368,6 +386,7 @@ const StudentHome: React.FC = () => {
 
             return {
               id: item.id,
+
               title:
                 data.title ||
                 data.scholarshipName ||
@@ -420,12 +439,15 @@ const StudentHome: React.FC = () => {
             setErrorMessage(
               "Unable to load scholarships. Please check your Firestore Rules."
             );
+
             setLoading(false);
           }
         }
       );
 
+      // ========================================
       // STUDENT APPLICATIONS
+      // ========================================
 
       unsubscribeApplications = onSnapshot(
         query(
@@ -458,7 +480,9 @@ const StudentHome: React.FC = () => {
         }
       );
 
+      // ========================================
       // SAVED SCHOLARSHIPS
+      // ========================================
 
       unsubscribeSaved = onSnapshot(
         query(
@@ -480,7 +504,9 @@ const StudentHome: React.FC = () => {
         }
       );
 
+      // ========================================
       // REGISTERED ORGANIZATIONS MAP
+      // ========================================
 
       unsubscribeOrganizations = onSnapshot(
         collection(db, "organizations"),
@@ -524,6 +550,7 @@ const StudentHome: React.FC = () => {
               return [
                 {
                   id: item.id,
+
                   organizationName: String(
                     data.organizationName ||
                       data.orgName ||
@@ -563,6 +590,7 @@ const StudentHome: React.FC = () => {
 
           if (active && currentGeneration === authGeneration) {
             setMapLoading(false);
+
             setMapError(
               "Unable to load organizations. Please check your Firestore Rules."
             );
@@ -571,11 +599,17 @@ const StudentHome: React.FC = () => {
       );
     });
 
+    // ========================================
+    // CLEANUP
+    // ========================================
+
     return () => {
       active = false;
       authGeneration++;
 
       unsubscribeAuth();
+
+      unsubscribeStudentProfile?.();
       unsubscribeScholarships?.();
       unsubscribeApplications?.();
       unsubscribeSaved?.();
@@ -643,7 +677,9 @@ const StudentHome: React.FC = () => {
 
   const openSaved = () => navigate("/saved");
 
-  const openProfile = () => navigate("/student-profile");
+  const openProfile = () => navigate("/profile");
+
+  const openNotifications = () => navigate("/notifications");
 
   // ========================================
   // UI
@@ -658,7 +694,7 @@ const StudentHome: React.FC = () => {
       >
         <div className="student-home">
 
-          {/* HEADER - NO MENU OR BACK ARROW */}
+          {/* HEADER */}
 
           <header className="student-home-topbar">
             <div className="student-home-topbar-spacer" />
@@ -667,7 +703,7 @@ const StudentHome: React.FC = () => {
               type="button"
               className="student-notification-button"
               aria-label="Notifications"
-              onClick={() => navigate("/student-notifications")}
+              onClick={openNotifications}
             >
               <IonIcon icon={notificationsOutline} />
               <span className="notification-indicator" />
@@ -691,6 +727,8 @@ const StudentHome: React.FC = () => {
               </p>
             </div>
 
+            {/* STUDENT PROFILE AVATAR */}
+
             <button
               type="button"
               className="student-profile-avatar"
@@ -698,10 +736,18 @@ const StudentHome: React.FC = () => {
               aria-label="Open student profile"
             >
               {studentPhoto ? (
-                <img src={studentPhoto} alt="Student profile" />
+                <img
+                  src={studentPhoto}
+                  alt={`${studentName} profile`}
+                  onError={() => setStudentPhoto("")}
+                />
               ) : (
                 <IonIcon icon={personCircleOutline} />
               )}
+
+              <span className="student-avatar-edit">
+                <IonIcon icon={personCircleOutline} />
+              </span>
             </button>
           </section>
 
@@ -879,7 +925,9 @@ const StudentHome: React.FC = () => {
             ) : (
               <div className="student-home-empty">
                 <IonIcon icon={schoolOutline} />
+
                 <h3>No scholarships available yet</h3>
+
                 <p>
                   Published scholarship opportunities will appear
                   here once organizations post them.
@@ -926,13 +974,17 @@ const StudentHome: React.FC = () => {
             ) : mapError ? (
               <div className="student-map-empty">
                 <IonIcon icon={locationOutline} />
+
                 <h3>Unable to load map locations</h3>
+
                 <p>{mapError}</p>
               </div>
             ) : organizations.length === 0 ? (
               <div className="student-map-empty">
                 <IonIcon icon={locationOutline} />
+
                 <h3>No organization pins available</h3>
+
                 <p>
                   Registered organizations with saved map coordinates
                   will appear here.
@@ -1071,7 +1123,7 @@ const StudentHome: React.FC = () => {
         </div>
       </IonContent>
 
-      {/* BOTTOM NAVIGATION - RETAINED */}
+      {/* BOTTOM NAVIGATION */}
 
       <StudentBottomNav />
     </IonPage>
