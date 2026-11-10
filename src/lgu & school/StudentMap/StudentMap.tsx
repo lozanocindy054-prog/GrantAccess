@@ -48,12 +48,18 @@ const readPoint = (value: unknown): MapPoint | null => {
   if (!value || typeof value !== 'object') return null;
 
   const coordinates = value as Record<string, unknown>;
-  const latitude = coordinates.latitude;
-  const longitude = coordinates.longitude;
+
+  // Accept numbers and numeric strings (some documents save "13.41")
+  const latitude = Number(coordinates.latitude);
+  const longitude = Number(coordinates.longitude);
 
   if (
-    typeof latitude !== 'number' ||
-    typeof longitude !== 'number' ||
+    coordinates.latitude === null ||
+    coordinates.latitude === undefined ||
+    coordinates.latitude === '' ||
+    coordinates.longitude === null ||
+    coordinates.longitude === undefined ||
+    coordinates.longitude === '' ||
     !Number.isFinite(latitude) ||
     !Number.isFinite(longitude) ||
     latitude < -90 ||
@@ -73,9 +79,11 @@ const StudentMap: React.FC = () => {
   const mapRef = useRef<L.Map | null>(null);
   const studentMarkersRef = useRef<Map<string, L.CircleMarker>>(new Map());
   const organizationMarkerRef = useRef<L.CircleMarker | null>(null);
+  const fitKeyRef = useRef('');
   const [students, setStudents] = useState<SharedStudentLocation[]>([]);
   const [organizationLocation, setOrganizationLocation] =
     useState<MapPoint | null>(null);
+  const [organizationLoaded, setOrganizationLoaded] = useState(false);
   const [search, setSearch] = useState('');
   const [selectedStudentId, setSelectedStudentId] = useState('');
   const [loading, setLoading] = useState(true);
@@ -91,6 +99,10 @@ const StudentMap: React.FC = () => {
     );
   }, [search, students]);
 
+  // ------------------------------------------------------
+  // FIREBASE LISTENERS
+  // ------------------------------------------------------
+
   useEffect(() => {
     let unsubscribeApplications: (() => void) | undefined;
     let unsubscribeOrganization: (() => void) | undefined;
@@ -102,6 +114,7 @@ const StudentMap: React.FC = () => {
       unsubscribeOrganization = undefined;
       setStudents([]);
       setOrganizationLocation(null);
+      setOrganizationLoaded(false);
 
       if (!user) {
         setLoading(false);
@@ -168,15 +181,18 @@ const StudentMap: React.FC = () => {
           setOrganizationLocation(
             data
               ? readPoint({
-                  latitude: data.latitude ?? data.lat ?? data.coordinates?.latitude,
+                  latitude:
+                    data.latitude ?? data.lat ?? data.coordinates?.latitude,
                   longitude:
                     data.longitude ?? data.lng ?? data.coordinates?.longitude,
                 })
               : null
           );
+          setOrganizationLoaded(true);
         },
         (error) => {
           console.error('Unable to load organization map pin:', error);
+          setOrganizationLoaded(true);
         }
       );
     });
@@ -187,6 +203,10 @@ const StudentMap: React.FC = () => {
       unsubscribeOrganization?.();
     };
   }, [navigate]);
+
+  // ------------------------------------------------------
+  // MAP SETUP (runs once)
+  // ------------------------------------------------------
 
   useEffect(() => {
     const container = mapContainerRef.current;
@@ -208,6 +228,7 @@ const StudentMap: React.FC = () => {
     ).addTo(map);
 
     mapRef.current = map;
+    fitKeyRef.current = '';
     const frame = window.requestAnimationFrame(() =>
       map.invalidateSize({ animate: false })
     );
@@ -234,6 +255,10 @@ const StudentMap: React.FC = () => {
   }, []);
 
   useIonViewDidEnter(refreshMap, [refreshMap]);
+
+  // ------------------------------------------------------
+  // DRAW MARKERS (does NOT move the map)
+  // ------------------------------------------------------
 
   useEffect(() => {
     const map = mapRef.current;
@@ -281,35 +306,59 @@ const StudentMap: React.FC = () => {
       marker.on('click', () => setSelectedStudentId(student.id));
       studentMarkersRef.current.set(student.id, marker);
     });
+  }, [filteredStudents, organizationLocation, selectedStudentId]);
 
-    const selectedMarker = studentMarkersRef.current.get(selectedStudentId);
-    if (selectedMarker) {
-      map.setView(selectedMarker.getLatLng(), 12, { animate: true });
-      selectedMarker.openPopup();
+  // ------------------------------------------------------
+  // FIT THE MAP only when the set of pins changes
+  // (typing in the search box no longer makes the map jump)
+  // ------------------------------------------------------
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+
+    const key = `${students.map((student) => student.id).join(',')}|${
+      organizationLocation
+        ? `${organizationLocation.latitude},${organizationLocation.longitude}`
+        : ''
+    }`;
+
+    if (key === fitKeyRef.current) return;
+    fitKeyRef.current = key;
+
+    const allMarkers = [
+      ...studentMarkersRef.current.values(),
+      ...(organizationMarkerRef.current ? [organizationMarkerRef.current] : []),
+    ];
+
+    if (allMarkers.length > 1) {
+      map.fitBounds(L.featureGroup(allMarkers).getBounds(), {
+        padding: [40, 40],
+        maxZoom: 12,
+      });
+    } else if (allMarkers.length === 1) {
+      map.setView(allMarkers[0].getLatLng(), 12);
     } else {
-      const allMarkers = [
-        ...studentMarkersRef.current.values(),
-        ...(organizationMarkerRef.current ? [organizationMarkerRef.current] : []),
-      ];
-      if (allMarkers.length > 1) {
-        map.fitBounds(
-          L.featureGroup(allMarkers).getBounds(),
-          { padding: [40, 40], maxZoom: 12 }
-        );
-      } else if (allMarkers.length === 1) {
-        map.setView(allMarkers[0].getLatLng(), 12);
-      } else {
-        map.setView(DEFAULT_CENTER, 5);
-      }
+      map.setView(DEFAULT_CENTER, 5);
     }
 
     refreshMap();
-  }, [
-    filteredStudents,
-    organizationLocation,
-    refreshMap,
-    selectedStudentId,
-  ]);
+  }, [students, organizationLocation, refreshMap]);
+
+  // ------------------------------------------------------
+  // FOCUS the selected student (only when the selection changes)
+  // ------------------------------------------------------
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !selectedStudentId) return;
+
+    const selectedMarker = studentMarkersRef.current.get(selectedStudentId);
+    if (!selectedMarker) return;
+
+    map.setView(selectedMarker.getLatLng(), 12, { animate: true });
+    selectedMarker.openPopup();
+  }, [selectedStudentId]);
 
   return (
     <IonPage className="lgu-student-map-page">
@@ -346,6 +395,22 @@ const StudentMap: React.FC = () => {
               exact addresses.
             </p>
           </section>
+
+          {organizationLoaded && !organizationLocation && (
+            <section className="lgu-student-map-privacy" role="alert">
+              <IonIcon icon={locationOutline} />
+              <p>
+                Your organization map pin is not set yet, so students cannot
+                find your location. Set it in your organization profile.
+              </p>
+              <IonButton
+                size="small"
+                onClick={() => navigate('/lgu-school-profile')}
+              >
+                Set pin
+              </IonButton>
+            </section>
+          )}
 
           <div className="lgu-student-map-content">
             <section className="lgu-student-map-list-panel">
