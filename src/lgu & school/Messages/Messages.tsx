@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 
@@ -34,6 +35,7 @@ import {
 } from '../../services/messagingService';
 
 import './Messages.css';
+import { parseDate } from '../../utils/dates';
 
 interface Conversation {
   id: string;
@@ -47,10 +49,9 @@ interface Conversation {
   participantName?: string;
   name?: string;
   lastMessage?: string;
-  lastMessageAt?: any;
+  lastMessageAt?: unknown;
   unreadCounts?: Record<string, number>;
   unreadCount?: number;
-  [key: string]: any;
 }
 
 interface ChatMessage {
@@ -60,32 +61,17 @@ interface ChatMessage {
   message?: string;
   text?: string;
   content?: string;
-  createdAt?: any;
-  timestamp?: any;
-  [key: string]: any;
+  createdAt?: unknown;
+  timestamp?: unknown;
 }
 
 interface MessagesProps {
   onClose?: () => void;
 }
 
-const getDate = (value: any): Date | null => {
-  if (!value) return null;
+const getDate = parseDate;
 
-  if (typeof value?.toDate === 'function') {
-    return value.toDate();
-  }
-
-  if (value instanceof Date) {
-    return value;
-  }
-
-  const date = new Date(value);
-
-  return Number.isNaN(date.getTime()) ? null : date;
-};
-
-const formatTime = (value: any): string => {
+const formatTime = (value: unknown): string => {
   const date = getDate(value);
 
   if (!date) return '';
@@ -96,7 +82,7 @@ const formatTime = (value: any): string => {
   });
 };
 
-const formatConversationDate = (value: any): string => {
+const formatConversationDate = (value: unknown): string => {
   const date = getDate(value);
 
   if (!date) return '';
@@ -116,6 +102,7 @@ const getMessageText = (message: ChatMessage): string => {
 };
 
 const Messages: React.FC<MessagesProps> = ({ onClose }) => {
+  const navigate = useNavigate();
   const [currentUserId, setCurrentUserId] = useState('');
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -271,13 +258,7 @@ const Messages: React.FC<MessagesProps> = ({ onClose }) => {
       return;
     }
 
-    const modal = document.querySelector('ion-modal.msg-modal') as any;
-
-    if (modal && typeof modal.dismiss === 'function') {
-      modal.dismiss();
-    } else {
-      window.history.back();
-    }
+    navigate('/lgu-dashboard');
   };
 
   // REFRESH
@@ -431,7 +412,7 @@ const Messages: React.FC<MessagesProps> = ({ onClose }) => {
                 type="button"
                 className="msg-header-icon"
                 onClick={handleClose}
-                aria-label="Close messages"
+                aria-label="Back to organization home"
               >
                 <IonIcon icon={closeOutline} />
               </button>

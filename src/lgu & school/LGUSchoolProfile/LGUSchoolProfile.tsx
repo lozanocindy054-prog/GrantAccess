@@ -1,3 +1,4 @@
+import { publishStudentAnnouncement } from '../../services/studentNotificationService';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import type { ChangeEvent } from 'react';
 import {
@@ -19,7 +20,6 @@ import {
   addDoc,
   collection,
   doc,
-  getDocs,
   onSnapshot,
   query,
   serverTimestamp,
@@ -64,27 +64,15 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
 import { auth, db } from '../../Firebase/config';
-import {
-  clearGoogleDriveAccess,
-  connectGoogleDrive,
-  loadGoogleDriveIdentity,
-  uploadPdfToGoogleDrive,
-} from '../../services/googleDriveService';
+import { encodeProfileImage, uploadFirestoreFile, setStoredFileVisibility, MAX_DOCUMENT_BYTES, MAX_IMAGE_BYTES } from '../../services/firestoreFileService';
 import './LGUSchoolProfile.css';
 
 // ======================================================
 // CLOUDINARY CONFIGURATION
 // ======================================================
 
-const CLOUDINARY_CLOUD_NAME = 'verlmdcg';
-
-const PROFILE_UPLOAD_PRESET = 'grantaccess_profile';
-
-const CLOUDINARY_UPLOAD_URL =
-  `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/auto/upload`;
-
-const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
-const MAX_DOCUMENT_SIZE = 10 * 1024 * 1024;
+const MAX_IMAGE_SIZE = MAX_IMAGE_BYTES;
+const MAX_DOCUMENT_SIZE = MAX_DOCUMENT_BYTES;
 const MAX_REQUIRED_DOCUMENTS = 10;
 const MAX_DOWNLOADABLE_DOCUMENTS = 10;
 
@@ -101,10 +89,8 @@ const ALLOWED_IMAGES = [
 // Collection that the student home notification bell reads from.
 // The student side should query:
 //   where('studentId', '==', currentStudent.uid)
-const STUDENT_NOTIFICATIONS_COLLECTION = 'studentNotifications';
 
 // Firestore allows max 500 writes per batch.
-const NOTIFICATION_BATCH_SIZE = 400;
 
 // ======================================================
 // TYPES
@@ -143,7 +129,7 @@ interface UploadedFile {
   description?: string;
   available?: boolean;
   mimeType?: string;
-  provider?: 'google-drive' | 'cloudinary';
+  provider?: 'google-drive' | 'cloudinary' | 'firestore';
   driveFileId?: string;
   previewUrl?: string;
   downloadUrl?: string;
@@ -276,27 +262,7 @@ interface DocumentFileSelection {
   available: boolean;
 }
 
-interface CloudinaryResponse {
-  secure_url: string;
-  public_id: string;
-  resource_type: string;
-  format?: string;
-}
 
-interface StudentNotificationPayload {
-  organizationId: string;
-  organizationName: string;
-  organizationLogo: string;
-  title: string;
-  message: string;
-  type: 'scholarship' | 'announcement';
-  scholarshipId: string;
-  postId: string;
-  scholarshipTitle: string;
-  amount: string;
-  deadline: string;
-  imageUrl: string;
-}
 
 // ======================================================
 // DEFAULT VALUES
@@ -365,43 +331,9 @@ const getRequiredDocumentNames = (value: string): string[] =>
 // HELPER FUNCTIONS
 // ======================================================
 
-const uploadToCloudinary = async (
-  file: File,
-  preset: string
-): Promise<UploadedFile> => {
-  const formData = new FormData();
-
-  formData.append('file', file);
-  formData.append('upload_preset', preset);
-
-  const response = await fetch(CLOUDINARY_UPLOAD_URL, {
-    method: 'POST',
-    body: formData,
-  });
-
-  const result = await response.json();
-
-  if (!response.ok) {
-    throw new Error(
-      result?.error?.message || 'Cloudinary upload failed.'
-    );
-  }
-
-  const uploaded = result as CloudinaryResponse;
-
-  if (!uploaded.secure_url || !uploaded.public_id) {
-    throw new Error('Cloudinary returned an incomplete upload response.');
-  }
-
-  return {
-    name: file.name,
-    url: uploaded.secure_url,
-    publicId: uploaded.public_id,
-    resourceType: uploaded.resource_type || 'raw',
-    format: uploaded.format || '',
-    size: file.size,
-  };
-};
+const uploadImage = async (file: File): Promise<UploadedFile> => ({
+  name: file.name, url: await encodeProfileImage(file), size: file.size,
+});
 
 const getTimestamp = (
   value?: Timestamp | Date | string | null
@@ -472,77 +404,6 @@ const isPublished = (status?: string): boolean =>
 // STUDENT NOTIFICATION HELPERS
 // ======================================================
 
-/**
- * Collects the UID of every student account.
- * 1) Reads the "students" collection (document id = student uid).
- * 2) If that collection is empty, falls back to "users" with role == "student".
- */
-const getAllStudentIds = async (): Promise<string[]> => {
-  const ids = new Set<string>();
-
-  const studentsSnapshot = await getDocs(collection(db, 'students'));
-  studentsSnapshot.docs.forEach((student) => ids.add(student.id));
-
-  if (ids.size === 0) {
-    try {
-      const usersSnapshot = await getDocs(
-        query(collection(db, 'users'), where('role', '==', 'student'))
-      );
-      usersSnapshot.docs.forEach((student) => ids.add(student.id));
-    } catch (fallbackError) {
-      console.warn('Fallback student lookup (users) failed:', fallbackError);
-    }
-  }
-
-  return Array.from(ids);
-};
-
-/**
- * Creates one notification document per student so the notification
- * bell on the student home page can show it (and mark it as read per student).
- * Returns how many notifications were created.
- */
-const sendNotificationsToAllStudents = async (
-  payload: StudentNotificationPayload
-): Promise<number> => {
-  const studentIds = await getAllStudentIds();
-
-  for (let offset = 0; offset < studentIds.length; offset += NOTIFICATION_BATCH_SIZE) {
-    const batch = writeBatch(db);
-
-    studentIds
-      .slice(offset, offset + NOTIFICATION_BATCH_SIZE)
-      .forEach((studentId) => {
-        const notificationRef = doc(
-          collection(db, STUDENT_NOTIFICATIONS_COLLECTION)
-        );
-
-        batch.set(notificationRef, {
-          studentId,
-          title: payload.title,
-          message: payload.message,
-          type: payload.type,
-          organizationId: payload.organizationId,
-          organizationName: payload.organizationName,
-          organizationLogo: payload.organizationLogo,
-          scholarshipId: payload.scholarshipId,
-          scholarshipTitle: payload.scholarshipTitle,
-          amount: payload.amount,
-          deadline: payload.deadline,
-          imageUrl: payload.imageUrl,
-          postId: payload.postId,
-          isRead: false,
-          read: false,
-          createdAt: serverTimestamp(),
-        });
-      });
-
-    await batch.commit();
-  }
-
-  return studentIds.length;
-};
-
 // ======================================================
 // MAIN COMPONENT
 // ======================================================
@@ -606,11 +467,6 @@ const LGUSchoolProfile: React.FC<LGUSchoolProfileProps> = ({
     message: '',
     color: 'success' as 'success' | 'danger' | 'warning',
   });
-  const [driveReady, setDriveReady] = useState(false);
-  const [driveConnectedFor, setDriveConnectedFor] = useState('');
-  const [driveConnecting, setDriveConnecting] = useState(false);
-  const [driveSetupMessage, setDriveSetupMessage] = useState('');
-  const driveConnected = Boolean(user?.uid && driveConnectedFor === user.uid);
 
   const organizationName =
     profile.organizationName || profile.name || 'Your Organization';
@@ -701,57 +557,6 @@ const LGUSchoolProfile: React.FC<LGUSchoolProfileProps> = ({
     });
   };
 
-  useEffect(() => {
-    let active = true;
-
-    void loadGoogleDriveIdentity()
-      .then(() => {
-        if (active) {
-          setDriveReady(true);
-          setDriveSetupMessage('');
-        }
-      })
-      .catch((error: unknown) => {
-        if (!active) return;
-
-        setDriveSetupMessage(
-          error instanceof Error
-            ? error.message
-            : 'Google Drive could not be initialized.'
-        );
-      });
-
-    return () => {
-      active = false;
-    };
-  }, []);
-
-  const handleConnectGoogleDrive = () => {
-    if (!driveReady || driveConnecting || !user) return;
-
-    const organizationId = user.uid;
-    setDriveConnecting(true);
-    void connectGoogleDrive(organizationId)
-      .then(() => {
-        if (auth.currentUser?.uid === organizationId) {
-          setDriveConnectedFor(organizationId);
-        }
-        notify(
-          'Google Drive connected. Uploaded PDFs will be available to anyone with their link.'
-        );
-      })
-      .catch((error: unknown) => {
-        setDriveConnectedFor('');
-        notify(
-          error instanceof Error
-            ? error.message
-            : 'Unable to connect Google Drive.',
-          'danger'
-        );
-      })
-      .finally(() => setDriveConnecting(false));
-  };
-
   // ------------------------------------------------------
   // FIREBASE AUTH AND REAL-TIME LISTENERS
   // ------------------------------------------------------
@@ -776,8 +581,6 @@ const LGUSchoolProfile: React.FC<LGUSchoolProfileProps> = ({
       unsubscribeApplications = undefined;
 
       if (!currentUser) {
-        clearGoogleDriveAccess();
-        setDriveConnectedFor('');
         setProfile({});
         setScholarships([]);
         setOrganizationPosts([]);
@@ -1240,7 +1043,7 @@ const LGUSchoolProfile: React.FC<LGUSchoolProfileProps> = ({
     }
 
     if (file.size > MAX_IMAGE_SIZE) {
-      notify('Image size must not exceed 5 MB.', 'warning');
+      notify('Image size must not exceed 128 KB.', 'warning');
       return false;
     }
 
@@ -1252,14 +1055,14 @@ const LGUSchoolProfile: React.FC<LGUSchoolProfileProps> = ({
 
     if (extension !== 'pdf' || file.type !== 'application/pdf') {
       notify(
-        `${file.name}: Only PDF files can be uploaded to Google Drive.`,
+        `${file.name}: Only PDF files can be uploaded.`,
         'warning'
       );
       return false;
     }
 
     if (file.size > MAX_DOCUMENT_SIZE) {
-      notify(`${file.name} exceeds the 10 MB file limit.`, 'warning');
+      notify(`${file.name} exceeds the 650 KB file limit.`, 'warning');
       return false;
     }
 
@@ -1286,10 +1089,7 @@ const LGUSchoolProfile: React.FC<LGUSchoolProfileProps> = ({
     setUploading(true);
 
     try {
-      const uploaded = await uploadToCloudinary(
-        file,
-        PROFILE_UPLOAD_PRESET
-      );
+      const uploaded = await uploadImage(file);
 
       updateForm(field, uploaded.url);
 
@@ -1318,6 +1118,10 @@ const LGUSchoolProfile: React.FC<LGUSchoolProfileProps> = ({
   // ------------------------------------------------------
 
   const openEditProfile = () => {
+    if (['scheduled'].includes(status)) {
+      notify('Save a draft and publish it when ready. Automatic scheduling is unavailable.', 'warning');
+      return;
+    }
     if (!user) {
       notify('Please log in again.', 'warning');
       return;
@@ -1805,10 +1609,7 @@ const LGUSchoolProfile: React.FC<LGUSchoolProfileProps> = ({
       return;
     }
 
-    if (documentFiles.length > 0 && !driveConnected) {
-      notify('Connect Google Drive before saving uploaded PDF documents.', 'warning');
-      return;
-    }
+
 
     setSaving(true);
 
@@ -1819,10 +1620,7 @@ const LGUSchoolProfile: React.FC<LGUSchoolProfileProps> = ({
 
       if (posterFile) {
         setUploading(true);
-        uploadedPoster = await uploadToCloudinary(
-          posterFile,
-          PROFILE_UPLOAD_PRESET
-        );
+        uploadedPoster = await uploadImage(posterFile);
       }
 
       const uploadedDocuments: UploadedFile[] = [];
@@ -1831,18 +1629,11 @@ const LGUSchoolProfile: React.FC<LGUSchoolProfileProps> = ({
         setUploading(true);
 
         for (const selection of documentFiles) {
-          const uploaded = await uploadPdfToGoogleDrive(
-            selection.file,
-            {
-              organizationId: user.uid,
-              organizationName:
-                profile.organizationName ||
-                profile.name ||
-                'Organization',
-              category: selection.category,
-              description: selection.description,
-            }
-          );
+          const stored = await uploadFirestoreFile(selection.file, {
+            organizationId: user.uid, visibility: 'private',
+          });
+          const uploaded = { ...stored, category: selection.category, description: selection.description,
+            organizationId: user.uid, organizationName: profile.organizationName || profile.name || 'Organization' };
 
           uploadedDocuments.push({
             ...uploaded,
@@ -1968,28 +1759,20 @@ const LGUSchoolProfile: React.FC<LGUSchoolProfileProps> = ({
         postId = postDoc.id;
       }
       if (!publishedItemId) publishedItemId = postId;
+      await Promise.all(commonData.attachments.map(file => setStoredFileVisibility(
+        file.url, status === 'published' && ['public', 'students'].includes(postForm.visibility) ? 'public' : 'private'
+      )));
 
       // ----------------------------------------------------
       // NOTIFY STUDENTS (notification bell on student home)
-      // Sent only when the post is newly published
-      // (new post, or a draft/scheduled post being published now).
+      // One shared record per post; saving again safely retries delivery.
       // ----------------------------------------------------
-      const previousPostStatus = organizationPosts.find(
-        (item) => item.id === editingPostId
-      )?.status;
-      const previousScholarshipStatus = scholarships.find(
-        (item) => item.id === editingScholarshipId
-      )?.status;
-      const wasAlreadyPublished =
-        isPublished(previousPostStatus) ||
-        isPublished(previousScholarshipStatus);
-
-      if (status === 'published' && !wasAlreadyPublished) {
+      if (status === 'published') {
         try {
           const organizationDisplayName =
             profile.organizationName || profile.name || 'An organization';
 
-          await sendNotificationsToAllStudents({
+          await publishStudentAnnouncement({
             organizationId: user.uid,
             organizationName: organizationDisplayName,
             organizationLogo: profile.logoUrl || '',
@@ -2037,17 +1820,11 @@ const LGUSchoolProfile: React.FC<LGUSchoolProfileProps> = ({
       );
     } catch (error) {
       console.error('Post submission error:', error);
-      if (
-        error instanceof Error &&
-        error.message.includes('Connect or reconnect Google Drive')
-      ) {
-        setDriveConnectedFor('');
-      }
 
       notify(
         error instanceof Error
           ? error.message
-          : 'Unable to save post. Please check Cloudinary and Firestore settings.',
+          : 'Unable to save post. Please try again.',
         'danger'
       );
     } finally {
@@ -2450,7 +2227,7 @@ const LGUSchoolProfile: React.FC<LGUSchoolProfileProps> = ({
 
           <header className="org-dashboard-topbar">
             <div className="org-topbar-left">
-              <div className="org-brand-logo">GA</div>
+              <div className="org-brand-logo"><img className="grantaccess-brand-image" src="/mylogo.png" alt="GrantAccess" /></div>
 
               <div>
                 <span className="org-topbar-subtitle">
@@ -3725,7 +3502,7 @@ const LGUSchoolProfile: React.FC<LGUSchoolProfileProps> = ({
                       </label>
 
                       <small className="org-field-hint">
-                        Maximum file size: 5 MB.
+                        Maximum file size: 128 KB.
                       </small>
 
                       {posterFile && (
@@ -3767,7 +3544,7 @@ const LGUSchoolProfile: React.FC<LGUSchoolProfileProps> = ({
                         <span>
                           {existingDocuments.length + documentFiles.length >= MAX_DOWNLOADABLE_DOCUMENTS
                             ? 'Maximum number of documents reached'
-                            : 'Select PDF files for Google Drive'}
+                            : 'Select PDF files'}
                         </span>
 
                         <input
@@ -3785,43 +3562,8 @@ const LGUSchoolProfile: React.FC<LGUSchoolProfileProps> = ({
 
                       <small className="org-field-hint">
                         {existingDocuments.length + documentFiles.length}/{MAX_DOWNLOADABLE_DOCUMENTS}{' '}
-                        PDFs · Maximum 10 MB each. Files are stored in the
-                        connected Google Drive and shared as viewer links so
-                        students can preview and download them.
+                        PDFs ? Maximum 650 KB each. Students can preview and download attached forms.
                       </small>
-
-                      <div className="org-drive-connection">
-                        <div>
-                          <strong>
-                            {driveConnected
-                              ? 'Google Drive connected'
-                              : 'Connect Google Drive to upload PDFs'}
-                          </strong>
-                          <small>
-                            Anyone with the file link can view it. Do not upload
-                            confidential documents.
-                          </small>
-                          {driveSetupMessage && (
-                            <small className="org-drive-setup-error">
-                              {driveSetupMessage}
-                            </small>
-                          )}
-                        </div>
-                        <button
-                          type="button"
-                          className="org-drive-connect-button"
-                          onClick={handleConnectGoogleDrive}
-                          disabled={!driveReady || driveConnecting}
-                        >
-                          {driveConnecting
-                            ? 'Connecting...'
-                            : driveConnected
-                              ? 'Reconnect'
-                              : driveReady
-                                ? 'Connect Drive'
-                                : 'Loading Drive...'}
-                        </button>
-                      </div>
 
                       {existingDocuments.length > 0 && (
                         <div className="org-selected-documents">
@@ -3948,22 +3690,6 @@ const LGUSchoolProfile: React.FC<LGUSchoolProfileProps> = ({
                       </select>
                     </div>
 
-                    <div className="org-form-group">
-                      <label>Schedule Post (optional)</label>
-                      <input
-                        type="datetime-local"
-                        value={postForm.scheduledAt}
-                        onChange={(event) =>
-                          updatePostForm('scheduledAt', event.target.value)
-                        }
-                        min={new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
-                          .toISOString()
-                          .slice(0, 16)}
-                      />
-                      <small className="org-field-hint">
-                        Select a future date, then use Schedule Post below.
-                      </small>
-                    </div>
 
                     <div className="org-form-group org-form-full org-post-options">
                       <label className="org-post-option">
@@ -4056,9 +3782,8 @@ const LGUSchoolProfile: React.FC<LGUSchoolProfileProps> = ({
                     <p>
                       Scholarship announcements are linked to your scholarship
                       listing and student feed. Publishing sends a notification
-                      to every student's notification bell. Scheduled posts
-                      publish at the selected time using the GrantAccess
-                      scheduled-publishing function. Drafts stay private to
+                      to every student's notification bell. Save a draft to publish
+                      later. Drafts stay private to
                       your organization.
                     </p>
                   </div>
@@ -4075,15 +3800,7 @@ const LGUSchoolProfile: React.FC<LGUSchoolProfileProps> = ({
                     Save Draft
                   </button>
 
-                  <button
-                    type="button"
-                    className="org-outline-button"
-                    onClick={() => submitPost('scheduled')}
-                    disabled={saving || uploading || !postForm.scheduledAt}
-                  >
-                    <IonIcon icon={calendarOutline} />
-                    Schedule Post
-                  </button>
+
 
                   <button
                     type="button"

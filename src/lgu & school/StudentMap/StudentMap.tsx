@@ -292,6 +292,7 @@ const StudentMap: React.FC = () => {
 
     mapRef.current = map;
     fitKeyRef.current = '';
+    const studentMarkers = studentMarkersRef.current;
 
     const frame = window.requestAnimationFrame(() => {
       map.invalidateSize({ animate: false });
@@ -300,11 +301,11 @@ const StudentMap: React.FC = () => {
     return () => {
       window.cancelAnimationFrame(frame);
 
-      studentMarkersRef.current.forEach((marker) =>
+      studentMarkers.forEach((marker) =>
         marker.remove()
       );
 
-      studentMarkersRef.current.clear();
+      studentMarkers.clear();
 
       organizationMarkerRef.current?.remove();
       organizationMarkerRef.current = null;

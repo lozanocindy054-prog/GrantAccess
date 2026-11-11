@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import {
   IonButton,
@@ -43,6 +43,7 @@ import { auth, db } from '../../Firebase/config';
 import FaceLiveness from '../../components/FaceVerification/FaceLiveness';
 
 import './StudentRegister.css';
+import { sendVerificationEmail } from '../../services/emailVerificationService';
 
 /* =========================================================
    TYPES
@@ -122,6 +123,8 @@ const StudentRegister: React.FC = () => {
   ------------------------------------------------------- */
 
   const [registrationStep, setRegistrationStep] = useState(1);
+  const contentRef = useRef<HTMLIonContentElement>(null);
+  useEffect(() => { void contentRef.current?.scrollToTop?.(200); }, [registrationStep]);
 
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
@@ -372,7 +375,8 @@ const StudentRegister: React.FC = () => {
         'Your GrantAccess account has been created successfully!'
       );
 
-      navigate('/student-dashboard', {
+      try { await sendVerificationEmail(user); } catch { /* Resend is available on the verification page. */ }
+      navigate('/verify-email', {
         replace: true,
         state: {
           registrationSuccess: true,
@@ -456,15 +460,14 @@ const StudentRegister: React.FC = () => {
 
   return (
     <IonPage>
-      <IonContent fullscreen>
+      <IonContent ref={contentRef} fullscreen>
         <div className="student-register-page">
 
           {/* HEADER */}
 
           <div className="student-register-header">
             <div className="student-register-brand">
-              <div className="student-register-logo">
-                <IonIcon icon={schoolOutline} />
+              <div className="student-register-logo"><img className="grantaccess-brand-image" src="/mylogo.png" alt="GrantAccess" />
               </div>
 
               <div>

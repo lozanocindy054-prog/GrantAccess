@@ -1,4 +1,6 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import { createAdminReportPdf } from '../../services/adminReportService';
+import { logoutAdministrator } from '../../services/adminService';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   IonPage,
@@ -8,7 +10,6 @@ import {
 } from '@ionic/react';
 
 import {
-  schoolOutline,
   gridOutline,
   barChartOutline,
   notificationsOutline,
@@ -27,10 +28,11 @@ import {
 import { collection, onSnapshot } from 'firebase/firestore';
 import { db } from '../../Firebase/config';
 import './AdminReports.css';
+import { parseDate } from '../../utils/dates';
 
 interface ReportRecord {
   id: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 type DateFilter = 'all' | 'today' | 'month' | 'year' | 'custom';
@@ -43,23 +45,7 @@ const menuItems = [
   { label: 'System Settings', icon: settingsOutline, path: '/admin-settings' },
 ];
 
-const getDate = (value: any): Date | null => {
-  if (!value) return null;
-
-  if (typeof value.toDate === 'function') return value.toDate();
-  if (value instanceof Date) return value;
-
-  if (typeof value === 'string' || typeof value === 'number') {
-    const date = new Date(value);
-    return Number.isNaN(date.getTime()) ? null : date;
-  }
-
-  if (typeof value.seconds === 'number') {
-    return new Date(value.seconds * 1000);
-  }
-
-  return null;
-};
+const getDate = parseDate;
 
 const getRecordDate = (record: ReportRecord): Date | null =>
   getDate(
@@ -82,7 +68,7 @@ const getStatus = (record: ReportRecord): string =>
     .replace(/[_-]/g, ' ')
     .trim();
 
-const normalize = (value: any): string =>
+const normalize = (value: unknown): string =>
   String(value ?? '').toLowerCase().trim();
 
 const formatDate = (date: Date | null): string =>
@@ -106,29 +92,31 @@ const sameMonth = (a: Date, b: Date): boolean =>
 const sameYear = (a: Date, b: Date): boolean =>
   a.getFullYear() === b.getFullYear();
 
-const csvValue = (value: any): string =>
-  `"${String(value ?? '').replace(/"/g, '""')}"`;
+const csvValue = (value: unknown): string => {
+  const text = String(value ?? '');
+  return `"${(/^[=+@\-\t\r]/.test(text) ? "'" + text : text).replace(/"/g, '""')}"`;
+};
 
 const studentName = (record: ReportRecord): string =>
-  record.studentName ??
+  String(  record.studentName ??
   record.fullName ??
   record.name ??
   record.studentEmail ??
   record.email ??
-  'Unknown student';
+  'Unknown student');
 
 const scholarshipName = (record: ReportRecord): string =>
-  record.scholarshipTitle ??
+  String(  record.scholarshipTitle ??
   record.scholarshipName ??
   record.title ??
-  'Not specified';
+  'Not specified');
 
 const organizationName = (record: ReportRecord): string =>
-  record.organizationName ??
+  String(  record.organizationName ??
   record.schoolName ??
   record.lguName ??
   record.name ??
-  'Unnamed organization';
+  'Unnamed organization');
 
 const AdminReports: React.FC = () => {
   const navigate = useNavigate();
@@ -146,17 +134,24 @@ const AdminReports: React.FC = () => {
   const [endDate, setEndDate] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [search, setSearch] = useState('');
+  const [reportTab, setReportTab] = useState<'analytics' | 'applications' | 'organizations'>('analytics');
+  const [generating, setGenerating] = useState(false);
+  const [reportError, setReportError] = useState('');
+  const [generatedReport, setGeneratedReport] = useState<{ url: string; filename: string; count: number } | null>(null);
+  const reportVersion = useRef(0);
+  const invalidRange = dateFilter === 'custom' && Boolean(startDate && endDate && startDate > endDate);
 
   // Load Firestore collections in real time.
   useEffect(() => {
     const collectionNames = [
       'applications',
       'scholarships',
-      'users',
+      'students',
       'organizations',
     ];
 
     const loadedCollections = new Set<string>();
+    const collectionErrors = new Map<string, string>();
     const unsubscribers: Array<() => void> = [];
 
     const setters: Record<
@@ -165,7 +160,7 @@ const AdminReports: React.FC = () => {
     > = {
       applications: setApplications,
       scholarships: setScholarships,
-      users: setStudents,
+      students: setStudents,
       organizations: setOrganizations,
     };
 
@@ -188,15 +183,15 @@ const AdminReports: React.FC = () => {
             }))
           );
 
-          setError('');
+          collectionErrors.delete(name);
+          setError([...collectionErrors.values()].join(' '));
           markLoaded(name);
         },
         (err) => {
           console.error(`Firestore error (${name}):`, err);
 
-          setError(
-            `Unable to load "${name}". Check the collection name and Firestore security rules.`
-          );
+          collectionErrors.set(name, `Unable to load ${name}. Check your connection and administrator permissions.`);
+          setError([...collectionErrors.values()].join(' '));
 
           markLoaded(name);
         }
@@ -314,7 +309,7 @@ const AdminReports: React.FC = () => {
         1
       );
 
-      const count = applications.filter((record) => {
+      const count = filteredApplications.filter((record) => {
         const date = getRecordDate(record);
 
         return (
@@ -332,7 +327,7 @@ const AdminReports: React.FC = () => {
         count,
       };
     });
-  }, [applications]);
+  }, [filteredApplications]);
 
   const maxMonthly = Math.max(
     1,
@@ -344,7 +339,33 @@ const AdminReports: React.FC = () => {
     ...Object.values(statusCounts)
   );
 
+  useEffect(() => {
+    reportVersion.current++;
+    setGeneratedReport(null);
+    setReportError('');
+  }, [filteredApplications, students.length, organizations.length, scholarships.length, applications.length]);
+  useEffect(() => () => { if (generatedReport) URL.revokeObjectURL(generatedReport.url); }, [generatedReport]);
+  const generatePdf = async () => {
+    if (loading || error || invalidRange || generating) return;
+    const version = reportVersion.current;
+    setGenerating(true); setReportError('');
+    try {
+      const report = await createAdminReportPdf({
+        generatedAt: new Date(),
+        filters: `Date: ${dateFilter === 'custom' ? `${startDate || 'Any start'} to ${endDate || 'Any end'}` : dateFilter}; Status: ${statusFilter}; Search: ${search || 'None'}`,
+        totals: { students: students.length, organizations: organizations.length, scholarships: scholarships.length, applications: applications.length },
+        statuses: statusCounts, months: monthlyData,
+        rows: filteredApplications.map(record => [record.id, studentName(record), String(record.studentEmail ?? record.email ?? ''), scholarshipName(record), organizationName(record), getStatus(record), formatDate(getRecordDate(record))]),
+      });
+      if (version !== reportVersion.current) { setReportError('Records or filters changed while generating. Please generate the report again.'); return; }
+      setGeneratedReport({ url: URL.createObjectURL(new Blob([report.data], { type: 'application/pdf' })), filename: report.filename, count: filteredApplications.length });
+    } catch (cause) {
+      console.error('PDF generation failed:', cause); setReportError('Unable to generate the PDF. Please retry.');
+    } finally { setGenerating(false); }
+  };
+
   const exportCsv = () => {
+    if (loading || error || invalidRange) return;
     const headers = [
       'Application ID',
       'Student Name',
@@ -398,8 +419,7 @@ const AdminReports: React.FC = () => {
         {/* SIDEBAR — same layout as Admin Dashboard */}
         <aside className="admin-sidebar">
           <div className="admin-brand">
-            <div className="admin-brand-icon">
-              <IonIcon icon={schoolOutline} />
+            <div className="admin-brand-icon"><img className="grantaccess-brand-image" src="/mylogo.png" alt="GrantAccess" />
             </div>
 
             <div>
@@ -429,7 +449,7 @@ const AdminReports: React.FC = () => {
           <button
             type="button"
             className="admin-nav-item admin-logout"
-            onClick={() => navigate('/admin-login')}
+            onClick={() => void logoutAdministrator().then(() => navigate('/admin-login', { replace: true })).catch(() => setError('Unable to sign out. Please retry.'))}
           >
             <IonIcon icon={logOutOutline} />
             <span>Logout</span>
@@ -453,15 +473,20 @@ const AdminReports: React.FC = () => {
                   </p>
                 </div>
 
+                <div className="reports-actions" aria-busy={generating}>
+                <button type="button" className="reports-export-button reports-pdf-button" onClick={() => void generatePdf()} disabled={loading || Boolean(error) || invalidRange || generating}>
+                  <IonIcon icon={documentTextOutline} /><span>{generating ? 'Generating PDF?' : 'Generate PDF'}</span>
+                </button>
                 <button
                   type="button"
                   className="reports-export-button"
                   onClick={exportCsv}
-                  disabled={loading}
+                  disabled={loading || Boolean(error) || invalidRange || generating}
                 >
                   <IonIcon icon={downloadOutline} />
                   <span>Export CSV</span>
                 </button>
+                </div>
               </header>
 
               {error && (
@@ -470,6 +495,19 @@ const AdminReports: React.FC = () => {
                 </div>
               )}
 
+              {reportError && <p className="reports-error" role="alert">{reportError}</p>}
+              {invalidRange && <p className="reports-error" role="alert">Start date must be on or before the end date.</p>}
+              {generatedReport && <section className="reports-download-ready" aria-live="polite">
+                <div><strong>Your PDF report is ready</strong><p>{generatedReport.count} matching application records, platform totals, and analytics.</p></div>
+                <a href={generatedReport.url} download={generatedReport.filename}>Download PDF</a>
+                <a href={generatedReport.url} target="_blank" rel="noopener noreferrer">Open PDF</a>
+              </section>}
+              <nav className="reports-tabs" role="tablist" aria-label="Report sections">{(['analytics', 'applications', 'organizations'] as const).map((tab, index, tabs) => <button key={tab} id={`report-tab-${tab}`} type="button" role="tab" aria-selected={reportTab === tab} aria-controls={`report-panel-${tab}`} tabIndex={reportTab === tab ? 0 : -1} onClick={() => setReportTab(tab)} onKeyDown={event => {
+                if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+                event.preventDefault();
+                const next = event.key === 'Home' ? 0 : event.key === 'End' ? tabs.length - 1 : (index + (event.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length;
+                setReportTab(tabs[next]); document.getElementById(`report-tab-${tabs[next]}`)?.focus();
+              }}>{tab === 'analytics' ? 'Analytics' : tab === 'applications' ? 'Applications' : 'Organizations'}</button>)}</nav>
               {loading ? (
                 <div className="reports-loading">
                   <IonSpinner name="crescent" />
@@ -547,6 +585,7 @@ const AdminReports: React.FC = () => {
                     </div>
                   </section>
 
+                  <section className="reports-filter-scope"><strong>Application analytics</strong><p>Charts and the application table follow the filters below. Platform totals and organization records include all records.</p></section>
                   {/* FILTER PANEL */}
                   <section className="reports-filter-panel">
                     <div className="reports-section-heading">
@@ -565,6 +604,7 @@ const AdminReports: React.FC = () => {
                           <IonIcon icon={searchOutline} />
                           <input
                             type="search"
+                            maxLength={200}
                             placeholder="Student or scholarship..."
                             value={search}
                             onChange={(event) => setSearch(event.target.value)}
@@ -646,7 +686,7 @@ const AdminReports: React.FC = () => {
                   </section>
 
                   {/* CHARTS */}
-                  <section className="reports-analytics-grid">
+                  <section className="reports-analytics-grid" id="report-panel-analytics" role="tabpanel" aria-labelledby="report-tab-analytics" hidden={reportTab !== 'analytics'}>
                     <article className="reports-panel">
                       <div className="reports-panel-heading">
                         <div>
@@ -690,7 +730,7 @@ const AdminReports: React.FC = () => {
                       <div className="reports-panel-heading">
                         <div>
                           <h2>Monthly Application Trend</h2>
-                          <p>Applications in the last six months</p>
+                          <p>Filtered applications in the last six months</p>
                         </div>
                         <IonIcon icon={analyticsOutline} />
                       </div>
@@ -721,7 +761,7 @@ const AdminReports: React.FC = () => {
                   </section>
 
                   {/* APPLICATION TABLE */}
-                  <section className="reports-table-panel">
+                  <section className="reports-table-panel" id="report-panel-applications" role="tabpanel" aria-labelledby="report-tab-applications" hidden={reportTab !== 'applications'}>
                     <div className="reports-table-heading">
                       <div>
                         <h2>Application Records</h2>
@@ -767,17 +807,17 @@ const AdminReports: React.FC = () => {
                                       <div className="reports-student-info">
                                         <strong>{studentName(record)}</strong>
                                         <span>
-                                          {record.studentEmail ??
+                                          {String(record.studentEmail ??
                                             record.email ??
-                                            '—'}
+                                            '—')}
                                         </span>
                                       </div>
                                     </div>
                                   </td>
                                   <td>{scholarshipName(record)}</td>
                                   <td>
-                                    {record.organizationName ??
-                                      organizationName(record)}
+                                    {String(record.organizationName ??
+                                      organizationName(record))}
                                   </td>
                                   <td>{formatDate(getRecordDate(record))}</td>
                                   <td>
@@ -799,7 +839,7 @@ const AdminReports: React.FC = () => {
                   </section>
 
                   {/* ORGANIZATION TABLE */}
-                  <section className="reports-table-panel">
+                  <section className="reports-table-panel" id="report-panel-organizations" role="tabpanel" aria-labelledby="report-tab-organizations" hidden={reportTab !== 'organizations'}>
                     <div className="reports-table-heading">
                       <div>
                         <h2>Organization Overview</h2>
@@ -832,19 +872,19 @@ const AdminReports: React.FC = () => {
                               <tr key={record.id}>
                                 <td>{organizationName(record)}</td>
                                 <td>
-                                  {record.organizationType ??
+                                  {String(record.organizationType ??
                                     record.type ??
                                     record.role ??
-                                    '—'}
+                                    '—')}
                                 </td>
                                 <td>
-                                  {record.organizationEmail ??
+                                  {String(record.organizationEmail ??
                                     record.email ??
-                                    '—'}
+                                    '—')}
                                 </td>
                                 <td>
                                   <span className="reports-status-badge">
-                                    {record.status ?? 'Registered'}
+                                    {String(record.status ?? 'Registered')}
                                   </span>
                                 </td>
                               </tr>

@@ -1,8 +1,11 @@
+import { resolveDocumentUrl } from '../../utils/documentUrls';
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import {
   IonIcon,
+  IonPage,
+  IonContent,
   IonSpinner,
   IonModal,
   IonButton,
@@ -38,9 +41,13 @@ import {
   doc,
   getDoc,
   getDocs,
+  type QuerySnapshot,
+  type DocumentData,
   onSnapshot,
   query,
   updateDoc,
+  setDoc,
+  serverTimestamp,
   where,
   Timestamp,
 } from 'firebase/firestore';
@@ -220,16 +227,7 @@ const isPresenceActive = (value: RawData): boolean => {
   );
 };
 
-const getSafeDocumentUrl = (value: string): string => {
-  try {
-    const url = new URL(value);
-    return url.protocol === 'https:' || url.protocol === 'http:'
-      ? url.toString()
-      : '';
-  } catch {
-    return '';
-  }
-};
+const getSafeDocumentUrl = resolveDocumentUrl;
 
 const getDocumentDownloadUrl = (value: string): string => {
   const safeUrl = getSafeDocumentUrl(value);
@@ -303,7 +301,9 @@ const Applications: React.FC = () => {
     setToast({ show: true, message, color });
   };
 
-  const fetchApplications = useCallback(async () => {
+  const fetchGeneration = useRef(0);
+  const fetchApplications = useCallback(async (incoming?: QuerySnapshot<DocumentData>) => {
+    const generation = ++fetchGeneration.current;
     const user = auth.currentUser;
 
     if (!user) {
@@ -320,7 +320,7 @@ const Applications: React.FC = () => {
         where('organizationId', '==', user.uid),
       );
 
-      const snapshot = await getDocs(applicationsQuery);
+      const snapshot = incoming ?? await getDocs(applicationsQuery);
 
       const records: ApplicationRecord[] = await Promise.all(
         snapshot.docs.map(async (applicationDoc) => {
@@ -329,22 +329,16 @@ const Applications: React.FC = () => {
           const studentId = getString(data.studentId ?? data.userId);
           const scholarshipId = getString(data.scholarshipId);
 
-          let studentData: RawData = {};
+          const studentData: RawData = {
+            ...data, fullName: data.studentName, email: data.studentEmail,
+            studentNumber: data.studentNumber, contactNumber: data.contactNumber,
+          };
           let scholarshipData: RawData = {};
           const studentActive = false;
-
           if (studentId) {
-            try {
-              const studentSnapshot = await getDoc(
-                doc(db, 'students', studentId),
-              );
-
-              if (studentSnapshot.exists()) {
-                studentData = studentSnapshot.data() as RawData;
-              }
-            } catch (error) {
-              console.error('Unable to fetch student:', error);
-            }
+            const accessRef = doc(db, 'organizationApplicants', user.uid, 'students', studentId);
+            const access = await getDoc(accessRef);
+            if (!access.exists()) await setDoc(accessRef, { applicationId: applicationDoc.id });
           }
 
           if (scholarshipId) {
@@ -471,8 +465,9 @@ const Applications: React.FC = () => {
         return dateB - dateA;
       });
 
-      setApplications(records);
+      if (generation === fetchGeneration.current && auth.currentUser?.uid === user.uid) setApplications(records);
     } catch (error) {
+      if (generation !== fetchGeneration.current || auth.currentUser?.uid !== user.uid) return;
       console.error('Error fetching applications:', error);
 
       showToast(
@@ -480,9 +475,11 @@ const Applications: React.FC = () => {
         'danger',
       );
     } finally {
-      setLoading(false);
+      if (generation === fetchGeneration.current) setLoading(false);
     }
   }, [auth]);
+
+  const invalidateFetch = useCallback(() => { fetchGeneration.current++; }, []);
 
   const applicantIds = useMemo(
     () => Array.from(new Set(applications.map((item) => item.studentId))).join('\0'),
@@ -490,8 +487,13 @@ const Applications: React.FC = () => {
   );
 
   useEffect(() => {
-    void fetchApplications();
-  }, [fetchApplications]);
+    const uid = auth.currentUser?.uid;
+    if (!uid) return;
+    const unsubscribe = onSnapshot(query(collection(db, 'applications'), where('organizationId', '==', uid)), snapshot => {
+      void fetchApplications(snapshot);
+    }, () => { setLoading(false); setToast({ show: true, message: 'Unable to load applications. Please check your connection.', color: 'danger' }); });
+    return () => { unsubscribe(); invalidateFetch(); };
+  }, [auth, fetchApplications, invalidateFetch]);
 
   useEffect(() => {
     const studentIds = applicantIds.split('\0').filter(Boolean);
@@ -593,9 +595,9 @@ const Applications: React.FC = () => {
         remarks: remarks.trim(),
         rejectionReason:
           newStatus === 'Rejected' ? remarks.trim() : '',
-        reviewedAt: Timestamp.now(),
+        reviewedAt: serverTimestamp(),
         reviewedBy: auth.currentUser?.uid ?? '',
-        updatedAt: Timestamp.now(),
+        updatedAt: serverTimestamp(),
       });
 
       setApplications((previous) =>
@@ -643,20 +645,19 @@ const Applications: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="applications-popup-loading">
+      <IonPage className="organization-applications-page"><IonContent scrollY={false}><div className="applications-popup-loading">
         <IonSpinner name="crescent" />
         <p>Loading applications...</p>
-      </div>
+      </div></IonContent></IonPage>
     );
   }
 
   return (
-    <div className="applications-popup">
+    <IonPage className="organization-applications-page"><IonContent scrollY={false}><div className="applications-popup">
 
       <header className="applications-popup-header">
         <div className="applications-popup-brand">
-          <div className="applications-popup-brand-icon">
-            <IonIcon icon={schoolOutline} />
+          <div className="applications-popup-brand-icon"><img className="grantaccess-brand-image" src="/mylogo.png" alt="GrantAccess" />
           </div>
 
           <div>
@@ -1122,7 +1123,7 @@ const Applications: React.FC = () => {
                               </a>
                               <a
                                 href={downloadUrl}
-                                download={requirement.name}
+                                download={requirement.url.startsWith('/files/') ? undefined : requirement.name}
                                 className="applications-download-button"
                               >
                                 <IonIcon icon={downloadOutline} />
@@ -1158,7 +1159,7 @@ const Applications: React.FC = () => {
                       </IonButton>
                     </div>
 
-                    {getDocumentType(previewRequirement) === 'image' ? (
+                    {getDocumentType(previewRequirement) === 'image' && !previewRequirement.url.startsWith('/files/') ? (
                       <img
                         className="applications-document-preview-image"
                         src={getSafeDocumentUrl(previewRequirement.url)}
@@ -1209,6 +1210,7 @@ const Applications: React.FC = () => {
                   </label>
 
                   <IonTextarea
+                    maxlength={2000}
                     value={remarks}
                     onIonInput={(event) =>
                       setRemarks(event.detail.value ?? '')
@@ -1273,7 +1275,7 @@ const Applications: React.FC = () => {
         }
       />
 
-    </div>
+    </div></IonContent></IonPage>
   );
 };
 

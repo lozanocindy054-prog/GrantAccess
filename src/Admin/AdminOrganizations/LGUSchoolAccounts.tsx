@@ -1,5 +1,5 @@
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import {
@@ -21,7 +21,7 @@ import {
   closeOutline,
 } from 'ionicons/icons';
 
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, onSnapshot, type QuerySnapshot, type DocumentData } from 'firebase/firestore';
 import { db } from '../../Firebase/config';
 
 import './LGUSchoolAccounts.css';
@@ -50,14 +50,12 @@ const LGUSchoolAccounts: React.FC = () => {
   const [showDetails, setShowDetails] = useState(false);
   const [showToast, setShowToast] = useState(false);
 
-  const loadOrganizations = async () => {
+  const loadOrganizations = useCallback(async (incoming?: QuerySnapshot<DocumentData>) => {
     setLoading(true);
     setErrorMessage('');
 
     try {
-      const snapshot = await getDocs(
-        collection(db, 'organizations')
-      );
+      const snapshot = incoming ?? await getDocs(collection(db, 'organizations'));
 
       const organizationList: Organization[] = snapshot.docs.map(
         (document) => {
@@ -125,11 +123,13 @@ const LGUSchoolAccounts: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  useEffect(() => {
-    void loadOrganizations();
   }, []);
+
+  useEffect(() => onSnapshot(collection(db, 'organizations'), snapshot => {
+    void loadOrganizations(snapshot);
+  }, () => {
+    setLoading(false); setErrorMessage('Unable to load organizations. Please check your connection.'); setShowToast(true);
+  }), [loadOrganizations]);
 
   const filteredOrganizations = useMemo(() => {
     const search = searchTerm.trim().toLowerCase();
@@ -171,7 +171,7 @@ const LGUSchoolAccounts: React.FC = () => {
           <header className="organizations-brand-header">
             <div className="organizations-brand">
               <img
-                src="/image/logo3.png"
+                src="/mylogo.png"
                 alt="GrantAccess Logo"
                 className="organizations-brand-logo"
               />
@@ -358,7 +358,7 @@ const LGUSchoolAccounts: React.FC = () => {
             <div className="organization-modal-header">
               <div className="organization-modal-brand">
                 <img
-                  src="public/image/logo3.png"
+                  src="/mylogo.png"
                   alt="GrantAccess Logo"
                   className="organization-modal-logo"
                 />

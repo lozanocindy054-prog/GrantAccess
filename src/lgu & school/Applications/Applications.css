@@ -10,6 +10,7 @@
    THEME VARIABLES
 ===================================================== */
 
+.organization-applications-page,
 ion-modal.lgu-applications-popout {
   --ga-app-green: #078747;
   --ga-app-green-dark: #056b38;
@@ -1555,3 +1556,5 @@ ion-modal.applications-details-modal::part(content) {
     background: #d9f0e1;
   }
 }
+
+ion-content > .applications-popup { min-height: 100%; width: 100%; }

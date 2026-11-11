@@ -1,3 +1,4 @@
+import { subscribeStudentNotifications, markStudentNotificationsRead, type StudentNotification } from '../../services/studentNotificationService';
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -19,19 +20,9 @@ import {
   schoolOutline,
 } from "ionicons/icons";
 
-import {
-  collection,
-  doc,
-  onSnapshot,
-  query,
-  serverTimestamp,
-  updateDoc,
-  where,
-  writeBatch,
-} from "firebase/firestore";
 
 import { onAuthStateChanged } from "firebase/auth";
-import { auth, db } from "../../Firebase/config";
+import { auth } from "../../Firebase/config";
 
 import StudentBottomNav from "../../components/StudentBottomNav";
 
@@ -41,46 +32,12 @@ import "./StudentNotifications.css";
 // TYPES
 // ==========================================
 
-interface StudentNotification {
-  id: string;
-  title: string;
-  message: string;
-  type: "scholarship" | "announcement";
-  organizationName: string;
-  organizationLogo: string;
-  scholarshipId: string;
-  scholarshipTitle: string;
-  amount: string;
-  deadline: string;
-  imageUrl: string;
-  isRead: boolean;
-  createdAtMs: number;
-}
 
 type FilterTab = "all" | "unread";
 
 // ==========================================
 // HELPERS
 // ==========================================
-
-const getMillis = (value: unknown): number => {
-  if (!value) return 0;
-
-  if (
-    typeof value === "object" &&
-    value !== null &&
-    "toMillis" in value &&
-    typeof (value as { toMillis: () => number }).toMillis === "function"
-  ) {
-    return (value as { toMillis: () => number }).toMillis();
-  }
-
-  if (value instanceof Date) return value.getTime();
-
-  const parsed = new Date(value as string);
-
-  return Number.isNaN(parsed.getTime()) ? 0 : parsed.getTime();
-};
 
 const timeAgo = (milliseconds: number): string => {
   // serverTimestamp() is empty for a moment right after the write
@@ -167,53 +124,12 @@ const StudentNotifications: React.FC = () => {
       setLoading(true);
       setErrorMessage("");
 
-      // No orderBy here on purpose: where + orderBy on a different field
-      // needs a composite index. Sorting is done on the device instead.
-      unsubscribeNotifications = onSnapshot(
-        query(
-          collection(db, "studentNotifications"),
-          where("studentId", "==", user.uid)
-        ),
-        (snapshot) => {
-          const rows: StudentNotification[] = snapshot.docs.map((item) => {
-            const data = item.data();
-
-            return {
-              id: item.id,
-              title: String(data.title || "Notification"),
-              message: String(data.message || ""),
-              type: data.type === "scholarship" ? "scholarship" : "announcement",
-              organizationName: String(data.organizationName || ""),
-              organizationLogo: String(data.organizationLogo || ""),
-              scholarshipId: String(data.scholarshipId || ""),
-              scholarshipTitle: String(data.scholarshipTitle || ""),
-              amount: String(data.amount || ""),
-              deadline: String(data.deadline || ""),
-              imageUrl: String(data.imageUrl || ""),
-              isRead: data.isRead === true,
-              createdAtMs: getMillis(data.createdAt),
-            };
-          });
-
-          rows.sort((a, b) => {
-            // notifications with a pending timestamp are the newest
-            const first = a.createdAtMs || Date.now();
-            const second = b.createdAtMs || Date.now();
-
-            return second - first;
-          });
-
-          setNotifications(rows);
-          setLoading(false);
-        },
-        (error) => {
-          console.error("Student notifications listener error:", error);
-          setLoading(false);
-          setErrorMessage(
-            "Unable to load notifications. Please check your Firestore Rules."
-          );
-        }
-      );
+      unsubscribeNotifications = subscribeStudentNotifications(user.uid, rows => {
+        setNotifications(rows); setLoading(false);
+      }, error => {
+        console.error('Student notifications listener error:', error);
+        setLoading(false); setErrorMessage('Unable to load notifications. Please try again.');
+      });
     });
 
     return () => {
@@ -247,11 +163,8 @@ const StudentNotifications: React.FC = () => {
     if (notification.isRead) return;
 
     try {
-      await updateDoc(doc(db, "studentNotifications", notification.id), {
-        isRead: true,
-        readAt: serverTimestamp(),
-        updatedAt: serverTimestamp(),
-      });
+      if (!auth.currentUser) return;
+      await markStudentNotificationsRead(auth.currentUser.uid, [notification]);
     } catch (error) {
       console.error("Mark notification as read error:", error);
       setErrorMessage("Unable to mark this notification as read.");
@@ -266,19 +179,8 @@ const StudentNotifications: React.FC = () => {
     setMarkingAll(true);
 
     try {
-      for (let offset = 0; offset < unread.length; offset += 400) {
-        const batch = writeBatch(db);
-
-        unread.slice(offset, offset + 400).forEach((item) => {
-          batch.update(doc(db, "studentNotifications", item.id), {
-            isRead: true,
-            readAt: serverTimestamp(),
-            updatedAt: serverTimestamp(),
-          });
-        });
-
-        await batch.commit();
-      }
+      if (!auth.currentUser) return;
+      await markStudentNotificationsRead(auth.currentUser.uid, unread);
     } catch (error) {
       console.error("Mark all notifications as read error:", error);
       setErrorMessage("Unable to mark all notifications as read.");

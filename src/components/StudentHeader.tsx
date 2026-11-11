@@ -1,47 +1,25 @@
+import { subscribeStudentNotifications } from '../services/studentNotificationService';
 
 import React, { FormEvent, useEffect, useState } from 'react';
 import { IonIcon } from '@ionic/react';
 import {
-  bookmarkOutline,
   chatbubbleOutline,
-  documentTextOutline,
-  homeOutline,
   notificationsOutline,
-  personOutline,
-  schoolOutline,
   searchOutline,
 } from 'ionicons/icons';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { onAuthStateChanged } from 'firebase/auth';
 import {
-  collection,
   doc,
   getDoc,
-  onSnapshot,
-  query,
   serverTimestamp,
   setDoc,
-  where,
 } from 'firebase/firestore';
 import { auth, db } from '../Firebase/config';
 import './StudentHeader.css';
 
-const navigationItems = [
-  { label: 'Home', path: '/student-dashboard', icon: homeOutline },
-  { label: 'Scholarships', path: '/scholarships', icon: schoolOutline },
-  { label: 'Saved', path: '/saved', icon: bookmarkOutline },
-  {
-    label: 'Applications',
-    path: '/application-history',
-    icon: documentTextOutline,
-  },
-  { label: 'Messages', path: '/student-messages', icon: chatbubbleOutline },
-  { label: 'Profile', path: '/profile', icon: personOutline },
-];
-
 const StudentHeader: React.FC = () => {
   const navigate = useNavigate();
-  const location = useLocation();
 
   const [searchText, setSearchText] = useState('');
   const [unreadNotifications, setUnreadNotifications] = useState(0);
@@ -94,34 +72,11 @@ const StudentHeader: React.FC = () => {
           return;
         }
 
-        // 2. Listen to this student's notifications only.
-        const notificationsQuery = query(
-          collection(db, 'studentNotifications'),
-          where('studentId', '==', user.uid)
-        );
-
-        unsubscribeNotifications = onSnapshot(
-          notificationsQuery,
-          (snapshot) => {
-            if (!active || currentGeneration !== authGeneration) {
-              return;
-            }
-
-            const unreadCount = snapshot.docs.filter(
-              (notification) =>
-                notification.data().isRead !== true
-            ).length;
-
-            setUnreadNotifications(unreadCount);
-          },
-          (error) => {
-            console.error(
-              'Unable to load unread notification count:',
-              error.code,
-              error.message
-            );
+        unsubscribeNotifications = subscribeStudentNotifications(user.uid, items => {
+          if (active && currentGeneration === authGeneration) {
+            setUnreadNotifications(items.filter(item => !item.isRead).length);
           }
-        );
+        }, error => console.error('Unable to load unread notification count:', error.message));
 
         // 3. Update Student online presence.
         const presenceRef = doc(
@@ -226,7 +181,7 @@ const StudentHeader: React.FC = () => {
         }}
         aria-label="GrantAccess home"
       >
-        <img src="/image/logo3.png" alt="" />
+        <img src="/mylogo.png" alt="" />
         <span>GrantAccess</span>
       </a>
 
@@ -246,53 +201,34 @@ const StudentHeader: React.FC = () => {
         />
       </form>
 
-      <nav
-        className="student-global-nav"
-        aria-label="Student navigation"
-      >
-        {navigationItems.map((item) => {
-          const active = location.pathname === item.path;
+      <div className="student-global-actions">
+        <button
+          type="button"
+          className="student-global-notifications"
+          aria-label="Open messages"
+          onClick={() => navigate('/student-messages')}
+        >
+          <IonIcon icon={chatbubbleOutline} aria-hidden="true" />
+        </button>
 
-          return (
-            <button
-              type="button"
-              key={item.path}
-              className={`student-global-nav-item${
-                active ? ' active' : ''
-              }`}
-              aria-current={active ? 'page' : undefined}
-              onClick={() => navigate(item.path)}
-            >
-              <IonIcon icon={item.icon} aria-hidden="true" />
-              <span>{item.label}</span>
-            </button>
-          );
-        })}
-      </nav>
-
-      <button
-        type="button"
-        className="student-global-notifications"
-        aria-label={`Open notifications${
-          unreadNotifications > 0
-            ? `, ${unreadNotifications} unread`
-            : ''
-        }`}
-        onClick={() => navigate('/notifications')}
-      >
-        <IonIcon
-          icon={notificationsOutline}
-          aria-hidden="true"
-        />
-
-        {unreadNotifications > 0 && (
-          <span className="student-notification-count">
-            {unreadNotifications > 99
-              ? '99+'
-              : unreadNotifications}
-          </span>
-        )}
-      </button>
+        <button
+          type="button"
+          className="student-global-notifications"
+          aria-label={`Open notifications${
+            unreadNotifications > 0
+              ? `, ${unreadNotifications} unread`
+              : ''
+          }`}
+          onClick={() => navigate('/notifications')}
+        >
+          <IonIcon icon={notificationsOutline} aria-hidden="true" />
+          {unreadNotifications > 0 && (
+            <span className="student-notification-count">
+              {unreadNotifications > 99 ? '99+' : unreadNotifications}
+            </span>
+          )}
+        </button>
+      </div>
     </header>
   );
 };

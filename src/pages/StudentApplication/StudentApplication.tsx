@@ -31,6 +31,7 @@ import StudentHeader from "../../components/StudentHeader";
 import StudentBottomNav from "../../components/StudentBottomNav";
 import StudentDocumentAccess from "../../components/StudentDocumentAccess";
 import "./StudentApplication.css";
+import { uploadFirestoreFile, MAX_DOCUMENT_BYTES } from "../../services/firestoreFileService";
 
 interface DownloadableFile {
   name: string;
@@ -80,12 +81,7 @@ interface LocationConsentData {
   longitude: number;
 }
 
-const CLOUDINARY_CLOUD_NAME =
-  import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || "verlmdcg";
-const CLOUDINARY_DOCUMENT_PRESET =
-  import.meta.env.VITE_CLOUDINARY_DOCUMENT_UPLOAD_PRESET ||
-  "grantaccess_documents";
-const MAX_FILE_SIZE = 10 * 1024 * 1024;
+const MAX_FILE_SIZE = MAX_DOCUMENT_BYTES;
 const MAX_REQUIRED_DOCUMENTS = 10;
 const ALLOWED_EXTENSIONS = [
   "pdf",
@@ -199,34 +195,9 @@ const getApproximateLocation = (): Promise<LocationConsentData> =>
     );
   });
 
-const uploadDocument = async (file: File) => {
-  const formData = new FormData();
-  formData.append("file", file);
-  formData.append("upload_preset", CLOUDINARY_DOCUMENT_PRESET);
-
-  const response = await fetch(
-    `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/auto/upload`,
-    { method: "POST", body: formData }
-  );
-  const result = (await response.json()) as {
-    secure_url?: string;
-    public_id?: string;
-    error?: { message?: string };
-  };
-
-  if (!response.ok || !result.secure_url) {
-    throw new Error(result.error?.message || "A document could not be uploaded.");
-  }
-
-  return {
-    name: file.name,
-    url: result.secure_url,
-    publicId: result.public_id || "",
-    size: file.size,
-    mimeType: file.type,
-    status: "Submitted",
-  };
-};
+const uploadDocument = async (file: File, organizationId: string) => ({
+  ...(await uploadFirestoreFile(file, { organizationId, visibility: 'private' })), status: 'Submitted',
+});
 
 const StudentApplication: React.FC = () => {
   const navigate = useNavigate();
@@ -424,7 +395,7 @@ const StudentApplication: React.FC = () => {
     if (file.size > MAX_FILE_SIZE) {
       setToast({
         visible: true,
-        message: `${file.name} exceeds the 10 MB limit.`,
+        message: `${file.name} exceeds the 650 KB limit.`,
         color: "warning",
       });
       return;
@@ -448,7 +419,7 @@ const StudentApplication: React.FC = () => {
       if (file.size > MAX_FILE_SIZE) {
         setToast({
           visible: true,
-          message: `${file.name} exceeds the 10 MB limit.`,
+          message: `${file.name} exceeds the 650 KB limit.`,
           color: "warning",
         });
         return false;
@@ -549,12 +520,12 @@ const StudentApplication: React.FC = () => {
       const submittedRequirements = await Promise.all(
         scholarship.requiredDocuments.map(async (name) => {
           const file = files[name];
-          return uploadDocument(file);
+          return uploadDocument(file, scholarship.organizationId);
         })
       );
       const submittedOptionalFiles = await Promise.all(
         optionalFiles.map(async (file) => ({
-          ...(await uploadDocument(file)),
+          ...(await uploadDocument(file, scholarship.organizationId)),
           requirementType: "Optional",
         }))
       );
@@ -612,7 +583,7 @@ const StudentApplication: React.FC = () => {
         <main className="student-application-layout">
           <button
             type="button"
-            className="student-application-back"
+            className="student-application-back app-back-control"
             onClick={() => navigate("/scholarships")}
           >
             <IonIcon icon={arrowBackOutline} />
@@ -844,7 +815,7 @@ const StudentApplication: React.FC = () => {
                       <h2>Optional supporting documents</h2>
                       <p>
                         You may include up to 10 additional files. Each file
-                        must be 10 MB or smaller.
+                        must be 650 KB or smaller.
                       </p>
                       <input
                         type="file"

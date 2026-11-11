@@ -1,4 +1,7 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import { parseDate } from '../../utils/dates';
+import { reviewApplicationAsAdmin } from '../../services/adminService';
+import { resolveDocumentUrl } from '../../utils/documentUrls';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import {
@@ -24,10 +27,9 @@ import {
 import {
   collection,
   getDocs,
-  doc,
-  updateDoc,
-  orderBy,
-  query,
+  onSnapshot,
+  type QuerySnapshot,
+  type DocumentData,
 } from 'firebase/firestore';
 
 import { db } from '../../Firebase/config';
@@ -60,14 +62,7 @@ const getSubmittedRequirements = (value: unknown): SubmittedRequirement[] => {
     const url = record.url ?? record.downloadURL ?? record.downloadUrl;
     if (typeof url !== 'string') return [];
 
-    try {
-      const parsedUrl = new URL(url);
-      if (parsedUrl.protocol !== 'https:' && parsedUrl.protocol !== 'http:') {
-        return [];
-      }
-    } catch {
-      return [];
-    }
+    if (!resolveDocumentUrl(url)) return [];
 
     return [{
       name:
@@ -142,20 +137,11 @@ const AdminApplications: React.FC = () => {
     }
   };
 
-  const loadApplications = async () => {
+  const loadApplications = useCallback(async (incoming?: QuerySnapshot<DocumentData>) => {
     setLoading(true);
 
     try {
-      const applicationsRef = collection(db, 'applications');
-      let snapshot;
-
-      try {
-        snapshot = await getDocs(
-          query(applicationsRef, orderBy('submittedAt', 'desc'))
-        );
-      } catch {
-        snapshot = await getDocs(applicationsRef);
-      }
+      const snapshot = incoming ?? await getDocs(collection(db, 'applications'));
 
       const loadedApplications: Application[] = snapshot.docs.map(
         (applicationDoc) => {
@@ -206,7 +192,9 @@ const AdminApplications: React.FC = () => {
         }
       );
 
+      loadedApplications.sort((a, b) => (parseDate(b.rawData.submittedAt ?? b.rawData.createdAt)?.getTime() || 0) - (parseDate(a.rawData.submittedAt ?? a.rawData.createdAt)?.getTime() || 0));
       setApplications(loadedApplications);
+      setSelectedApplication(previous => previous ? loadedApplications.find(item => item.id === previous.id) || previous : null);
     } catch (error) {
       console.error('Error loading applications:', error);
       setToastMessage(
@@ -216,11 +204,11 @@ const AdminApplications: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  useEffect(() => {
-    void loadApplications();
   }, []);
+
+  useEffect(() => onSnapshot(collection(db, 'applications'), snapshot => {
+    void loadApplications(snapshot);
+  }, () => { setLoading(false); setToastMessage('Unable to load applications. Please check your connection.'); setShowToast(true); }), [loadApplications]);
 
   const filteredApplications = useMemo(() => {
     const search = searchText.toLowerCase().trim();
@@ -265,10 +253,7 @@ const AdminApplications: React.FC = () => {
     setUpdatingId(application.id);
 
     try {
-      await updateDoc(
-        doc(db, 'applications', application.id),
-        { status: newStatus }
-      );
+      await reviewApplicationAsAdmin(application.id, newStatus);
 
       setApplications((previous) =>
         previous.map((item) =>
@@ -321,7 +306,7 @@ const AdminApplications: React.FC = () => {
           <header className="applications-header">
             <div className="applications-brand">
               <img
-                src="/image/logo3.png"
+                src="/mylogo.png"
                 alt="GrantAccess Logo"
                 className="applications-logo"
                 onError={(event) => {

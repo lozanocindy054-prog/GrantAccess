@@ -1,3 +1,5 @@
+import { useAppBack } from '../../hooks/useAppBack';
+import { resolveDocumentUrl } from '../../utils/documentUrls';
 
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -166,7 +168,7 @@ const getAttachments = (value: unknown): DownloadableFile[] => {
     if (
       typeof record.name !== 'string' ||
       typeof record.url !== 'string' ||
-      !isWebUrl(record.url)
+      !resolveDocumentUrl(record.url)
     ) {
       return [];
     }
@@ -798,6 +800,7 @@ const OrganizationProfilePost: React.FC<{
 // =====================================================
 
 const OrganizationProfile: React.FC = () => {
+  const goBack = useAppBack();
   const { organizationId = '' } = useParams<{
     organizationId: string;
   }>();
@@ -1286,8 +1289,8 @@ const OrganizationProfile: React.FC = () => {
         <main className="public-organization-layout">
           <button
             type="button"
-            className="public-organization-back"
-            onClick={() => navigate(-1)}
+            className="public-organization-back app-back-control"
+            onClick={goBack}
           >
             Back
           </button>

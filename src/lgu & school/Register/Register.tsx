@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   IonContent,
   IonPage,
@@ -32,19 +32,14 @@ import {
   serverTimestamp,
 } from 'firebase/firestore';
 import { auth, db } from '../../Firebase/config';
-import {
-  consumeEmailVerificationToken,
-  sendEmailVerificationCode,
-  verifyEmailVerificationCode,
-} from '../../services/emailVerificationService';
+import { sendVerificationEmail } from '../../services/emailVerificationService';
 
 const Register: React.FC = () => {
   const navigate = useNavigate();
 
   const [step, setStep] = useState(1);
-  const [verificationCode, setVerificationCode] = useState('');
-  const [verificationToken, setVerificationToken] = useState('');
-
+  const contentRef = useRef<HTMLIonContentElement>(null);
+  useEffect(() => { void contentRef.current?.scrollToTop?.(200); }, [step]);
   const [organizationType, setOrganizationType] = useState('');
   const [organizationName, setOrganizationName] = useState('');
   const [address, setAddress] = useState('');
@@ -90,7 +85,7 @@ const Register: React.FC = () => {
     return true;
   };
 
-  const validateStepTwo = () => {
+  const validateRepresentative = () => {
     if (!representativeName.trim() || !position.trim()) {
       showMessage('Please complete the representative information.');
       return false;
@@ -99,7 +94,7 @@ const Register: React.FC = () => {
     return true;
   };
 
-  const validateStepThree = () => {
+  const validatePassword = () => {
     if (!password || !confirmPassword) {
       showMessage('Please enter and confirm your password.');
       return false;
@@ -118,88 +113,22 @@ const Register: React.FC = () => {
     return true;
   };
 
-  const requestEmailCode = async () => {
-    const email = organizationEmail.trim().toLowerCase();
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      showMessage('Please enter a valid organization email.');
-      return;
-    }
-
-    setIsSubmitting(true);
-    try {
-      await sendEmailVerificationCode(email);
-      setOrganizationEmail(email);
-      setVerificationCode('');
-      setVerificationToken('');
-      setStep(2);
-      showMessage('Verification code sent. Check your email.');
-    } catch (error) {
-      showMessage(
-        error instanceof Error
-          ? error.message
-          : 'Unable to send the verification code.'
-      );
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const verifyEmailCode = async () => {
-    if (verificationToken) {
-      setStep(3);
-      return;
-    }
-
-    if (!/^\d{6}$/.test(verificationCode.trim())) {
-      showMessage('Enter the 6-digit code sent to your email.');
-      return;
-    }
-
-    setIsSubmitting(true);
-    try {
-      const token = await verifyEmailVerificationCode(
-        organizationEmail.trim().toLowerCase(),
-        verificationCode.trim()
-      );
-      setVerificationToken(token);
-      setStep(3);
-      showMessage('Email verified successfully.');
-    } catch (error) {
-      showMessage(
-        error instanceof Error
-          ? error.message
-          : 'Unable to verify this code. Please try again.'
-      );
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleNext = async () => {
+  const handleNext = () => {
     if (isSubmitting) return;
-
     if (step === 1) {
-      await requestEmailCode();
-    } else if (step === 2) {
-      await verifyEmailCode();
-    } else if (step === 3 && validateStepThree()) {
-      setStep(4);
-    } else if (step === 4 && validateOrganization()) {
-      setStep(5);
-    }
-
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(organizationEmail.trim())) {
+        showMessage('Please enter a valid organization email.'); return;
+      }
+      setStep(2);
+    } else if (step === 2 && validatePassword()) setStep(3);
+    else if (step === 3 && validateOrganization()) setStep(4);
   };
 
   const handlePrevious = () => {
     if (step > 1) {
-      if (step === 2) {
-        setVerificationCode('');
-        setVerificationToken('');
+
+      setStep(step === 2 ? 1 : step - 1);
       }
-      setStep(step - 1);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
   };
 
   const handleSubmit = async (
@@ -208,25 +137,21 @@ const Register: React.FC = () => {
     event.preventDefault();
 
     if (isSubmitting) return;
-    if (step < 5) {
+    if (step < 4) {
       await handleNext();
       return;
     }
 
     if (
-      !validateStepThree() ||
+      !validatePassword() ||
       !validateOrganization() ||
-      !validateStepTwo()
+      !validateRepresentative()
     ) return;
     if (!acceptedTerms) {
       showMessage('Please accept the terms and conditions.');
       return;
     }
-    if (!verificationToken) {
-      showMessage('Verify your organization email before continuing.');
-      setStep(1);
-      return;
-    }
+
 
     setIsSubmitting(true);
 
@@ -236,7 +161,7 @@ const Register: React.FC = () => {
     try {
       const email = organizationEmail.trim().toLowerCase();
 
-      await consumeEmailVerificationToken(email, verificationToken);
+
 
       // Create account in Firebase Authentication.
       const credential = await createUserWithEmailAndPassword(
@@ -259,18 +184,15 @@ const Register: React.FC = () => {
         position: position.trim(),
         role: 'lgu_school',
         status: 'active',
+        emailVerified: false,
         createdAt: serverTimestamp(),
       });
 
       profileSaved = true;
 
-      showMessage(
-        'Registration successful! Your organization account is ready.'
-      );
-
-      window.setTimeout(() => {
-        navigate('/lgu-login');
-      }, 1500);
+      try { await sendVerificationEmail(createdUser); }
+      catch { /* The verification page allows retrying without recreating the account. */ }
+      navigate('/verify-email', { replace: true });
     } catch (error: unknown) {
       console.error('LGU/School registration error:', error);
 
@@ -337,12 +259,11 @@ const Register: React.FC = () => {
 
   return (
     <IonPage>
-      <IonContent className="lgu-register-content">
+      <IonContent ref={contentRef} className="lgu-register-content">
         <div className="lgu-register-container">
           <header className="lgu-register-header">
             <div className="lgu-brand">
-              <div className="lgu-brand-icon">
-                <IonIcon icon={businessOutline} />
+              <div className="lgu-brand-icon"><img className="grantaccess-brand-image" src="/mylogo.png" alt="GrantAccess" />
               </div>
 
               <div className="lgu-header-copy">
@@ -365,7 +286,7 @@ const Register: React.FC = () => {
             </div>
 
             <div className="lgu-step-progress">
-              {[1, 2, 3, 4, 5].map((number) => (
+              {[1, 2, 3, 4].map((number) => (
                 <React.Fragment key={number}>
                   <div
                     className={`lgu-step-item ${
@@ -388,16 +309,14 @@ const Register: React.FC = () => {
                       {number === 1
                         ? 'Email'
                         : number === 2
-                        ? 'Verify'
-                        : number === 3
                         ? 'Password'
-                        : number === 4
+                        : number === 3
                         ? 'Organization'
                         : 'Representative'}
                     </span>
                   </div>
 
-                  {number < 5 && (
+                  {number < 4 && (
                     <div
                       className={`lgu-step-line ${
                         step > number ? 'completed' : ''
@@ -414,10 +333,10 @@ const Register: React.FC = () => {
                   <div className="lgu-section-heading">
                     <IonIcon icon={mailOutline} />
                     <div>
-                      <h3>Verify your email</h3>
+                      <h3>Organization email</h3>
                       <p>
-                        Enter your official organization email. We will send
-                        a 6-digit code before you set a password.
+                        Enter your official organization email. After registration,
+                        we will email a link to verify it.
                       </p>
                     </div>
                   </div>
@@ -440,56 +359,13 @@ const Register: React.FC = () => {
                       />
                     </div>
                     <p className="lgu-field-hint">
-                      This verified email will also be used to sign in.
+                      Use this email to sign in and receive your verification link.
                     </p>
                   </div>
                 </section>
               )}
 
-              {step === 2 && (
-                <section className="lgu-form-section">
-                  <div className="lgu-section-heading">
-                    <IonIcon icon={mailOutline} />
-                    <div>
-                      <h3>Enter your verification code</h3>
-                      <p>We sent a code to {organizationEmail}.</p>
-                    </div>
-                  </div>
-                  <div className="lgu-field">
-                    <label className="lgu-field-label">
-                      6-Digit Code <span>*</span>
-                    </label>
-                    <div className="lgu-input-wrapper">
-                      <IonIcon icon={mailOutline} />
-                      <input
-                        className="lgu-input"
-                        type="text"
-                        inputMode="numeric"
-                        autoComplete="one-time-code"
-                        maxLength={6}
-                        placeholder="Enter code"
-                        value={verificationCode}
-                        onChange={(event) =>
-                          setVerificationCode(
-                            event.target.value.replace(/\D/g, '').slice(0, 6)
-                          )
-                        }
-                        required
-                      />
-                    </div>
-                    <button
-                      type="button"
-                      className="lgu-resend-code"
-                      onClick={requestEmailCode}
-                      disabled={isSubmitting}
-                    >
-                      Resend code
-                    </button>
-                  </div>
-                </section>
-              )}
-
-              {step === 4 && (
+              {step === 3 && (
                 <section className="lgu-form-section">
                   <div className="lgu-section-heading">
                     <IonIcon icon={businessOutline} />
@@ -616,7 +492,7 @@ const Register: React.FC = () => {
                 </section>
               )}
 
-              {step === 5 && (
+              {step === 4 && (
                 <section className="lgu-form-section">
                   <div className="lgu-section-heading">
                     <IonIcon icon={personOutline} />
@@ -677,7 +553,7 @@ const Register: React.FC = () => {
                 </section>
               )}
 
-              {step === 3 && (
+              {step === 2 && (
                 <section className="lgu-form-section">
                   <div className="lgu-section-heading">
                     <IonIcon icon={lockClosedOutline} />
@@ -783,7 +659,7 @@ const Register: React.FC = () => {
                 </section>
               )}
 
-              {step === 5 && (
+              {step === 4 && (
                 <label className="lgu-terms">
                   <input
                     type="checkbox"
@@ -816,7 +692,7 @@ const Register: React.FC = () => {
                   </button>
                 )}
 
-                {step < 5 ? (
+                {step < 4 ? (
                   <button
                     type="button"
                     className="lgu-step-button lgu-next-button"
@@ -825,13 +701,7 @@ const Register: React.FC = () => {
                   >
                     {isSubmitting
                       ? 'Please wait...'
-                      : step === 1
-                      ? 'Send Verification Code'
-                      : step === 2
-                      ? 'Verify Email'
-                      : step === 3
-                      ? 'Continue'
-                      : 'Next'}
+                      : 'Continue'}
                   </button>
                 ) : (
                   <button

@@ -1,6 +1,7 @@
+import { logoutAdministrator } from '../../services/adminService';
 
 import React, { useCallback, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import {
   IonPage,
@@ -119,6 +120,7 @@ const managementCards = [
 
 const AdminDashboard: React.FC = () => {
   const navigate = useNavigate();
+  const { pathname } = useLocation();
 
   const [stats, setStats] = useState<DashboardStats>(initialStats);
   const [loading, setLoading] = useState(true);
@@ -126,8 +128,8 @@ const AdminDashboard: React.FC = () => {
   const [toast, setToast] = useState('');
 
   // LOAD STATISTICS FROM FIRESTORE
-  const loadDashboard = useCallback(async () => {
-    setLoading(true);
+  const loadDashboard = useCallback(async (silent = false) => {
+    if (!silent) setLoading(true);
     setError('');
 
     try {
@@ -193,8 +195,20 @@ const AdminDashboard: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    void loadDashboard();
-  }, [loadDashboard]);
+    if (pathname !== '/admin-dashboard') return;
+    let busy = false;
+    let initial = true;
+    const refresh = () => {
+      if (busy || document.visibilityState !== 'visible') return;
+      busy = true;
+      const silent = !initial; initial = false;
+      void loadDashboard(silent).finally(() => { busy = false; });
+    };
+    refresh();
+    const timer = window.setInterval(refresh, 60_000);
+    window.addEventListener('focus', refresh); document.addEventListener('visibilitychange', refresh);
+    return () => { window.clearInterval(timer); window.removeEventListener('focus', refresh); document.removeEventListener('visibilitychange', refresh); };
+  }, [loadDashboard, pathname]);
 
   // NAVIGATION
   const handleNavigation = (path: string) => {
@@ -261,8 +275,7 @@ const AdminDashboard: React.FC = () => {
         {/* SIDEBAR */}
         <aside className="admin-sidebar">
           <div className="admin-brand">
-            <div className="admin-brand-icon">
-              <IonIcon icon={schoolOutline} />
+            <div className="admin-brand-icon"><img className="grantaccess-brand-image" src="/mylogo.png" alt="GrantAccess" />
             </div>
 
             <div>
@@ -293,11 +306,7 @@ const AdminDashboard: React.FC = () => {
           <button
             type="button"
             className="admin-nav-item admin-logout"
-            onClick={() =>
-              setToast(
-                'Hindi pa naka-connect ang logout button sa Firebase Authentication.'
-              )
-            }
+            onClick={() => void logoutAdministrator().then(() => navigate('/admin-login', { replace: true })).catch(() => setToast('Unable to sign out. Please retry.'))}
           >
             <IonIcon icon={logOutOutline} />
             <span>Logout</span>

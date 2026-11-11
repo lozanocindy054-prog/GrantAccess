@@ -25,6 +25,7 @@ import { auth, db } from '../../Firebase/config';
 import StudentHeader from '../../components/StudentHeader';
 import StudentBottomNav from '../../components/StudentBottomNav';
 import './Profile.css';
+import { encodeProfileImage, MAX_IMAGE_BYTES } from '../../services/firestoreFileService';
 
 interface StudentProfileData {
   fullName: string;
@@ -49,9 +50,6 @@ const emptyProfile: StudentProfileData = {
   address: '',
   photoURL: '',
 };
-
-const CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
-const UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
 
 const Profile: React.FC = () => {
   const navigate = useNavigate();
@@ -174,15 +172,12 @@ const Profile: React.FC = () => {
       return;
     }
 
-    if (file.size > 5 * 1024 * 1024) {
-      setError('Your image must be 5 MB or smaller.');
+    if (file.size > MAX_IMAGE_BYTES) {
+      setError('Your image must be 128 KB or smaller.');
       return;
     }
 
-    if (!CLOUD_NAME || !UPLOAD_PRESET) {
-      setError('Cloudinary is not configured. Check your .env file and restart the app.');
-      return;
-    }
+
 
     const user = auth.currentUser;
 
@@ -196,30 +191,7 @@ const Profile: React.FC = () => {
       setError('');
       setMessage('');
 
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('upload_preset', UPLOAD_PRESET);
-      formData.append('folder', 'grantaccess/profile-pictures');
-
-      const response = await fetch(
-        `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,
-        {
-          method: 'POST',
-          body: formData,
-        }
-      );
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.error?.message || 'Cloudinary upload failed.');
-      }
-
-      const photoURL = result.secure_url;
-
-      if (!photoURL) {
-        throw new Error('Cloudinary did not return an image URL.');
-      }
+      const photoURL = await encodeProfileImage(file);
 
       await setDoc(
         doc(db, 'students', user.uid),
@@ -437,7 +409,7 @@ const Profile: React.FC = () => {
                   </span>
 
                   <p className="profile-photo-hint">
-                    JPG, PNG, or WebP · Maximum 5 MB
+                    JPG, PNG, or WebP · Maximum 128 KB
                   </p>
                 </div>
 

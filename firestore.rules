@@ -1,0 +1,1003 @@
+
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // =====================================
+    // AUTHENTICATION HELPERS
+    // =====================================
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn()
+        && request.auth.token.admin == true;
+    }
+
+    function isOwner(uid) {
+      return isSignedIn()
+        && request.auth.uid == uid;
+    }
+
+    function ownsScholarship() {
+      return isSignedIn()
+        && resource.data.organizationId == request.auth.uid;
+    }
+
+    function ownsNewScholarship() {
+      return isSignedIn()
+        && request.resource.data.organizationId == request.auth.uid;
+    }
+
+    function isNotificationOwner() {
+      return isSignedIn()
+        && (
+          resource.data.studentId == request.auth.uid
+          || resource.data.userId == request.auth.uid
+          || resource.data.recipientId == request.auth.uid
+          || resource.data.uid == request.auth.uid
+        );
+    }
+
+    function isOrganizationUid(uid) {
+      return uid is string
+        && uid.size() > 0
+        && exists(
+          /databases/$(database)/documents/organizations/$(uid)
+        )
+        && get(
+          /databases/$(database)/documents/organizations/$(uid)
+        ).data.role == 'lgu_school';
+    }
+
+    function isRegisteredOrganization() {
+      return isSignedIn()
+        && isOrganizationUid(request.auth.uid);
+    }
+
+    function isExistingStudent(studentId) {
+      return studentId is string
+        && studentId.size() > 0
+        && exists(
+          /databases/$(database)/documents/students/$(studentId)
+        );
+    }
+
+    // =====================================
+    // STUDENT PROFILES
+    // =====================================
+
+
+    // Spark file storage: immutable payloads with explicit sharing.
+    match /uploadedFiles/{fileId} {
+      allow get: if isSignedIn() && (
+        isAdmin() || resource.data.ownerId == request.auth.uid
+        || resource.data.organizationId == request.auth.uid
+        || resource.data.visibility == 'public'
+      );
+      allow list: if false;
+      allow create: if isSignedIn()
+        && request.auth.token.email_verified == true
+        && request.resource.data.keys().hasOnly(['ownerId', 'organizationId', 'visibility', 'name', 'size', 'mimeType', 'dataBase64', 'createdAt'])
+        && request.resource.data.ownerId == request.auth.uid
+        && request.resource.data.organizationId is string
+        && request.resource.data.organizationId.size() > 0
+        && request.resource.data.visibility in ['public', 'private']
+        && (request.resource.data.visibility == 'private'
+          || (isRegisteredOrganization() && request.resource.data.organizationId == request.auth.uid))
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0 && request.resource.data.name.size() <= 180
+        && request.resource.data.size is int
+        && request.resource.data.size > 0 && request.resource.data.size <= 665600
+        && request.resource.data.mimeType in ['application/pdf', 'image/jpeg', 'image/png', 'image/webp', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
+        && request.resource.data.dataBase64 is string
+        && request.resource.data.dataBase64.size() > 0
+        && request.resource.data.dataBase64.size() <= 887468
+        && request.resource.data.createdAt == request.time;
+      allow update: if isRegisteredOrganization()
+        && resource.data.ownerId == request.auth.uid
+        && resource.data.organizationId == request.auth.uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['visibility'])
+        && request.resource.data.visibility in ['public', 'private'];
+      allow delete: if isSignedIn() && (isAdmin() || resource.data.ownerId == request.auth.uid);
+    }
+
+    match /students/{studentId} {
+
+      // A student can access their own profile.
+      // Admin can access student profiles.
+      allow get: if isOwner(studentId) || isAdmin();
+
+      // Do not expose the entire students collection
+      // to organizations. Use dashboardStats instead.
+      allow list: if isAdmin();
+
+      allow create: if isOwner(studentId)
+        && request.resource.data.role == 'student';
+
+      allow update: if isOwner(studentId)
+        && request.resource.data.role == resource.data.role
+        && request.resource.data.get('uid', studentId) == studentId;
+
+      allow delete: if isOwner(studentId) || isAdmin();
+    }
+
+    // =====================================
+    // USER PROFILES
+    // =====================================
+
+    match /users/{userId} {
+
+      allow get: if isOwner(userId) || isAdmin();
+
+      allow list: if isAdmin();
+
+      allow create: if isOwner(userId);
+
+      allow update: if isOwner(userId)
+        && request.resource.data.role == resource.data.role;
+
+      allow delete: if isAdmin();
+
+      match /notifications/{notificationId} {
+
+        allow get, list: if isOwner(userId) || isAdmin();
+
+        allow create: if isOwner(userId) || isAdmin();
+
+        allow update: if isOwner(userId)
+          && request.resource.data.diff(resource.data)
+            .affectedKeys()
+            .hasOnly(['isRead', 'read', 'readAt']);
+
+        allow delete: if isOwner(userId) || isAdmin();
+      }
+    }
+
+    // =====================================
+    // ORGANIZATIONS
+    // =====================================
+
+    match /organizations/{organizationId} {
+
+      allow get, list: if isSignedIn();
+
+      allow create: if isOwner(organizationId)
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.role == 'lgu_school'
+        && request.resource.data.organizationType in ['LGU', 'School']
+        && request.resource.data.organizationName is string
+        && request.resource.data.address is string
+        && request.resource.data.organizationEmail is string
+        && request.resource.data.contactNumber is string
+        && request.resource.data.representativeName is string
+        && request.resource.data.position is string;
+
+      allow update: if isOwner(organizationId)
+        && request.resource.data.uid == resource.data.uid
+        && request.resource.data.role == resource.data.role;
+
+      allow delete: if isAdmin();
+    }
+
+    // =====================================
+    // SCHOLARSHIPS
+    // =====================================
+
+    match /scholarships/{scholarshipId} {
+
+      allow get, list: if isAdmin()
+        || (
+          isSignedIn()
+          && resource.data.status == 'published'
+        )
+        || ownsScholarship();
+
+      allow create: if isAdmin()
+        || (
+          ownsNewScholarship()
+          && request.resource.data.status in [
+            'draft',
+            'pending',
+            'scheduled',
+            'published'
+          ]
+        );
+
+      allow update: if isAdmin()
+        || (
+          ownsScholarship()
+          && ownsNewScholarship()
+          && request.resource.data.status in [
+            'draft',
+            'pending',
+            'scheduled',
+            'published'
+          ]
+        )
+        || (
+          isSignedIn()
+          && resource.data.status == 'published'
+          && request.resource.data.organizationId == resource.data.organizationId
+          && request.resource.data.diff(resource.data)
+            .affectedKeys().hasOnly(['viewCount'])
+          && request.resource.data.viewCount is number
+          && request.resource.data.viewCount
+            == resource.data.get('viewCount', 0) + 1
+        );
+
+      allow delete: if isAdmin() || ownsScholarship();
+    }
+
+    // =====================================
+    // ORGANIZATION POSTS
+    // =====================================
+
+    match /organizationPosts/{postId} {
+
+      allow get, list: if isAdmin()
+        || (
+          isSignedIn()
+          && resource.data.status == 'published'
+        )
+        || (
+          isSignedIn()
+          && resource.data.organizationId == request.auth.uid
+        );
+
+      allow create: if isAdmin()
+        || (
+          isSignedIn()
+          && request.resource.data.organizationId == request.auth.uid
+          && request.resource.data.status in [
+            'draft',
+            'scheduled',
+            'published'
+          ]
+        );
+
+      allow update: if isAdmin()
+        || (
+          isSignedIn()
+          && resource.data.organizationId == request.auth.uid
+          && request.resource.data.organizationId == resource.data.organizationId
+        )
+        || (
+          isSignedIn()
+          && resource.data.status == 'published'
+          && request.resource.data.organizationId == resource.data.organizationId
+          && (
+            (
+              request.resource.data.diff(resource.data)
+                .affectedKeys().hasOnly(['reactionCount'])
+              && request.resource.data.reactionCount is number
+              && request.resource.data.reactionCount >= 0
+              && request.resource.data.reactionCount
+                <= resource.data.get('reactionCount', 0) + 1
+              && request.resource.data.reactionCount
+                >= resource.data.get('reactionCount', 0) - 1
+            )
+            ||
+            (
+              request.resource.data.diff(resource.data)
+                .affectedKeys().hasOnly(['commentCount'])
+              && request.resource.data.commentCount is number
+              && request.resource.data.commentCount
+                == resource.data.get('commentCount', 0) + 1
+            )
+            ||
+            (
+              request.resource.data.diff(resource.data)
+                .affectedKeys().hasOnly(['shareCount'])
+              && request.resource.data.shareCount is number
+              && request.resource.data.shareCount
+                == resource.data.get('shareCount', 0) + 1
+            )
+            ||
+            (
+              request.resource.data.diff(resource.data)
+                .affectedKeys().hasOnly(['viewCount'])
+              && request.resource.data.viewCount is number
+              && request.resource.data.viewCount
+                == resource.data.get('viewCount', 0) + 1
+            )
+          )
+        );
+
+      allow delete: if isAdmin()
+        || (
+          isSignedIn()
+          && resource.data.organizationId == request.auth.uid
+        );
+
+      // POST COMMENTS
+
+      match /comments/{commentId} {
+
+        function canAccessPostComments() {
+          return isSignedIn()
+            && (
+              get(
+                /databases/$(database)/documents/organizationPosts/$(postId)
+              ).data.status == 'published'
+              || get(
+                /databases/$(database)/documents/organizationPosts/$(postId)
+              ).data.organizationId == request.auth.uid
+              || isAdmin()
+            );
+        }
+
+        allow get, list: if canAccessPostComments();
+
+        allow create: if canAccessPostComments()
+          && request.resource.data.studentId == request.auth.uid
+          && request.resource.data.studentName is string
+          && request.resource.data.text is string
+          && request.resource.data.text.size() > 0
+          && request.resource.data.text.size() <= 1000;
+
+        allow update: if isAdmin()
+          || (
+            isSignedIn()
+            && resource.data.studentId == request.auth.uid
+            && request.resource.data.studentId == resource.data.studentId
+            && request.resource.data.diff(resource.data)
+              .affectedKeys().hasOnly(['text'])
+            && request.resource.data.text is string
+            && request.resource.data.text.size() > 0
+            && request.resource.data.text.size() <= 1000
+          );
+
+        allow delete: if isAdmin()
+          || (
+            isSignedIn()
+            && resource.data.studentId == request.auth.uid
+          );
+      }
+
+      // POST REACTIONS
+
+      match /reactions/{studentId} {
+
+        allow get: if isSignedIn()
+          && request.auth.uid == studentId;
+
+        allow list: if false;
+
+        allow create: if isSignedIn()
+          && request.auth.uid == studentId
+          && request.resource.data.studentId == request.auth.uid;
+
+        allow delete: if isSignedIn()
+          && request.auth.uid == studentId
+          && resource.data.studentId == request.auth.uid;
+
+        allow update: if false;
+      }
+    }
+
+    // =====================================
+    // ORGANIZATION UPDATES
+    // =====================================
+
+    match /organizationUpdates/{updateId} {
+
+      allow get, list: if isAdmin()
+        || (
+          isSignedIn()
+          && resource.data.status == 'published'
+        )
+        || (
+          isSignedIn()
+          && resource.data.organizationId == request.auth.uid
+        );
+
+      allow create: if isAdmin()
+        || (
+          isSignedIn()
+          && request.resource.data.organizationId == request.auth.uid
+        );
+
+      allow update: if isAdmin()
+        || (
+          isSignedIn()
+          && resource.data.organizationId == request.auth.uid
+          && request.resource.data.organizationId == resource.data.organizationId
+        );
+
+      allow delete: if isAdmin()
+        || (
+          isSignedIn()
+          && resource.data.organizationId == request.auth.uid
+        );
+    }
+
+    // =====================================
+    // GENERAL NOTIFICATIONS
+    // =====================================
+
+    match /notifications/{notificationId} {
+
+      allow get, list: if isAdmin() || isNotificationOwner();
+
+      allow create: if isAdmin();
+
+      allow update: if isAdmin()
+        || (
+          isNotificationOwner()
+          && request.resource.data.diff(resource.data)
+            .affectedKeys()
+            .hasOnly([
+              'isRead',
+              'read',
+              'readAt',
+              'updatedAt'
+            ])
+        );
+
+      allow delete: if isAdmin() || isNotificationOwner();
+    }
+
+    // =====================================
+    // STUDENT NOTIFICATIONS
+    // =====================================
+
+    match /studentAnnouncements/{postId} {
+      function validAnnouncement() {
+        let data = request.resource.data;
+        let post = get(/databases/$(database)/documents/organizationPosts/$(postId));
+        return isRegisteredOrganization()
+          && post.data.organizationId == request.auth.uid
+          && post.data.status == 'published'
+          && data.organizationId == request.auth.uid && data.postId == postId
+          && data.keys().hasOnly(['organizationId', 'organizationName', 'organizationLogo', 'title', 'message', 'type', 'scholarshipId', 'postId', 'scholarshipTitle', 'amount', 'deadline', 'imageUrl', 'createdAt'])
+          && data.title is string && data.title.size() > 0 && data.title.size() <= 200
+          && data.message is string && data.message.size() > 0 && data.message.size() <= 600
+          && data.type in ['scholarship', 'announcement']
+          && data.createdAt == request.time;
+      }
+      allow get, list: if isSignedIn();
+      allow create: if validAnnouncement();
+      allow update: if resource.data.organizationId == request.auth.uid && validAnnouncement();
+      allow delete: if isAdmin() || (isSignedIn() && resource.data.organizationId == request.auth.uid);
+    }
+
+    match /studentAnnouncementReads/{studentId}/items/{postId} {
+      allow get, list: if isOwner(studentId);
+      allow create, update: if isOwner(studentId)
+        && request.resource.data.keys().hasOnly(['isRead', 'readAt'])
+        && request.resource.data.isRead == true
+        && request.resource.data.readAt == request.time
+        && exists(/databases/$(database)/documents/studentAnnouncements/$(postId));
+      allow delete: if isOwner(studentId);
+    }
+
+    match /organizationApplicants/{organizationId}/students/{studentId} {
+      function validApplicantLink() {
+        let data = request.resource.data;
+        let application = get(/databases/$(database)/documents/applications/$(data.applicationId));
+        return isOwner(organizationId) && isRegisteredOrganization()
+          && data.keys().hasOnly(['applicationId'])
+          && data.applicationId is string
+          && application.data.organizationId == organizationId
+          && application.data.studentId == studentId;
+      }
+      allow get: if isOwner(organizationId) || isOwner(studentId) || isAdmin();
+      allow list: if false;
+      allow create, update: if validApplicantLink();
+      allow delete: if isOwner(organizationId) || isOwner(studentId) || isAdmin();
+    }
+
+    match /studentNotifications/{notificationId} {
+
+      function isStudentNotificationOwner() {
+        return isSignedIn()
+          && resource.data.studentId is string
+          && resource.data.studentId == request.auth.uid;
+      }
+
+      function isValidStudentNotification() {
+        let data = request.resource.data;
+
+        return data.studentId is string
+          && data.studentId.size() > 0
+          && data.organizationId is string
+          && data.organizationId == request.auth.uid
+          && data.title is string
+          && data.title.size() > 0
+          && data.title.size() <= 200
+          && data.message is string
+          && data.message.size() > 0
+          && data.message.size() <= 600
+          && data.type in ['scholarship', 'announcement']
+          && data.isRead == false;
+      }
+
+      allow get, list: if isAdmin()
+        || isStudentNotificationOwner();
+
+      allow create: if isAdmin()
+        || (
+          isRegisteredOrganization()
+          && isValidStudentNotification()
+        );
+
+      allow update: if isStudentNotificationOwner()
+        && request.resource.data.studentId == resource.data.studentId
+        && request.resource.data.diff(resource.data)
+          .affectedKeys()
+          .hasOnly(['isRead', 'read', 'readAt', 'updatedAt'])
+        && (
+          !('isRead' in request.resource.data)
+          || request.resource.data.isRead is bool
+        );
+
+      allow delete: if isAdmin();
+    }
+
+    // =====================================
+    // STUDENT PRESENCE
+    // =====================================
+
+    match /studentPresence/{studentId} {
+      function isApplicantOrganization() {
+        let link = /databases/$(database)/documents/organizationApplicants/$(request.auth.uid)/students/$(studentId);
+        return isRegisteredOrganization() && exists(link)
+          && get(/databases/$(database)/documents/applications/$(get(link).data.applicationId)).data.organizationId == request.auth.uid
+          && get(/databases/$(database)/documents/applications/$(get(link).data.applicationId)).data.studentId == studentId;
+      }
+      allow get: if isOwner(studentId) || isAdmin()
+        || (isSignedIn() && isApplicantOrganization());
+
+      allow list: if false;
+
+      allow create: if isSignedIn()
+        && request.auth.uid == studentId
+        && request.resource.data.studentId == request.auth.uid
+        && request.resource.data.online is bool
+        && request.resource.data.lastActive == request.time;
+
+      allow update: if isSignedIn()
+        && request.auth.uid == studentId
+        && request.resource.data.studentId == request.auth.uid
+        && request.resource.data.online is bool
+        && request.resource.data.lastActive == request.time
+        && request.resource.data.diff(resource.data)
+          .affectedKeys()
+          .hasOnly([
+            'studentId',
+            'online',
+            'lastActive'
+          ]);
+
+      allow delete: if isAdmin();
+    }
+
+    // =====================================
+    // APPLICATIONS
+    // =====================================
+
+    match /applications/{applicationId} {
+
+      allow get, list: if isAdmin()
+        || (
+          isSignedIn()
+          && resource.data.studentId == request.auth.uid
+        )
+        || (
+          isSignedIn()
+          && resource.data.organizationId == request.auth.uid
+        );
+
+      allow create: if isSignedIn()
+        && request.resource.data.studentId == request.auth.uid;
+
+      allow update: if isAdmin()
+        || (
+          isSignedIn()
+          && resource.data.studentId == request.auth.uid
+          && request.resource.data.studentId == request.auth.uid
+          && request.resource.data.diff(resource.data)
+            .affectedKeys()
+            .hasOnly(['updatedAt', 'status'])
+        )
+        || (
+          isRegisteredOrganization()
+          && resource.data.organizationId == request.auth.uid
+          && request.resource.data.organizationId == resource.data.organizationId
+          && request.resource.data.studentId == resource.data.studentId
+          && request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(['updatedAt', 'status', 'remarks', 'rejectionReason', 'reviewedAt', 'reviewedBy'])
+          && request.resource.data.status in ['Pending', 'Under Review', 'For Compliance', 'Approved', 'Rejected']
+          && request.resource.data.remarks is string && request.resource.data.remarks.size() <= 2000
+          && request.resource.data.rejectionReason is string && request.resource.data.rejectionReason.size() <= 2000
+          && request.resource.data.reviewedBy == request.auth.uid
+          && request.resource.data.reviewedAt == request.time
+          && request.resource.data.updatedAt == request.time
+        );
+
+      allow delete: if isAdmin();
+    }
+
+    // =====================================
+    // SAVED SCHOLARSHIPS
+    // =====================================
+
+    match /savedScholarships/{savedId} {
+
+      allow get: if isAdmin()
+        || (
+          isSignedIn()
+          && resource.data.studentId == request.auth.uid
+        );
+
+      allow list: if isAdmin()
+        || (
+          isSignedIn()
+          && resource.data.studentId == request.auth.uid
+        );
+
+      allow create: if isSignedIn()
+        && request.resource.data.studentId == request.auth.uid;
+
+      allow update: if isSignedIn()
+        && resource.data.studentId == request.auth.uid
+        && request.resource.data.studentId == resource.data.studentId;
+
+      allow delete: if isAdmin()
+        || (
+          isSignedIn()
+          && resource.data.studentId == request.auth.uid
+        );
+    }
+
+    // =====================================
+    // SAVED POSTS
+    // =====================================
+
+    match /savedPosts/{savedPostId} {
+
+      allow get: if isSignedIn()
+        && savedPostId.matches(
+          '^' + request.auth.uid + '_[^/]+$'
+        );
+
+      allow list: if isAdmin()
+        || (
+          isSignedIn()
+          && resource.data.studentId == request.auth.uid
+        );
+
+      allow create: if isSignedIn()
+        && request.resource.data.studentId == request.auth.uid
+        && request.resource.data.postId is string
+        && savedPostId == request.auth.uid
+          + '_' + request.resource.data.postId;
+
+      allow update: if isSignedIn()
+        && resource.data.studentId == request.auth.uid
+        && request.resource.data.studentId == request.auth.uid
+        && request.resource.data.postId == resource.data.postId;
+
+      allow delete: if isAdmin()
+        || (
+          isSignedIn()
+          && resource.data.studentId == request.auth.uid
+        );
+    }
+
+    // =====================================
+    // SAVED ORGANIZATIONS
+    // =====================================
+
+    match /savedOrganizations/{savedId} {
+
+      allow get: if isSignedIn()
+        && savedId.matches(
+          '^' + request.auth.uid + '_[^/]+$'
+        );
+
+      allow list: if isSignedIn()
+        && resource.data.studentId == request.auth.uid;
+
+      allow create: if isSignedIn()
+        && request.resource.data.studentId == request.auth.uid
+        && request.resource.data.organizationId is string
+        && savedId == request.auth.uid + '_'
+          + request.resource.data.organizationId;
+
+      allow update: if isSignedIn()
+        && resource.data.studentId == request.auth.uid
+        && request.resource.data.studentId == request.auth.uid
+        && request.resource.data.organizationId == resource.data.organizationId;
+
+      allow delete: if isSignedIn()
+        && resource.data.studentId == request.auth.uid;
+    }
+
+    // =====================================
+    // ORGANIZATION FOLLOWS
+    // =====================================
+
+    match /organizationFollows/{followId} {
+
+      allow get: if isSignedIn()
+        && followId.matches(
+          '^.*_' + request.auth.uid + '$'
+        );
+
+      allow list: if isSignedIn()
+        && resource.data.studentId == request.auth.uid;
+
+      allow create: if isSignedIn()
+        && request.resource.data.studentId == request.auth.uid
+        && request.resource.data.organizationId is string
+        && followId == request.resource.data.organizationId
+          + '_' + request.auth.uid;
+
+      allow update: if isSignedIn()
+        && resource.data.studentId == request.auth.uid
+        && request.resource.data.studentId == request.auth.uid
+        && request.resource.data.organizationId == resource.data.organizationId;
+
+      allow delete: if isSignedIn()
+        && resource.data.studentId == request.auth.uid;
+    }
+
+    // =====================================
+    // MESSAGING HELPERS
+    // =====================================
+
+    function isConversationParticipant(data) {
+      return isSignedIn()
+        && (
+          data.studentId == request.auth.uid
+          || data.organizationId == request.auth.uid
+        );
+    }
+
+    function validConversationData(data) {
+      return data.studentId is string
+        && data.studentId.size() > 0
+        && data.organizationId is string
+        && data.organizationId.size() > 0
+        && data.studentId != data.organizationId
+        && data.studentName is string
+        && data.organizationName is string
+        && data.scholarshipTitle is string
+        && data.lastMessage is string
+        && data.lastMessage.size() > 0
+        && data.lastMessage.size() <= 2000
+        && data.lastSenderId is string
+        && data.unreadCounts is map;
+    }
+
+    function isValidNewConversation() {
+      let data = request.resource.data;
+      let studentId = data.studentId;
+      let organizationId = data.organizationId;
+      let unread = data.unreadCounts;
+
+      return validConversationData(data)
+        && isExistingStudent(studentId)
+        && isOrganizationUid(organizationId)
+        && unread.keys().hasAll([studentId, organizationId])
+        && unread.keys().hasOnly([studentId, organizationId])
+        && (
+          (
+            request.auth.uid == studentId
+            && unread.get(studentId, -1) == 0
+            && unread.get(organizationId, -1) == 1
+          )
+          ||
+          (
+            request.auth.uid == organizationId
+            && isRegisteredOrganization()
+            && unread.get(organizationId, -1) == 0
+            && unread.get(studentId, -1) == 1
+          )
+        )
+        && data.lastSenderId == request.auth.uid
+        && data.lastMessageAt == request.time
+        && data.createdAt == request.time;
+    }
+
+    function isValidConversationMessageUpdate() {
+      let studentId = resource.data.studentId;
+      let organizationId = resource.data.organizationId;
+
+      let recipientId = request.auth.uid == studentId
+        ? organizationId
+        : studentId;
+
+      let oldUnread = resource.data.get('unreadCounts', {});
+      let newUnread = request.resource.data.get('unreadCounts', {});
+
+      let changedFields =
+        request.resource.data.diff(resource.data).affectedKeys();
+
+      let unreadChanges =
+        newUnread.diff(oldUnread).affectedKeys();
+
+      return isConversationParticipant(resource.data)
+        && changedFields.hasAll([
+          'lastMessage',
+          'lastSenderId',
+          'lastMessageAt',
+          'unreadCounts'
+        ])
+        && changedFields.hasOnly([
+          'lastMessage',
+          'lastSenderId',
+          'lastMessageAt',
+          'unreadCounts'
+        ])
+        && request.resource.data.lastMessage is string
+        && request.resource.data.lastMessage.size() > 0
+        && request.resource.data.lastMessage.size() <= 2000
+        && request.resource.data.lastSenderId == request.auth.uid
+        && request.resource.data.lastMessageAt == request.time
+        && newUnread is map
+        && unreadChanges.hasOnly([recipientId])
+        && newUnread.get(request.auth.uid, 0)
+          == oldUnread.get(request.auth.uid, 0)
+        && newUnread.get(recipientId, 0)
+          == oldUnread.get(recipientId, 0) + 1;
+    }
+
+    function isValidMarkAsReadUpdate() {
+      let studentId = resource.data.studentId;
+      let organizationId = resource.data.organizationId;
+
+      let otherParticipantId = request.auth.uid == studentId
+        ? organizationId
+        : studentId;
+
+      let oldUnread = resource.data.get('unreadCounts', {});
+      let newUnread = request.resource.data.get('unreadCounts', {});
+
+      let changedFields =
+        request.resource.data.diff(resource.data).affectedKeys();
+
+      let unreadChanges =
+        newUnread.diff(oldUnread).affectedKeys();
+
+      return isConversationParticipant(resource.data)
+        && changedFields.hasOnly(['unreadCounts'])
+        && newUnread is map
+        && unreadChanges.hasOnly([request.auth.uid])
+        && newUnread.get(request.auth.uid, -1) == 0
+        && newUnread.get(otherParticipantId, 0)
+          == oldUnread.get(otherParticipantId, 0);
+    }
+
+    // =====================================
+    // CONVERSATIONS
+    // =====================================
+
+    match /conversations/{conversationId} {
+
+      allow get: if isSignedIn()
+        && (
+          resource == null
+          || isConversationParticipant(resource.data)
+        );
+
+      allow list: if isConversationParticipant(resource.data);
+
+      allow create: if isSignedIn()
+        && isValidNewConversation();
+
+      allow update: if isConversationParticipant(resource.data)
+        && request.resource.data.studentId == resource.data.studentId
+        && request.resource.data.organizationId == resource.data.organizationId
+        && (
+          isValidConversationMessageUpdate()
+          || isValidMarkAsReadUpdate()
+        );
+
+      allow delete: if false;
+
+      // CHAT MESSAGES
+
+      match /messages/{messageId} {
+
+        function messageParentPath() {
+          return /databases/$(database)/documents/conversations/$(conversationId);
+        }
+
+        function canReadMessages() {
+          let parentPath = messageParentPath();
+
+          return isSignedIn()
+            && exists(parentPath)
+            && (
+              get(parentPath).data.studentId == request.auth.uid
+              || get(parentPath).data.organizationId == request.auth.uid
+            );
+        }
+
+        function isValidMessageCreate() {
+          let parentPath = messageParentPath();
+          let parent = getAfter(parentPath);
+
+          return isSignedIn()
+            && existsAfter(parentPath)
+            && (
+              parent.data.studentId == request.auth.uid
+              || parent.data.organizationId == request.auth.uid
+            )
+            && request.resource.data.senderId == request.auth.uid
+            && request.resource.data.senderRole in [
+              'student',
+              'organization'
+            ]
+            && request.resource.data.message is string
+            && request.resource.data.message.size() > 0
+            && request.resource.data.message.size() <= 2000
+            && request.resource.data.createdAt == request.time
+            && (
+              (
+                request.resource.data.senderRole == 'student'
+                && parent.data.studentId == request.auth.uid
+              )
+              ||
+              (
+                request.resource.data.senderRole == 'organization'
+                && parent.data.organizationId == request.auth.uid
+              )
+            )
+            && parent.data.lastSenderId == request.auth.uid
+            && parent.data.lastMessage == request.resource.data.message;
+        }
+
+        allow get, list: if canReadMessages();
+
+        allow create: if isValidMessageCreate();
+
+        allow update, delete: if false;
+      }
+    }
+
+    // Administrator activity records are append-only and attributable to the signed-in admin.
+    match /activityLogs/{activityId} {
+      allow get, list: if isAdmin();
+      allow create: if isAdmin()
+        && request.resource.data.keys().hasOnly(['userId', 'userName', 'userEmail', 'role', 'action', 'description', 'status', 'createdAt'])
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.userEmail == request.auth.token.email
+        && request.resource.data.userName is string
+        && request.resource.data.role == 'admin'
+        && request.resource.data.action in ['Admin login', 'Admin logout', 'Application reviewed']
+        && request.resource.data.description is string
+        && request.resource.data.description.size() <= 1000
+        && request.resource.data.status == 'Success'
+        && request.resource.data.createdAt == request.time;
+      allow update, delete: if false;
+    }
+
+    // =====================================
+    // DASHBOARD AGGREGATE COUNTS
+    // =====================================
+
+    match /dashboardStats/{statId} {
+
+      // Only Admin and registered LGU/School accounts
+      // can read the student aggregate count.
+      allow get: if statId == 'studentCounts'
+        && (
+          isAdmin()
+          || isRegisteredOrganization()
+        );
+
+      allow list: if false;
+
+      // Client-side writes are blocked.
+      // Use trusted backend / Cloud Function to update.
+      allow create, update, delete: if false;
+    }
+  }
+}

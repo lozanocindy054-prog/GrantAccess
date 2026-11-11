@@ -1,21 +1,32 @@
 {
-  "short_name": "Ionic App",
-  "name": "My Ionic App",
+  "id": "/",
+  "name": "GrantAccess",
+  "short_name": "GrantAccess",
+  "description": "Scholarships, applications, and organization updates in one place.",
+  "lang": "en",
+  "start_url": "/register-choice?source=app",
+  "scope": "/",
+  "display": "standalone",
+  "theme_color": "#087638",
+  "background_color": "#ffffff",
   "icons": [
     {
-      "src": "assets/icon/favicon.png",
-      "sizes": "64x64 32x32 24x24 16x16",
-      "type": "image/x-icon"
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
     },
     {
-      "src": "assets/icon/icon.png",
-      "type": "image/png",
+      "src": "/icons/icon-512.png",
       "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
       "purpose": "maskable"
     }
-  ],
-  "start_url": ".",
-  "display": "standalone",
-  "theme_color": "#ffffff",
-  "background_color": "#ffffff"
+  ]
 }

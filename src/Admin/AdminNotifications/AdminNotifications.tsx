@@ -1,3 +1,4 @@
+import { logoutAdministrator } from '../../services/adminService';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -284,8 +285,9 @@ const AdminNotifications: React.FC = () => {
     setTypeFilter('all');
   };
 
-  const handleLogout = () => {
-    navigate('/admin-login', { replace: true });
+  const handleLogout = async () => {
+    try { await logoutAdministrator(); navigate('/admin-login', { replace: true }); }
+    catch { setToastMessage('Unable to sign out. Please retry.'); setShowToast(true); }
   };
 
   return (
@@ -294,8 +296,7 @@ const AdminNotifications: React.FC = () => {
         {/* SIDEBAR — SAME STRUCTURE AS ADMIN DASHBOARD */}
         <aside className="admin-sidebar">
           <div className="admin-brand">
-            <div className="admin-brand-icon">
-              <IonIcon icon={schoolOutline} />
+            <div className="admin-brand-icon"><img className="grantaccess-brand-image" src="/mylogo.png" alt="GrantAccess" />
             </div>
 
             <div>

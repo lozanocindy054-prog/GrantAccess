@@ -19,13 +19,12 @@ import {
   eyeOutline,
   schoolOutline,
   closeOutline,
-  gridOutline,
   cashOutline,
   calendarOutline,
   documentTextOutline,
 } from 'ionicons/icons';
 
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, onSnapshot, type QuerySnapshot, type DocumentData } from 'firebase/firestore';
 
 import { db } from '../../Firebase/config';
 import './AdminScholarships.css';
@@ -55,7 +54,7 @@ const AdminScholarships: React.FC = () => {
   const [selectedScholarship, setSelectedScholarship] =
     useState<Scholarship | null>(null);
 
-  const loadScholarships = useCallback(async (isRefresh = false) => {
+  const loadScholarships = useCallback(async (isRefresh = false, incoming?: QuerySnapshot<DocumentData>) => {
     if (isRefresh) {
       setRefreshing(true);
     } else {
@@ -65,7 +64,7 @@ const AdminScholarships: React.FC = () => {
     setError('');
 
     try {
-      const snapshot = await getDocs(collection(db, 'scholarships'));
+      const snapshot = incoming ?? await getDocs(collection(db, 'scholarships'));
 
       const scholarshipList: Scholarship[] = snapshot.docs.map((item) => {
         const data = item.data();
@@ -135,9 +134,9 @@ const AdminScholarships: React.FC = () => {
     }
   }, []);
 
-  useEffect(() => {
-    void loadScholarships();
-  }, [loadScholarships]);
+  useEffect(() => onSnapshot(collection(db, 'scholarships'), snapshot => {
+    void loadScholarships(false, snapshot);
+  }, () => { setLoading(false); setError('Unable to load scholarships. Please check your connection.'); }), [loadScholarships]);
 
   const keyword = searchText.trim().toLowerCase();
 
@@ -190,7 +189,7 @@ const AdminScholarships: React.FC = () => {
           <header className="scholarships-brand-header">
             <div className="scholarships-brand">
               <img
-                src="public/image/logo3.png"
+                src="/mylogo.png"
                 alt="GrantAccess Logo"
                 className="scholarships-brand-logo"
               />
@@ -393,7 +392,7 @@ const AdminScholarships: React.FC = () => {
             <div className="scholarship-modal-header">
               <div className="scholarship-modal-brand">
                 <img
-                  src="/images/logo3.png"
+                  src="/mylogo.png"
                   alt="GrantAccess Logo"
                   className="scholarship-modal-logo"
                 />

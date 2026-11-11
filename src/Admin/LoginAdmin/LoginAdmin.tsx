@@ -22,8 +22,8 @@ import {
   shieldCheckmarkOutline,
 } from 'ionicons/icons';
 
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../../Firebase/config';
+import { loginAdministrator } from '../../services/adminService';
+
 
 import './LoginAdmin.css';
 
@@ -57,6 +57,7 @@ const LoginAdmin: React.FC = () => {
   ) => {
     event.preventDefault();
 
+    if (loading) return;
     const cleanEmail = email.trim().toLowerCase();
 
     if (!cleanEmail || !password) {
@@ -71,12 +72,15 @@ const LoginAdmin: React.FC = () => {
       setLoading(true);
 
       // FIREBASE LOGIN
-      await signInWithEmailAndPassword(
-        auth,
+      const user = await loginAdministrator(
         cleanEmail,
         password,
       );
 
+      if (!user.emailVerified) {
+        navigate('/verify-email', { replace: true });
+        return;
+      }
       // Redirect to Admin Dashboard
       showMessage(
         'Login successful! Opening Admin Dashboard...',
@@ -95,7 +99,9 @@ const LoginAdmin: React.FC = () => {
       let message =
         'Unable to log in. Please try again.';
 
-      if (
+      if (errorCode === 'auth/admin-required') {
+        message = 'This account does not have administrator access. Contact the project owner.';
+      } else if (
         errorCode === 'auth/invalid-credential' ||
         errorCode === 'auth/wrong-password' ||
         errorCode === 'auth/user-not-found'
@@ -139,7 +145,7 @@ const LoginAdmin: React.FC = () => {
         <IonToolbar className="admin-login-toolbar">
           <div className="admin-login-brand">
             <img
-              src="/image/logo3.png"
+              src="/mylogo.png"
               alt="GrantAccess Logo"
             />
 
@@ -283,17 +289,6 @@ const LoginAdmin: React.FC = () => {
                 )}
               </IonButton>
 
-              {/* CREATE ACCOUNT */}
-              <p className="admin-login-register-prompt">
-                Don't have an account yet?{' '}
-                <button
-                  type="button"
-                  disabled={loading}
-                  onClick={() => navigate('/admin-register')}
-                >
-                  Create Account
-                </button>
-              </p>
             </form>
           </section>
 

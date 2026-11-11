@@ -11,7 +11,6 @@ import {
 } from '@ionic/react';
 
 import {
-  schoolOutline,
   mailOutline,
   arrowBackOutline,
 } from 'ionicons/icons';
@@ -207,8 +206,7 @@ const ForgotPassword: React.FC = () => {
               onClick={() => goToPage('/register-choice')}
               aria-label="Go to GrantAccess home"
             >
-              <span className="forgot-password-logo">
-                <IonIcon icon={schoolOutline} />
+              <span className="forgot-password-logo"><img className="grantaccess-brand-image" src="/mylogo.png" alt="GrantAccess" />
               </span>
 
               <span className="forgot-password-brand-text">

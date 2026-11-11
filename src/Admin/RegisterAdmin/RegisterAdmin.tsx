@@ -109,7 +109,7 @@ const RegisterAdmin: React.FC = () => {
       setConfirmPassword('');
 
       showMessage(
-        'Account created successfully! Please log in.',
+        'Account created. Ask the project owner to grant administrator access before logging in.',
         'success',
       );
 
@@ -163,7 +163,7 @@ const RegisterAdmin: React.FC = () => {
         <IonToolbar className="admin-register-toolbar">
           <div className="admin-register-brand">
             <img
-              src="/image/logo3.png"
+              src="/mylogo.png"
               alt="GrantAccess Logo"
             />
 
@@ -196,8 +196,8 @@ const RegisterAdmin: React.FC = () => {
             </h1>
 
             <p>
-              Register your account to access the
-              GrantAccess administration portal.
+              Create an account, then ask the project owner to grant
+              administrator access before signing in.
             </p>
           </section>
 

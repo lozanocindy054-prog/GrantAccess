@@ -31,6 +31,6 @@ export const db = initializeFirestore(app, {
 // Firebase Analytics (optional)
 export const analyticsReady = isSupported().then((supported) => {
   return supported ? getAnalytics(app) : null;
-});
+}).catch(() => null);
 
 export default app;

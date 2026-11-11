@@ -1,5 +1,5 @@
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import {
@@ -14,7 +14,6 @@ import {
 } from '@ionic/react';
 
 import {
-  arrowBackOutline,
   searchOutline,
   refreshOutline,
   eyeOutline,
@@ -22,7 +21,7 @@ import {
   closeOutline,
 } from 'ionicons/icons';
 
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, onSnapshot, type QuerySnapshot, type DocumentData } from 'firebase/firestore';
 import { db } from '../../Firebase/config';
 
 import './RegisteredStudents.css';
@@ -49,12 +48,12 @@ const RegisteredStudents: React.FC = () => {
   const [showDetails, setShowDetails] = useState(false);
   const [showToast, setShowToast] = useState(false);
 
-  const loadStudents = async () => {
+  const loadStudents = useCallback(async (incoming?: QuerySnapshot<DocumentData>) => {
     setLoading(true);
     setErrorMessage('');
 
     try {
-      const snapshot = await getDocs(collection(db, 'students'));
+      const snapshot = incoming ?? await getDocs(collection(db, 'students'));
 
       const studentList: Student[] = snapshot.docs.map(
         (document, index) => {
@@ -106,11 +105,13 @@ const RegisteredStudents: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  useEffect(() => {
-    void loadStudents();
   }, []);
+
+  useEffect(() => onSnapshot(collection(db, 'students'), snapshot => {
+    void loadStudents(snapshot);
+  }, () => {
+    setLoading(false); setErrorMessage('Unable to load students. Please check your connection.'); setShowToast(true);
+  }), [loadStudents]);
 
   const filteredStudents = useMemo(() => {
     const search = searchTerm.trim().toLowerCase();
@@ -150,7 +151,7 @@ const RegisteredStudents: React.FC = () => {
           <header className="students-brand-header">
             <div className="students-brand">
               <img
-                src="/image/logo3.png"
+                src="/mylogo.png"
                 alt="GrantAccess Logo"
                 className="students-brand-logo"
               />
@@ -329,7 +330,7 @@ const RegisteredStudents: React.FC = () => {
             <div className="student-modal-header">
               <div className="student-modal-brand">
                 <img
-                  src="/image/logo3.png"
+                  src="/mylogo.png"
                   alt="GrantAccess Logo"
                   className="student-modal-logo"
                 />

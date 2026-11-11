@@ -1,3 +1,4 @@
+import { resolveDocumentUrl } from '../utils/documentUrls';
 import React, { useState } from 'react';
 import {
   IonButton,
@@ -43,16 +44,7 @@ const getDriveFileId = (
   }
 };
 
-const getSafeHttpUrl = (value: string): string => {
-  try {
-    const url = new URL(value);
-    return url.protocol === 'https:' || url.protocol === 'http:'
-      ? url.toString()
-      : '';
-  } catch {
-    return '';
-  }
-};
+const getSafeHttpUrl = resolveDocumentUrl;
 
 const StudentDocumentAccess: React.FC<StudentDocumentAccessProps> = ({
   document,
@@ -108,7 +100,7 @@ const StudentDocumentAccess: React.FC<StudentDocumentAccessProps> = ({
           <a
             className="student-document-download"
             href={downloadUrl}
-            download={document.name}
+            download={document.url.startsWith('/files/') ? undefined : document.name}
             target={driveFileId ? '_blank' : undefined}
             rel={driveFileId ? 'noopener noreferrer' : undefined}
           >

@@ -10,7 +10,6 @@ import {
 } from '@ionic/react';
 
 import {
-  schoolOutline,
   mailOutline,
   lockClosedOutline,
   eyeOutline,
@@ -94,11 +93,7 @@ const LoginStudent: React.FC = () => {
       await user.reload();
 
       if (!user.emailVerified) {
-        await signOut(auth);
-
-        setError(
-          'Please verify your email address before logging in.'
-        );
+        navigate('/verify-email', { replace: true });
 
         return;
       }
@@ -246,8 +241,7 @@ const LoginStudent: React.FC = () => {
               aria-label="Go to GrantAccess home"
               disabled={loading}
             >
-              <span className="grant-login-logo">
-                <IonIcon icon={schoolOutline} />
+              <span className="grant-login-logo"><img className="grantaccess-brand-image" src="/mylogo.png" alt="GrantAccess" />
               </span>
 
               <span className="grant-login-brand-text">

@@ -769,3 +769,5 @@
     animation-duration: 0.01ms !important;
   }
 }
+.register-choice-overlay ion-button.admin-choice-button { --background:#087638;--color:#fff;--background-hover:#075b2e;--color-hover:#fff; }
+.register-choice-overlay ion-button.admin-choice-button::part(native){background:#087638;color:#fff}

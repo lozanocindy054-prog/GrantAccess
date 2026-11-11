@@ -189,6 +189,8 @@ exports.sendEmailVerificationCode = onCall(
     cors: [
       "http://localhost:8100",
       "http://localhost:5173",
+      "https://grand-access.web.app",
+      "https://grand-access.firebaseapp.com",
     ],
   },
 
@@ -374,6 +376,8 @@ exports.verifyEmailVerificationCode = onCall(
     cors: [
       "http://localhost:8100",
       "http://localhost:5173",
+      "https://grand-access.web.app",
+      "https://grand-access.firebaseapp.com",
     ],
   },
 
@@ -494,6 +498,8 @@ exports.consumeEmailVerificationToken = onCall(
     cors: [
       "http://localhost:8100",
       "http://localhost:5173",
+      "https://grand-access.web.app",
+      "https://grand-access.firebaseapp.com",
     ],
   },
 

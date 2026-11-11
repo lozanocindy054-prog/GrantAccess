@@ -1,3 +1,4 @@
+import { resolveDocumentUrl } from '../../utils/documentUrls';
 
 import React, { useEffect, useMemo, useState } from "react";
 import {
@@ -22,7 +23,6 @@ import {
   documentTextOutline,
   calendarOutline,
   businessOutline,
-  checkmarkCircleOutline,
   alertCircleOutline,
 } from "ionicons/icons";
 
@@ -197,18 +197,7 @@ const getSubmittedRequirements = (
 
     if (typeof url !== "string") return [];
 
-    try {
-      const parsedUrl = new URL(url);
-
-      if (
-        parsedUrl.protocol !== "https:" &&
-        parsedUrl.protocol !== "http:"
-      ) {
-        return [];
-      }
-    } catch {
-      return [];
-    }
+    if (!resolveDocumentUrl(url)) return [];
 
     return [
       {
@@ -261,7 +250,7 @@ const ApplicationHistory: React.FC = () => {
 
   const [showDetails, setShowDetails] = useState(false);
   const [showToast, setShowToast] = useState(false);
-  const [toastMessage, setToastMessage] = useState("");
+  const [toastMessage] = useState("");
 
   // REAL-TIME FIRESTORE APPLICATION HISTORY
   useEffect(() => {
@@ -384,22 +373,6 @@ const ApplicationHistory: React.FC = () => {
     );
   }, [applications, selectedFilter]);
 
-  // FILTER COUNTS
-  const filterCounts = useMemo(() => {
-    return {
-      All: applications.length,
-      Pending: applications.filter(
-        (item) => getStatusCategory(item.status) === "pending"
-      ).length,
-      Approved: applications.filter(
-        (item) => getStatusCategory(item.status) === "approved"
-      ).length,
-      Rejected: applications.filter(
-        (item) => getStatusCategory(item.status) === "rejected"
-      ).length,
-    };
-  }, [applications]);
-
   // OPEN APPLICATION DETAILS
   const handleViewDetails = (application: ApplicationItem) => {
     setSelectedApplication(application);
@@ -429,7 +402,7 @@ const ApplicationHistory: React.FC = () => {
       <header className="history-top-header">
         <button
           type="button"
-          className="history-back-button"
+          className="history-back-button app-back-control"
           aria-label="Go back"
           onClick={() => navigate(-1)}
         >

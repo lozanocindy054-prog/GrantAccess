@@ -482,3 +482,10 @@
     padding: 18px 13px;
   }
 }
+
+/* Keep the primary action readable despite shared Ionic theme overrides. */
+ion-button.admin-login-submit { --background:#087638;--background-hover:#075b2e;--background-activated:#064a26;--color:#fff;--color-hover:#fff;--color-activated:#fff;--border-color:#087638;--border-width:1px;--border-style:solid;font-weight:700;min-height:48px;opacity:1; }
+ion-button.admin-login-submit::part(native){background:#087638;color:#fff}
+ion-button.admin-login-submit:hover::part(native){background:#075b2e}
+ion-button.admin-login-submit:focus-visible{outline:3px solid #159447;outline-offset:3px}
+ion-button.admin-login-submit[disabled]{opacity:.65}

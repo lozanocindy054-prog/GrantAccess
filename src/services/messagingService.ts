@@ -30,9 +30,9 @@ export interface Conversation {
   scholarshipTitle: string;
   lastMessage: string;
   lastSenderId: string;
-  lastMessageAt: any;
+  lastMessageAt: unknown;
   unreadCounts: Record<string, number>;
-  createdAt?: any;
+  createdAt?: unknown;
 }
 
 export interface ChatMessage {
@@ -40,7 +40,7 @@ export interface ChatMessage {
   senderId: string;
   senderRole: SenderRole;
   message: string;
-  createdAt: any;
+  createdAt: unknown;
 }
 
 export interface SendMessageInput {

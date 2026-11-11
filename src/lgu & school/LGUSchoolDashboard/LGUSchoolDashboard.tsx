@@ -1,3 +1,5 @@
+import { useOrganizationNotifications } from '../../hooks/useOrganizationNotifications';
+import { markOrganizationNotificationsRead } from '../../services/organizationNotificationService';
 
 import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -8,7 +10,6 @@ import {
   IonIcon,
   IonSpinner,
   IonToast,
-  IonModal,
 } from '@ionic/react';
 
 import {
@@ -24,10 +25,8 @@ import {
   checkmarkCircleOutline,
   timeOutline,
   shieldCheckmarkOutline,
-  locationOutline,
-  mapOutline,
   home,
-  closeOutline,
+  chatbubblesOutline,
 } from 'ionicons/icons';
 
 import {
@@ -46,9 +45,9 @@ import {
 
 import { auth, db } from '../../Firebase/config';
 
-import ManageScholarships from '../ManageScholarships/ManageScholarships';
-import LGUSchoolProfile from '../LGUSchoolProfile/LGUSchoolProfile';
-import Applications from '../Applications/Applications';
+
+
+
 
 import './LGUSchoolDashboard.css';
 
@@ -93,8 +92,6 @@ const HOME_PATH = '/lgu-dashboard';
 const ORGANIZATION_PROFILE_PATH = '/lgu-organization-profile';
 const SCHOLARSHIPS_PATH = '/lgu-scholarships';
 const APPLICATIONS_PATH = '/lgu-applications';
-const STUDENT_MAP_PATH = '/lgu-student-map';
-const ORGANIZATION_MAP_PIN_PATH = '/lgu-organization-map-pin';
 
 // ==========================================
 // MAIN MENU
@@ -107,20 +104,6 @@ const mainMenuItems: MainMenuItem[] = [
     path: HOME_PATH,
     icon: home,
     color: 'green',
-  },
-  {
-    label: 'My Organization',
-    description: 'View and manage your organization information.',
-    path: ORGANIZATION_PROFILE_PATH,
-    icon: businessOutline,
-    color: 'green',
-  },
-  {
-    label: 'Set Map Pin',
-    description: 'Pin your organization location for students to see.',
-    path: ORGANIZATION_MAP_PIN_PATH,
-    icon: mapOutline,
-    color: 'blue',
   },
   {
     label: 'Manage Scholarships',
@@ -136,13 +119,7 @@ const mainMenuItems: MainMenuItem[] = [
     icon: peopleOutline,
     color: 'purple',
   },
-  {
-    label: 'Student Map',
-    description: 'View approximate locations shared by your applicants.',
-    path: STUDENT_MAP_PATH,
-    icon: locationOutline,
-    color: 'blue',
-  },
+  { label: 'Messages', description: 'Read and reply to student conversations.', path: '/lgu-messages', icon: chatbubblesOutline, color: 'green' },
 ];
 
 // ==========================================
@@ -167,21 +144,8 @@ const LGUSchoolDashboard: React.FC = () => {
 
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
-
-  // ==========================================
-  // MODAL STATES
-  // ==========================================
-
-  const [showManageScholarships, setShowManageScholarships] =
-    useState(false);
-
-  const [showOrganizationProfile, setShowOrganizationProfile] =
-    useState(false);
-
-  const [openOrganizationMapPin, setOpenOrganizationMapPin] =
-    useState(false);
-
-  const [showApplications, setShowApplications] = useState(false);
+  const { items: notificationItems, unreadCount } = useOrganizationNotifications();
+  const [markingNotifications, setMarkingNotifications] = useState(false);
 
   // ==========================================
   // FIRESTORE DATA
@@ -217,99 +181,10 @@ const LGUSchoolDashboard: React.FC = () => {
     []
   );
 
-  // ==========================================
-  // CLOSE ALL MODALS
-  // ==========================================
-
-  const closeAllModals = useCallback(() => {
-    setShowManageScholarships(false);
-    setShowOrganizationProfile(false);
-    setShowApplications(false);
-  }, []);
-
-  // ==========================================
-  // MODAL FUNCTIONS
-  // ==========================================
-
-  const openManageScholarships = useCallback(() => {
-    closeAllModals();
-    setShowProfileMenu(false);
-    setShowNotifications(false);
-    setShowManageScholarships(true);
-  }, [closeAllModals]);
-
-  const closeManageScholarships = useCallback(() => {
-    setShowManageScholarships(false);
-  }, []);
-
-  const openOrganizationProfile = useCallback(() => {
-    closeAllModals();
-    setShowProfileMenu(false);
-    setShowNotifications(false);
-    setShowOrganizationProfile(true);
-  }, [closeAllModals]);
-
-  const closeOrganizationProfile = useCallback(() => {
-    setShowOrganizationProfile(false);
-    setOpenOrganizationMapPin(false);
-  }, []);
-
-  const openApplications = useCallback(() => {
-    closeAllModals();
-    setShowProfileMenu(false);
-    setShowNotifications(false);
-    setShowApplications(true);
-  }, [closeAllModals]);
-
-  const closeApplications = useCallback(() => {
-    setShowApplications(false);
-  }, []);
-
-  // ==========================================
-  // NAVIGATION
-  // ==========================================
-
-  const handleNavigation = useCallback(
-    (path: string) => {
-      setShowProfileMenu(false);
-      setShowNotifications(false);
-
-      if (path === ORGANIZATION_PROFILE_PATH) {
-        setOpenOrganizationMapPin(false);
-        openOrganizationProfile();
-        return;
-      }
-
-      if (path === ORGANIZATION_MAP_PIN_PATH) {
-        setOpenOrganizationMapPin(true);
-        openOrganizationProfile();
-        return;
-      }
-
-      if (path === SCHOLARSHIPS_PATH) {
-        openManageScholarships();
-        return;
-      }
-
-      if (path === APPLICATIONS_PATH) {
-        openApplications();
-        return;
-      }
-
-      if (path && location.pathname !== path) {
-        closeAllModals();
-        navigate(path);
-      }
-    },
-    [
-      navigate,
-      location.pathname,
-      openManageScholarships,
-      openOrganizationProfile,
-      openApplications,
-      closeAllModals,
-    ]
-  );
+  const handleNavigation = useCallback((path: string) => {
+    setShowProfileMenu(false); setShowNotifications(false);
+    if (location.pathname !== path) navigate(path);
+  }, [location.pathname, navigate]);
 
   // ==========================================
   // FIREBASE AUTH + SCHOLARSHIP + APPLICATIONS
@@ -352,7 +227,6 @@ const LGUSchoolDashboard: React.FC = () => {
             logoUrl: '',
           });
 
-          closeAllModals();
           navigate(LOGIN_PATH, { replace: true });
           return;
         }
@@ -469,7 +343,7 @@ const LGUSchoolDashboard: React.FC = () => {
       unsubscribeAuth();
       stopListeners();
     };
-  }, [navigate, showMessage, closeAllModals]);
+  }, [navigate, showMessage]);
 
   // ==========================================
   // ORGANIZATION PROFILE LIVE LISTENER
@@ -493,7 +367,7 @@ const LGUSchoolDashboard: React.FC = () => {
     let active = true;
     let unsubscribeFallback: (() => void) | undefined;
 
-    const updateOrganizationProfile = (data: Record<string, any>) => {
+    const updateOrganizationProfile = (data: Record<string, unknown>) => {
       if (!active) return;
 
       setOrganizationProfile({
@@ -642,7 +516,6 @@ const LGUSchoolDashboard: React.FC = () => {
     try {
       setShowProfileMenu(false);
       setShowNotifications(false);
-      closeAllModals();
 
       await signOut(auth);
 
@@ -679,8 +552,7 @@ const LGUSchoolDashboard: React.FC = () => {
 
           <header className="lgu-home-topbar">
             <div className="lgu-home-brand">
-              <div className="lgu-home-brand-icon">
-                <IonIcon icon={schoolOutline} />
+              <div className="lgu-home-brand-icon"><img className="grantaccess-brand-image" src="/mylogo.png" alt="GrantAccess" />
               </div>
 
               <div>
@@ -705,14 +577,14 @@ const LGUSchoolDashboard: React.FC = () => {
               >
                 <IonIcon icon={notificationsOutline} />
 
-                {applications.length > 0 && (
+                {unreadCount > 0 && (
                   <span className="lgu-home-notification-dot" />
                 )}
               </button>
 
               {showNotifications && (
                 <div className="lgu-home-notification-dropdown">
-                  <strong>Dashboard Overview</strong>
+                  <strong>Notifications ? {unreadCount} unread</strong>
 
                   <div>
                     <IonIcon icon={schoolOutline} />
@@ -728,6 +600,14 @@ const LGUSchoolDashboard: React.FC = () => {
                     </span>
                   </div>
 
+                  <button type="button" disabled={markingNotifications || unreadCount === 0} onClick={async () => {
+                    const uid = auth.currentUser?.uid;
+                    if (!uid || markingNotifications) return;
+                    setMarkingNotifications(true);
+                    try { await markOrganizationNotificationsRead(uid, notificationItems); }
+                    catch { showMessage('Unable to mark notifications as read. Please retry.', 'danger'); }
+                    finally { setMarkingNotifications(false); }
+                  }}>Mark all as read</button>
                   <button
                     type="button"
                     onClick={() =>
@@ -865,37 +745,20 @@ const LGUSchoolDashboard: React.FC = () => {
               <div className="lgu-home-menu-panel">
                 <div className="lgu-home-menu-grid">
                   {mainMenuItems.map((item) => {
-                    const isActive =
-                      location.pathname === item.path ||
-                      (item.path === SCHOLARSHIPS_PATH &&
-                        showManageScholarships) ||
-                      (item.path === ORGANIZATION_PROFILE_PATH &&
-                        showOrganizationProfile &&
-                        !openOrganizationMapPin) ||
-                      (item.path === ORGANIZATION_MAP_PIN_PATH &&
-                        showOrganizationProfile &&
-                        openOrganizationMapPin) ||
-                      (item.path === APPLICATIONS_PATH &&
-                        showApplications);
+                    const isActive = location.pathname === item.path;
 
                     return (
-                      <div
+                      <button
+                        type="button"
+                        onClick={() => handleNavigation(item.path)}
+                        aria-label={`Open ${item.label}`}
+                        aria-current={isActive ? 'page' : undefined}
                         className={`lgu-home-menu-item ${
                           isActive ? 'active' : ''
                         }`}
                         key={item.path}
                       >
-                        <button
-                          type="button"
-                          className={`lgu-home-menu-icon-button ${item.color}`}
-                          onClick={() =>
-                            handleNavigation(item.path)
-                          }
-                          aria-label={`Open ${item.label}`}
-                          title={item.label}
-                        >
-                          <IonIcon icon={item.icon} />
-                        </button>
+                        <span className={`lgu-home-menu-icon-button ${item.color}`} aria-hidden="true"><IonIcon icon={item.icon} /></span>
 
                         <div className="lgu-home-menu-copy">
                           <strong>{item.label}</strong>
@@ -917,7 +780,7 @@ const LGUSchoolDashboard: React.FC = () => {
                               : applications.length}
                           </span>
                         )}
-                      </div>
+                      </button>
                     );
                   })}
                 </div>
@@ -1067,7 +930,7 @@ const LGUSchoolDashboard: React.FC = () => {
                 <button
                   type="button"
                   className="lgu-home-view-all"
-                  onClick={openApplications}
+                  onClick={() => handleNavigation(APPLICATIONS_PATH)}
                 >
                   View Applications
                 </button>
@@ -1133,7 +996,7 @@ const LGUSchoolDashboard: React.FC = () => {
                 <button
                   type="button"
                   className="lgu-home-view-all"
-                  onClick={openManageScholarships}
+                  onClick={() => handleNavigation(SCHOLARSHIPS_PATH)}
                 >
                   View All
                 </button>
@@ -1162,7 +1025,7 @@ const LGUSchoolDashboard: React.FC = () => {
 
                     <button
                       type="button"
-                      onClick={openManageScholarships}
+                      onClick={() => handleNavigation(SCHOLARSHIPS_PATH)}
                     >
                       Manage Scholarships
                     </button>
@@ -1241,76 +1104,6 @@ const LGUSchoolDashboard: React.FC = () => {
         />
       </IonContent>
 
-      {/* MANAGE SCHOLARSHIPS MODAL */}
-
-      <IonModal
-        isOpen={showManageScholarships}
-        onDidDismiss={closeManageScholarships}
-        className="lgu-scholarship-popout"
-        backdropDismiss={true}
-      >
-        <div className="lgu-scholarship-modal-wrapper">
-          <button
-            type="button"
-            className="lgu-scholarship-modal-close"
-            onClick={closeManageScholarships}
-            aria-label="Close Manage Scholarships"
-          >
-            <IonIcon icon={closeOutline} />
-          </button>
-
-          <ManageScholarships />
-        </div>
-      </IonModal>
-
-      {/* MY ORGANIZATION MODAL */}
-
-      <IonModal
-        isOpen={showOrganizationProfile}
-        onDidDismiss={closeOrganizationProfile}
-        className="lgu-organization-popout"
-        backdropDismiss={true}
-      >
-        <div className="lgu-organization-modal-wrapper">
-          <button
-            type="button"
-            className="lgu-organization-modal-close"
-            onClick={closeOrganizationProfile}
-            aria-label="Close My Organization"
-          >
-            <IonIcon icon={closeOutline} />
-          </button>
-
-          <LGUSchoolProfile
-            openLocationEditor={openOrganizationMapPin}
-            onLocationEditorOpened={() =>
-              setOpenOrganizationMapPin(false)
-            }
-          />
-        </div>
-      </IonModal>
-
-      {/* APPLICATIONS MODAL */}
-
-      <IonModal
-        isOpen={showApplications}
-        onDidDismiss={closeApplications}
-        className="lgu-applications-popout"
-        backdropDismiss={true}
-      >
-        <div className="lgu-applications-modal-wrapper">
-          <button
-            type="button"
-            className="lgu-applications-modal-close"
-            onClick={closeApplications}
-            aria-label="Close Applications"
-          >
-            <IonIcon icon={closeOutline} />
-          </button>
-
-          <Applications />
-        </div>
-      </IonModal>
     </IonPage>
   );
 };

@@ -1,0 +1,47 @@
+const user = { uid: 'org-browser-test', email: 'organization@example.com', emailVerified: true, getIdTokenResult: async () => ({ claims: { admin: true } }) };
+export const auth = { currentUser: user };
+export const db = {};
+export const analyticsReady = Promise.resolve(null);
+export default {};
+export const onAuthStateChanged = (_auth, next) => { const timer = setTimeout(() => next(user), 0); return () => clearTimeout(timer); };
+export const onIdTokenChanged = onAuthStateChanged;
+export const getIdTokenResult = async () => ({ claims: { admin: true } });
+export const getAuth = () => auth;
+export const initializeFirestore = () => db;
+export const collection = (_db, ...parts) => ({ path: parts.join('/') });
+export const doc = collection;
+export const query = ref => ref;
+export const where = () => ({});
+export const orderBy = where;
+export const limit = where;
+const profile = { uid: user.uid, role: 'lgu_school', organizationName: 'Browser Test Organization', organizationType: 'School' };
+const snapshot = { docs: [], size: 0, empty: true, exists: () => true, data: () => profile };
+export const getDoc = async () => { await new Promise(resolve => setTimeout(resolve, 200)); return snapshot; };
+export const getDocs = async () => snapshot;
+const applications = [
+ { id: 'app-approved', data: () => ({ studentName: 'Ana Santos', studentEmail: 'ana@example.com', scholarshipTitle: 'STEM Grant', organizationName: 'City School', status: 'Approved', submittedAt: new Date().toISOString() }) },
+ { id: 'app-pending', data: () => ({ studentName: 'Ben Reyes', studentEmail: 'ben@example.com', scholarshipTitle: 'Arts Grant', organizationName: 'City School', status: 'Pending', submittedAt: new Date().toISOString() }) },
+];
+export const onSnapshot = (ref, next) => {
+ const docs = ref.path === 'applications' ? applications : ref.path === 'students' ? [{ id: 'student1', data: () => ({ fullName: 'Ana Santos', email: 'ana@example.com' }) }] : ref.path === 'organizations' ? [{ id: user.uid, data: () => profile }] : [];
+ const timer = setTimeout(() => next({ ...snapshot, docs, size: docs.length, empty: docs.length === 0 }), 0);
+ return () => clearTimeout(timer);
+};
+export const waitForPendingWrites = async () => {};
+export const getCountFromServer = async () => ({ data: () => ({ count: 0 }) });
+export const serverTimestamp = () => new Date();
+export const increment = n => n;
+export class Timestamp { toDate() { return new Date(); } }
+export const writeBatch = () => ({ set() {}, update() {}, delete() {}, commit: async () => {} });
+export const runTransaction = async (_db, action) => action({ get: getDoc, set() {}, update() {} });
+export const addDoc = async () => ({ id: 'test-id' });
+export const setDoc = async () => {};
+export const updateDoc = setDoc;
+export const deleteDoc = setDoc;
+export const signOut = setDoc;
+export const sendEmailVerification = setDoc;
+export const sendPasswordResetEmail = setDoc;
+export const createUserWithEmailAndPassword = async () => ({ user });
+export const signInWithEmailAndPassword = createUserWithEmailAndPassword;
+export const deleteUser = setDoc;
+export const updateProfile = setDoc;

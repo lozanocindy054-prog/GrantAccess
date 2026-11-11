@@ -30,3 +30,12 @@ yarn-error.log*
 
 # Optional eslint cache
 .eslintcache
+
+# Firebase CLI diagnostics
+firebase-debug.log
+
+# Browser test artifacts
+/cypress/screenshots/
+/cypress/videos/
+
+/cypress/downloads/

@@ -726,7 +726,7 @@
 .lgu-home-menu-grid {
   display: grid;
 
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 10px;
 }
 
@@ -1019,7 +1019,7 @@
 
 .lgu-home-application-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 13px;
 }
 
@@ -1593,7 +1593,7 @@ ion-modal.lgu-messages-popout .msg-page {
   }
 
   .lgu-home-menu-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .lgu-home-stats-grid {
@@ -1674,7 +1674,7 @@ ion-modal.lgu-messages-popout .msg-page {
   }
 
   .lgu-home-menu-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .lgu-home-application-grid {
@@ -2067,3 +2067,9 @@ ion-modal.lgu-messages-popout .msg-page {
     scroll-behavior: auto !important;
   }
 }
+
+/* Each menu card is a single keyboard-accessible navigation target. */
+button.lgu-home-menu-item { width: 100%; text-align: left; color: inherit; transition: background 160ms ease, transform 160ms ease; }
+button.lgu-home-menu-item:hover { background: #f0f8f2; transform: translateY(-2px); }
+button.lgu-home-menu-item:focus-visible { outline: 3px solid var(--ga-primary); outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) { button.lgu-home-menu-item { transition: none; } button.lgu-home-menu-item:hover { transform: none; } }

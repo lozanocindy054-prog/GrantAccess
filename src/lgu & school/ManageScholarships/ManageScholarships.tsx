@@ -539,8 +539,7 @@ const ManageScholarships: React.FC<ManageScholarshipsProps> = ({
 
           <header className="ms-topbar">
             <div className="ms-brand">
-              <span className="ms-brand-icon">
-                <IonIcon icon={schoolOutline} />
+              <span className="ms-brand-icon"><img className="grantaccess-brand-image" src="/mylogo.png" alt="GrantAccess" />
               </span>
 
               <div>

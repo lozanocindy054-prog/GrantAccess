@@ -982,6 +982,7 @@ const FaceLiveness: React.FC<FaceLivenessProps> = ({
 
   useEffect(() => {
     mountedRef.current = true;
+    const video = videoRef.current;
 
     return () => {
       mountedRef.current = false;
@@ -999,9 +1000,9 @@ const FaceLiveness: React.FC<FaceLivenessProps> = ({
         streamRef.current = null;
       }
 
-      if (videoRef.current) {
-        videoRef.current.pause();
-        videoRef.current.srcObject = null;
+      if (video) {
+        video.pause();
+        video.srcObject = null;
       }
 
       if (landmarkerRef.current) {

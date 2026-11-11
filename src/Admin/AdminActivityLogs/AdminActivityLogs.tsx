@@ -1,3 +1,4 @@
+import { logoutAdministrator } from '../../services/adminService';
 
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -51,6 +52,38 @@ interface ActivityLog {
   createdAt?: Timestamp | Date | string | null;
 }
 
+  const getDate = (value: ActivityLog['createdAt']): Date | null => {
+    if (!value) return null;
+
+    if (value instanceof Timestamp) {
+      return value.toDate();
+    }
+
+    if (value instanceof Date) {
+      return value;
+    }
+
+    if (typeof value === 'string') {
+      const parsedDate = new Date(value);
+      return Number.isNaN(parsedDate.getTime()) ? null : parsedDate;
+    }
+
+    return null;
+  };
+
+  const isToday = (value: ActivityLog['createdAt']) => {
+    const date = getDate(value);
+    if (!date) return false;
+
+    const today = new Date();
+
+    return (
+      date.getFullYear() === today.getFullYear() &&
+      date.getMonth() === today.getMonth() &&
+      date.getDate() === today.getDate()
+    );
+  };
+
 const AdminActivityLogs: React.FC = () => {
   const navigate = useNavigate();
 
@@ -91,38 +124,6 @@ const AdminActivityLogs: React.FC = () => {
 
     return () => unsubscribe();
   }, []);
-
-  const getDate = (value: ActivityLog['createdAt']): Date | null => {
-    if (!value) return null;
-
-    if (value instanceof Timestamp) {
-      return value.toDate();
-    }
-
-    if (value instanceof Date) {
-      return value;
-    }
-
-    if (typeof value === 'string') {
-      const parsedDate = new Date(value);
-      return Number.isNaN(parsedDate.getTime()) ? null : parsedDate;
-    }
-
-    return null;
-  };
-
-  const isToday = (value: ActivityLog['createdAt']) => {
-    const date = getDate(value);
-    if (!date) return false;
-
-    const today = new Date();
-
-    return (
-      date.getFullYear() === today.getFullYear() &&
-      date.getMonth() === today.getMonth() &&
-      date.getDate() === today.getDate()
-    );
-  };
 
   const getActionCategory = (activity: ActivityLog) => {
     const action = `${activity.action || ''} ${activity.description || ''}`
@@ -247,8 +248,9 @@ const AdminActivityLogs: React.FC = () => {
     setShowToast(true);
   };
 
-  const handleLogout = () => {
-    navigate('/admin-login');
+  const handleLogout = async () => {
+    try { await logoutAdministrator(); navigate('/admin-login', { replace: true }); }
+    catch { setToastMessage('Unable to sign out. Please retry.'); setShowToast(true); }
   };
 
   const getStatusClass = (status?: string) => {
@@ -287,8 +289,7 @@ const AdminActivityLogs: React.FC = () => {
           {/* SIDEBAR */}
           <aside className="admin-sidebar aal-sidebar">
             <div className="aal-brand">
-              <div className="aal-brand-icon">
-                <IonIcon icon={schoolOutlineFallback} />
+              <div className="aal-brand-icon"><img className="grantaccess-brand-image" src="/mylogo.png" alt="GrantAccess" />
               </div>
 
               <div className="aal-brand-text">
@@ -624,10 +625,9 @@ const AdminActivityLogs: React.FC = () => {
               <div className="aal-information">
                 <IonIcon icon={alertCircleOutline} />
                 <p>
-                  Activity records depend on the events saved by your
-                  application. This page displays existing records; it does
-                  not automatically create logs for actions performed on
-                  other pages.
+                  Administrator sign-ins, sign-outs, and application reviews
+                  are recorded here. Other actions appear when they create
+                  an activity record.
                 </p>
               </div>
 
@@ -651,6 +651,6 @@ const AdminActivityLogs: React.FC = () => {
   );
 };
 
-const schoolOutlineFallback = document ? document.createElement('span') as any : undefined;
+
 
 export default AdminActivityLogs;

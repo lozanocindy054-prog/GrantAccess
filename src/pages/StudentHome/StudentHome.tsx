@@ -16,6 +16,7 @@ import {
   bookmarkOutline,
   calendarOutline,
   notificationsOutline,
+  chatbubbleOutline,
   personCircleOutline,
   trophyOutline,
   chevronForwardOutline,
@@ -180,7 +181,7 @@ const getApplicationStatus = (
 };
 
 const getNestedValue = (
-  data: Record<string, any>,
+  data: Record<string, unknown>,
   path: string
 ): unknown => {
   return path.split(".").reduce<unknown>((current, key) => {
@@ -197,7 +198,7 @@ const getNestedValue = (
 };
 
 const getCoordinate = (
-  data: Record<string, any>,
+  data: Record<string, unknown>,
   keys: string[]
 ): number | null => {
   for (const key of keys) {
@@ -216,7 +217,7 @@ const getCoordinate = (
 };
 
 const getOrganizationAddress = (
-  data: Record<string, any>
+  data: Record<string, unknown>
 ): string => {
   const possibleAddresses = [
     data.address,
@@ -725,6 +726,15 @@ const StudentHome: React.FC = () => {
 
           <header className="student-home-topbar">
             <div className="student-home-topbar-spacer" />
+
+            <button
+              type="button"
+              className="student-message-button"
+              aria-label="Messages"
+              onClick={() => navigate("/student-messages")}
+            >
+              <IonIcon icon={chatbubbleOutline} aria-hidden="true" />
+            </button>
 
             <button
               type="button"

@@ -15,5 +15,11 @@
       ]
     }
   ],
-  "fieldOverrides": []
+  "fieldOverrides": [
+    {
+      "collectionGroup": "uploadedFiles",
+      "fieldPath": "dataBase64",
+      "indexes": []
+    }
+  ]
 }

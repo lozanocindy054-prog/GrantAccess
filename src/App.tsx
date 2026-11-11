@@ -1,3 +1,7 @@
+import AdminTabs from './components/AdminTabs';
+import './theme/branding.css';
+import OrganizationSettings from './lgu & school/OrganizationSettings/OrganizationSettings';
+import OrganizationNotifications from './lgu & school/OrganizationNotifications/OrganizationNotifications';
 
 import React, { useEffect } from 'react';
 
@@ -15,6 +19,9 @@ import {
 
 import { IonReactRouter } from '@ionic/react-router';
 
+import AdminAccessGate from './components/AdminAccessGate';
+import AdminSettings from './Admin/AdminSettings/AdminSettings';
+import EmailVerificationGate from './components/EmailVerificationGate';
 import GlobalBackButton from './components/GlobalBackButton';
 
 // ==========================================
@@ -24,6 +31,8 @@ import GlobalBackButton from './components/GlobalBackButton';
 import RegisterChoice from './pages/RegisterChoice/RegisterChoice';
 import StudentRegister from './pages/StudentRegister/StudentRegister';
 import LoginStudent from './pages/LoginStudent/LoginStudent';
+import VerifyEmail from './pages/VerifyEmail/VerifyEmail';
+import StoredFile from './pages/StoredFile/StoredFile';
 import ForgotPassword from './pages/ForgotPassword/ForgotPassword';
 
 // ==========================================
@@ -38,7 +47,6 @@ import LGUSchoolLogin from './lgu & school/LoginLGUSchool/LoginLGUSchool';
 // ==========================================
 
 import LGUSchoolDashboard from './lgu & school/LGUSchoolDashboard/LGUSchoolDashboard';
-import StudentMap from './lgu & school/StudentMap/StudentMap';
 
 // ==========================================
 // LGU / SCHOOL PROFILE
@@ -63,7 +71,6 @@ import LGUSchoolMessages from './lgu & school/Messages/Messages';
 // ADMIN REGISTRATION AND LOGIN
 // ==========================================
 
-import RegisterAdmin from './Admin/RegisterAdmin/RegisterAdmin';
 import LoginAdmin from './Admin/LoginAdmin/LoginAdmin';
 
 // ==========================================
@@ -166,8 +173,12 @@ const App: React.FC = () => {
         <RouteFocusHandler />
 
         <GlobalBackButton />
+        <AdminTabs />
 
         <IonRouterOutlet animated={false}>
+          <Route path="/admin-settings" element={<AdminAccessGate><AdminSettings /></AdminAccessGate>} />
+          <Route path="/verify-email" element={<EmailVerificationGate role="any" path="/verify-email" requireVerification={false}><VerifyEmail /></EmailVerificationGate>} />
+          <Route path="/files/:fileId" element={<EmailVerificationGate role="any" path="/files/:fileId"><StoredFile /></EmailVerificationGate>} />
 
           {/* ==========================================
               REGISTRATION CHOICE
@@ -217,12 +228,12 @@ const App: React.FC = () => {
 
           <Route
             path="/lgu-dashboard"
-            element={<LGUSchoolDashboard />}
+            element={<EmailVerificationGate role="organization" path="/lgu-dashboard"><LGUSchoolDashboard /></EmailVerificationGate>}
           />
 
           <Route
             path="/lgu-student-map"
-            element={<StudentMap />}
+            element={<Navigate to="/lgu-dashboard" replace />}
           />
 
           {/* ==========================================
@@ -231,7 +242,7 @@ const App: React.FC = () => {
 
           <Route
             path="/lgu-school-profile"
-            element={<LGUSchoolProfile />}
+            element={<EmailVerificationGate role="organization" path="/lgu-school-profile"><LGUSchoolProfile /></EmailVerificationGate>}
           />
 
           <Route
@@ -250,7 +261,7 @@ const App: React.FC = () => {
 
           <Route
             path="/lgu-scholarships"
-            element={<ManageScholarships />}
+            element={<EmailVerificationGate role="organization" path="/lgu-scholarships"><ManageScholarships /></EmailVerificationGate>}
           />
 
           <Route
@@ -279,12 +290,12 @@ const App: React.FC = () => {
 
           <Route
             path="/lgu-applications"
-            element={<Applications />}
+            element={<EmailVerificationGate role="organization" path="/lgu-applications"><Applications /></EmailVerificationGate>}
           />
 
           <Route
             path="/lgu-messages"
-            element={<LGUSchoolMessages />}
+            element={<EmailVerificationGate role="organization" path="/lgu-messages"><LGUSchoolMessages /></EmailVerificationGate>}
           />
 
           {/* ==========================================
@@ -303,12 +314,7 @@ const App: React.FC = () => {
 
           <Route
             path="/lgu-notifications"
-            element={
-              <Navigate
-                to="/lgu-dashboard"
-                replace
-              />
-            }
+            element={<EmailVerificationGate role="organization" path="/lgu-notifications"><OrganizationNotifications /></EmailVerificationGate>}
           />
 
           <Route
@@ -333,12 +339,7 @@ const App: React.FC = () => {
 
           <Route
             path="/lgu-settings"
-            element={
-              <Navigate
-                to="/lgu-dashboard"
-                replace
-              />
-            }
+            element={<EmailVerificationGate role="organization" path="/lgu-settings"><OrganizationSettings /></EmailVerificationGate>}
           />
 
           {/* ==========================================
@@ -347,7 +348,7 @@ const App: React.FC = () => {
 
           <Route
             path="/admin-register"
-            element={<RegisterAdmin />}
+            element={<Navigate to="/admin-login" replace />}
           />
 
           <Route
@@ -361,7 +362,7 @@ const App: React.FC = () => {
 
           <Route
             path="/admin-dashboard"
-            element={<AdminDashboard />}
+            element={<AdminAccessGate><AdminDashboard /></AdminAccessGate>}
           />
 
           {/* ==========================================
@@ -370,22 +371,22 @@ const App: React.FC = () => {
 
           <Route
             path="/admin-students"
-            element={<RegisteredStudents />}
+            element={<AdminAccessGate><RegisteredStudents /></AdminAccessGate>}
           />
 
           <Route
             path="/admin-organizations"
-            element={<LGUSchoolAccounts />}
+            element={<AdminAccessGate><LGUSchoolAccounts /></AdminAccessGate>}
           />
 
           <Route
             path="/admin-scholarships"
-            element={<AdminScholarships />}
+            element={<AdminAccessGate><AdminScholarships /></AdminAccessGate>}
           />
 
           <Route
             path="/admin-applications"
-            element={<AdminApplications />}
+            element={<AdminAccessGate><AdminApplications /></AdminAccessGate>}
           />
 
           {/* ==========================================
@@ -394,17 +395,17 @@ const App: React.FC = () => {
 
           <Route
             path="/admin-reports"
-            element={<AdminReports />}
+            element={<AdminAccessGate><AdminReports /></AdminAccessGate>}
           />
 
           <Route
             path="/admin-notifications"
-            element={<AdminNotifications />}
+            element={<AdminAccessGate><AdminNotifications /></AdminAccessGate>}
           />
 
           <Route
             path="/admin-activity-logs"
-            element={<AdminActivityLogs />}
+            element={<AdminAccessGate><AdminActivityLogs /></AdminAccessGate>}
           />
 
           {/* ==========================================
@@ -414,7 +415,7 @@ const App: React.FC = () => {
 
           <Route
             path="/student-dashboard"
-            element={<StudentHome />}
+            element={<EmailVerificationGate role="student" path="/student-dashboard"><StudentHome /></EmailVerificationGate>}
           />
 
           {/* STUDENT HOME ALIAS */}
@@ -435,7 +436,7 @@ const App: React.FC = () => {
 
           <Route
             path="/student-location"
-            element={<StudentLocation />}
+            element={<EmailVerificationGate role="student" path="/student-location"><StudentLocation /></EmailVerificationGate>}
           />
 
           {/* ==========================================
@@ -444,7 +445,7 @@ const App: React.FC = () => {
 
           <Route
             path="/organization-profile/:organizationId"
-            element={<OrganizationProfile />}
+            element={<EmailVerificationGate role="student" path="/organization-profile/:organizationId"><OrganizationProfile /></EmailVerificationGate>}
           />
 
           {/* ==========================================
@@ -453,7 +454,7 @@ const App: React.FC = () => {
 
           <Route
             path="/scholarships"
-            element={<Scholarships />}
+            element={<EmailVerificationGate role="student" path="/scholarships"><Scholarships /></EmailVerificationGate>}
           />
 
           {/* ==========================================
@@ -462,7 +463,7 @@ const App: React.FC = () => {
 
           <Route
             path="/application-history"
-            element={<ApplicationHistory />}
+            element={<EmailVerificationGate role="student" path="/application-history"><ApplicationHistory /></EmailVerificationGate>}
           />
 
           {/* ==========================================
@@ -471,7 +472,7 @@ const App: React.FC = () => {
 
           <Route
             path="/saved"
-            element={<Saved />}
+            element={<EmailVerificationGate role="student" path="/saved"><Saved /></EmailVerificationGate>}
           />
 
           {/* ==========================================
@@ -480,7 +481,7 @@ const App: React.FC = () => {
 
           <Route
             path="/profile"
-            element={<Profile />}
+            element={<EmailVerificationGate role="student" path="/profile"><Profile /></EmailVerificationGate>}
           />
 
           {/* ==========================================
@@ -489,7 +490,7 @@ const App: React.FC = () => {
 
           <Route
             path="/student-messages"
-            element={<Messages />}
+            element={<EmailVerificationGate role="student" path="/student-messages"><Messages /></EmailVerificationGate>}
           />
 
           <Route
@@ -508,7 +509,7 @@ const App: React.FC = () => {
 
           <Route
             path="/application"
-            element={<StudentApplication />}
+            element={<EmailVerificationGate role="student" path="/application"><StudentApplication /></EmailVerificationGate>}
           />
 
           {/* ==========================================
@@ -517,7 +518,7 @@ const App: React.FC = () => {
 
           <Route
             path="/notifications"
-            element={<StudentNotifications />}
+            element={<EmailVerificationGate role="student" path="/notifications"><StudentNotifications /></EmailVerificationGate>}
           />
 
           {/* ==========================================

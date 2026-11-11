@@ -1,5 +1,5 @@
 
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import {
   IonAvatar,
@@ -546,11 +546,9 @@ const Messages: React.FC = () => {
 
     return () => unsubscribe();
   }, [
-    activeConversation?.id,
-    activeConversation?.studentId,
-    activeConversation?.organizationId,
+    activeConversation,
     userId,
-    persistedConversation?.id,
+    persistedConversation,
   ]);
 
   // ==========================================
@@ -649,7 +647,7 @@ const Messages: React.FC = () => {
   // CREATE LOCAL DRAFT
   // ==========================================
 
-  const createDraftConversation = (
+  const createDraftConversation = useCallback((
     organization: Organization
   ): Conversation => {
     return {
@@ -665,7 +663,7 @@ const Messages: React.FC = () => {
       lastMessageAt: null,
       unreadCounts: {},
     };
-  };
+  }, [userId, studentName]);
 
   // ==========================================
   // START CONVERSATION
@@ -768,6 +766,7 @@ const Messages: React.FC = () => {
       state: null,
     });
   }, [
+    createDraftConversation,
     conversations,
     location.pathname,
     location.state,

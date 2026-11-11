@@ -1,40 +1,19 @@
+ion-app.ga-with-backbar { --ga-backbar-height: calc(56px + env(safe-area-inset-top, 0px)); }
+ion-app.ga-with-backbar > ion-router-outlet { top: var(--ga-backbar-height); }
+.global-backbar {
+  position: fixed; z-index: 30; inset: 0 0 auto; height: calc(56px + env(safe-area-inset-top, 0px));
+  display: flex; align-items: center; padding: env(safe-area-inset-top, 0px) max(16px, env(safe-area-inset-left, 0px)) 0;
+  background: #fff; border-bottom: 1px solid #e6e9e7;
+}
 .global-back-button {
-  position: fixed;
-  z-index: 10000;
-  top: max(10px, env(safe-area-inset-top));
-  left: 10px;
-  display: grid;
-  width: 42px;
-  height: 42px;
-  place-items: center;
-  padding: 0;
-  border: 1px solid rgba(127, 29, 45, 0.18);
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.96);
-  box-shadow: 0 3px 12px rgba(127, 29, 45, 0.16);
-  color: var(--ga-charcoal);
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 44px; padding: 8px 14px; border: 1px solid #dfe7e2; border-radius: 12px;
+  color: #243a2d; background: #f7faf8; font: inherit; font-size: 14px; font-weight: 600; line-height: 1.2; cursor: pointer;
+  transition: background 140ms ease, border-color 140ms ease; -webkit-tap-highlight-color: transparent;
 }
-
-.global-back-button ion-icon {
-  font-size: 22px;
-}
-
-.global-back-button:hover {
-  background: var(--ga-blush-white);
-}
-
-.global-back-button:focus-visible {
-  outline: 3px solid rgba(127, 29, 45, 0.35);
-  outline-offset: 3px;
-}
-
-@media (max-width: 520px) {
-  .global-back-button {
-    top: max(7px, env(safe-area-inset-top));
-    left: 7px;
-    width: 38px;
-    height: 38px;
-  }
-}
+.global-back-button ion-icon { font-size: 20px; }
+.global-back-button:hover { background: #eaf3ed; border-color: #b8d2c1; }
+.global-back-button:active { background: #dcebe2; }
+.app-back-control { min-width: 44px; min-height: 44px; touch-action: manipulation; }
+button.app-back-control:focus-visible { outline: 3px solid #3c8055; outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) { .global-back-button { transition: none; } }

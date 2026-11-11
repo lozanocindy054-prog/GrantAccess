@@ -17,7 +17,6 @@ import {
 import {
   mailOutline,
   lockClosedOutline,
-  schoolOutline,
   eyeOutline,
   eyeOffOutline,
 } from 'ionicons/icons';
@@ -73,12 +72,17 @@ const LoginLGUSchool: React.FC = () => {
     try {
       setLoading(true);
 
-      await signInWithEmailAndPassword(
+      const credential = await signInWithEmailAndPassword(
         auth,
         cleanEmail,
         password
       );
 
+      await credential.user.reload();
+      if (!credential.user.emailVerified) {
+        navigate('/verify-email', { replace: true });
+        return;
+      }
       // Firebase Authentication login succeeded.
       // Firestore permissions are checked separately.
       navigate('/lgu-dashboard', { replace: true });
@@ -178,11 +182,7 @@ const LoginLGUSchool: React.FC = () => {
       <IonContent fullscreen className="lgu-login-content">
         <main className="lgu-login-page">
           <section className="lgu-login-card">
-            <div className="lgu-login-logo">
-              <IonIcon
-                icon={schoolOutline}
-                aria-hidden="true"
-              />
+            <div className="lgu-login-logo"><img className="grantaccess-brand-image" src="/mylogo.png" alt="GrantAccess" />
             </div>
 
             <p className="lgu-login-brand">

@@ -1,3 +1,4 @@
+import { useAppBack } from '../../hooks/useAppBack';
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   IonContent,
@@ -180,6 +181,7 @@ const getAttachments = (value: unknown): ScholarshipAttachment[] => {
 };
 
 const Scholarships: React.FC = () => {
+  const goBack = useAppBack();
   const navigate = useNavigate();
   const location = useLocation();
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -514,9 +516,9 @@ const Scholarships: React.FC = () => {
       <header className="scholarships-top-header">
         <button
           type="button"
-          className="scholarships-back-button"
+          className="scholarships-back-button app-back-control"
           aria-label="Go back"
-          onClick={() => navigate(-1)}
+          onClick={goBack}
         >
           <IonIcon icon={arrowBackOutline} />
         </button>

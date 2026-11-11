@@ -1,3 +1,4 @@
+import AppInstallButton from '../../components/AppInstallButton';
 
 import React from "react";
 import {
@@ -46,7 +47,7 @@ const RegisterChoice: React.FC = () => {
 
             <div className="hero-content">
               <div className="hero-brand">
-                <img src="/image/logo3.png" alt="GrantAccess Logo" />
+                <img src="/mylogo.png" alt="GrantAccess Logo" />
                 <span>
                   Grant<span className="brand-highlight">Access</span>
                 </span>
@@ -68,6 +69,8 @@ const RegisterChoice: React.FC = () => {
                 Discover scholarship programs and bring students and
                 educational institutions closer together with GrantAccess.
               </p>
+
+              <AppInstallButton />
 
               <div className="hero-points">
                 <div>
@@ -312,22 +315,13 @@ const RegisterChoice: React.FC = () => {
                   <IonButton
                     expand="block"
                     className="admin-choice-button"
-                    onClick={() => navigateAfterBlur("/admin-register")}
+                    onClick={() => navigateAfterBlur("/admin-login")}
                   >
                     <IonIcon icon={peopleOutline} slot="start" />
-                    Create Admin Account
+                    Log in as Admin
                   </IonButton>
 
-                  <div className="login-prompt">
-                    <span>Already have an account?</span>
-                    <button
-                      type="button"
-                      className="text-login-button admin-text-login"
-                      onClick={() => navigateAfterBlur("/admin-login")}
-                    >
-                      Log in
-                    </button>
-                  </div>
+
                 </div>
 
                 <p className="card-note">
@@ -341,7 +335,7 @@ const RegisterChoice: React.FC = () => {
 
             <footer className="register-choice-footer">
               <div className="footer-brand">
-                <img src="/image/logo3.png" alt="" />
+                <img src="/mylogo.png" alt="" />
                 <strong>GrantAccess</strong>
               </div>
 
